@@ -5,7 +5,8 @@ class CircularImageWidget extends StatelessWidget {
   final double width;
   final double heigth;
 
-  CircularImageWidget({
+  const CircularImageWidget({
+    super.key, 
     required this.imageProvider,
     required this.width,
     required this.heigth,
