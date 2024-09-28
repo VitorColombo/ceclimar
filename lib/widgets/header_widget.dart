@@ -20,12 +20,12 @@ class HeaderWidget extends StatelessWidget {
               ),
             )
         ),
-          Column(
+          const Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
-              const SizedBox(height: 130),
+              SizedBox(height: 130),
               CircularImageWidget(
-                imageProvider: const AssetImage('assets/images/logo.png'),
+                imageProvider: AssetImage('assets/images/logo.png'),
                 width: 148,
                 heigth: 170,
               ),

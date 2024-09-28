@@ -9,10 +9,10 @@ class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
 
   @override
-  _SplashScreenState createState() => _SplashScreenState();
+  SplashScreenState createState() => SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
+class SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
@@ -31,15 +31,15 @@ class _SplashScreenState extends State<SplashScreen> {
             'assets/images/background1.png',
             fit: BoxFit.cover,
           ),
-          Column(
+          const Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               CircularImageWidget(
-                imageProvider: const AssetImage('assets/images/logo.png'),
+                imageProvider: AssetImage('assets/images/logo.png'),
                 width: 249,
                 heigth: 286,
               ),
-              const Padding(
+              Padding(
                 padding: EdgeInsets.only(left: 100, right: 100),
                 child: LinearProgressIndicator(
                   color: Color.fromARGB(255, 36, 53, 101),

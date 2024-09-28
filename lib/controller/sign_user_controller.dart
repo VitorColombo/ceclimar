@@ -28,6 +28,9 @@ class SignUserController {
     if (value.split(' ').length < 2) {
       return 'O campo deve conter nome e sobrenome';
     }
+    if (value.split(" ").last == '') {
+      return 'O campo deve conter nome e sobrenome';
+    }
     return null;
   }
 

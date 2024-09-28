@@ -12,13 +12,12 @@ class SendBtn extends StatelessWidget {
       onPressed: () {
         bool isValid = onValidate();
         if (isValid) {
-          // Ação quando a validação é bem-sucedida
+          // todo: implementar ação de envio
           print('Formulário válido');
         } else {
-          // Ação quando a validação falha
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Por favor, corrija os erros no formulário.'),
+              content: Text('Por favor, verifique os dados de entrada.'),
               backgroundColor: Colors.red,
             ),
           );
