@@ -99,7 +99,7 @@ class LoginPageState extends State<LoginPage> {
                                             key: _cadastroKey, 
                                             email: _controller.emailController.text,
                                           ),
-                                    ),
+                                        ),
                                       );                                  
                                     },
                                     child: const Text(
@@ -124,10 +124,41 @@ class LoginPageState extends State<LoginPage> {
                           validator: (value) => _controller.emailError,
                         ),
                         const SizedBox(height: 16),
-                        PasswordInput(
-                          text: "Senha", 
-                          controller: _controller.passController, 
-                          validator: (value) => _controller.passError
+                        Column(
+                          children: [
+                            PasswordInput(
+                              text: "Senha", 
+                              controller: _controller.passController, 
+                              validator: (value) => _controller.passError
+                            ),
+                            const SizedBox(height: 6),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                InkWell(
+                                  onTap: () {
+                                    Navigator.pushReplacement(
+                                      context,
+                                      NoAnimationPageRoute( //todo alterar rota para recuperação de senha
+                                        builder: (context) => CadastroUsuarioPage(
+                                          key: _cadastroKey, 
+                                          email: _controller.emailController.text,
+                                        ),
+                                      ),
+                                    );                                  
+                                  },
+                                  child: const Text(
+                                    'Esqueci minha senha',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color.fromARGB(255, 0, 111, 130),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
                         const SizedBox(height: 16),
                         SizedBox(
