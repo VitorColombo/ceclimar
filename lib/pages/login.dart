@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tcc_ceclimar/pages/forgot_pass.dart';
 import 'package:tcc_ceclimar/widgets/header_widget.dart';
 import 'package:tcc_ceclimar/widgets/input_field.dart';
 import 'package:tcc_ceclimar/widgets/password_input.dart';
@@ -20,7 +21,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class LoginPageState extends State<LoginPage> {
-  final SignUserController _controller = SignUserController();
+  final AuthenticationController _controller = AuthenticationController();
   final _formKey = GlobalKey<FormState>();
   final _cadastroKey = GlobalKey<CadastroUsuarioPageState>();
 
@@ -137,15 +138,12 @@ class LoginPageState extends State<LoginPage> {
                               children: [
                                 InkWell(
                                   onTap: () {
-                                    Navigator.pushReplacement(
+                                    Navigator.push(
                                       context,
-                                      NoAnimationPageRoute( //todo alterar rota para recuperação de senha
-                                        builder: (context) => CadastroUsuarioPage(
-                                          key: _cadastroKey, 
-                                          email: _controller.emailController.text,
-                                        ),
+                                      NoAnimationPageRoute(
+                                        builder: (context) => ForgotPasswordScreen(email: _controller.emailController.text,),
                                       ),
-                                    );                                  
+                                    );
                                   },
                                   child: const Text(
                                     'Esqueci minha senha',

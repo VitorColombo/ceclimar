@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tcc_ceclimar/pages/forgot_pass.dart';
 import 'package:tcc_ceclimar/pages/splashscreen.dart';
 import 'package:tcc_ceclimar/pages/sign_user.dart';
 import 'package:tcc_ceclimar/pages/login.dart';
@@ -9,9 +10,20 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: 'TCC Ceclimar',
+      theme: ThemeData(
+        textTheme: const TextTheme(
+          bodyLarge: TextStyle(fontSize: 72.0, fontWeight: FontWeight.bold),
+          bodyMedium: TextStyle(fontSize: 36.0),
+          bodySmall: TextStyle(fontSize: 14.0),
+          
+        ),
+        fontFamily: "Inter"
+      ),
       initialRoute: SplashScreen.routeName,
       routes: {
         SplashScreen.routeName: (context) => const SplashScreen(),
+        ForgotPasswordScreen.routeName: (context) => const ForgotPasswordScreen(email: "",),
         CadastroUsuarioPage.routeName: (context) => const CadastroUsuarioPage(email: "",),
         LoginPage.routeName: (context) => const LoginPage(email: "",),
       },

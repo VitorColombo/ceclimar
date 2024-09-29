@@ -28,3 +28,8 @@ flutter:
     - assets/images/
     - assets/images/background.jpg
     - assets/images/logo.png
+
+  fonts:
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter-VariableFont_opsz,wght.ttf
