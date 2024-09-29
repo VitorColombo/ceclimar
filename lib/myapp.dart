@@ -13,10 +13,10 @@ class MyApp extends StatelessWidget {
       title: 'TCC Ceclimar',
       theme: ThemeData(
         textTheme: const TextTheme(
-          bodyLarge: TextStyle(fontSize: 72.0, fontWeight: FontWeight.bold),
-          bodyMedium: TextStyle(fontSize: 36.0),
+          bodyLarge: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
+          bodyMedium: TextStyle(fontSize: 18.0),
           bodySmall: TextStyle(fontSize: 14.0),
-          
+
         ),
         fontFamily: "Inter"
       ),

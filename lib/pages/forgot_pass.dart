@@ -19,6 +19,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   final AuthenticationController _controller = AuthenticationController();
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
+  bool _showSuccessMessage = false;
 
   @override
   void dispose() {
@@ -31,6 +32,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       _controller.validateForgotPass();
     });
     return _formKey.currentState?.validate() ?? false;
+  }
+
+  void _sendPasswordResetEmail() {
+  //todo verificar se o email esta presente no BD
+
+    setState(() {
+      _showSuccessMessage = true;
+    });
   }
 
   @override
@@ -57,46 +66,13 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           SliverList(
             delegate: SliverChildListDelegate(
               [
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        const SizedBox(height: 10),
-                        const Text(
-                          'Esqueceu sua senha?',
-                          style: TextStyle(
-                            fontSize: 24.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 16.0),
-                        const Text(
-                          'Por favor informe o e-mail associado a sua conta para que seja enviado um link de alteração de senha',
-                          style: TextStyle(
-                            fontSize: 16.0,
-                          ),
-                        ),
-                        const SizedBox(height: 32.0),
-                        InputField(
-                          text: 'E-mail',
-                          controller: _controller.emailController,
-                          validator: (value) => _controller.emailError,
-                        ),
-                        const SizedBox(height: 36.0),
-                        SizedBox(
-                          width: double.infinity,
-                          height: 56,
-                          child: SendBtn(
-                            text: 'Recuperar senha',
-                            onValidate: _validateForm,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                AnimatedCrossFade(
+                  firstChild: _buildPasswordForm(),
+                  secondChild: _buildSuccessMessage(),
+                  crossFadeState: _showSuccessMessage
+                      ? CrossFadeState.showSecond
+                      : CrossFadeState.showFirst,
+                  duration: const Duration(milliseconds: 500),
                 ),
               ],
             ),
@@ -104,6 +80,83 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         ],
       ),
       backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+    );
+  }
+
+  Widget _buildPasswordForm() {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 20),
+            const Text(
+              'Esqueceu sua senha?',
+              style: TextStyle(
+                fontSize: 24.0,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 16.0),
+            const Text(
+              'Por favor informe o e-mail associado a sua conta para que seja enviado um link de alteração de senha',
+              style: TextStyle(
+                fontSize: 18.0,
+              ),
+            ),
+            const SizedBox(height: 32.0),
+            InputField(
+              text: 'Email',
+              controller: _controller.emailController,
+              validator: (value) => _controller.emailError
+            ),
+            const SizedBox(height: 32.0),
+            SizedBox(
+              width: double.infinity,
+              height: 56,
+              child: SendBtn(
+                text: 'Recuperar senha',
+                onValidate: () {
+                  if (_validateForm()) {
+                    _sendPasswordResetEmail();
+                  }
+                  return true; 
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSuccessMessage() {
+    return const Padding(
+      padding: EdgeInsets.all(16.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            'Envio realizado com sucesso!',
+            style: TextStyle(
+              fontSize: 20.0,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          SizedBox(height: 20.0),
+          Text(
+            'Cheque seu e-mail para recuperar o acesso a partir do link enviado',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 24.0,
+            ),
+          ),
+          SizedBox(height: 150),
+          Icon(Icons.check_circle, size: 120, color: Colors.green),
+        ],
+      ),
     );
   }
 }
