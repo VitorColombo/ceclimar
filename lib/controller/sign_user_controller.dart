@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class SignUserController {
+class AuthenticationController {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passController = TextEditingController();
@@ -85,6 +85,12 @@ class SignUserController {
         passError == null &&
         passConfError == null &&
         checkPassMatch();
+  }
+
+  bool validateForgotPass() {
+    emailError = validateEmail(emailController.text);
+    passError = validatePassword(passController.text);
+    return emailError == null && passError == null;
   }
 
   void dispose() {

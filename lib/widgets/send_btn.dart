@@ -35,6 +35,7 @@ class SendBtn extends StatelessWidget {
         textStyle: const TextStyle(
           fontSize: 18,
           fontWeight: FontWeight.bold,
+          fontFamily: "Inter"
         ),
       ),
       child: Text(

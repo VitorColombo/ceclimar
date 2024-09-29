@@ -25,7 +25,8 @@ class SendGoogleBtn extends StatelessWidget {
         ),
         textStyle: const TextStyle(
           fontSize: 18,
-          fontWeight: FontWeight.bold,
+          fontWeight: FontWeight.normal,
+          fontFamily: "Inter",
         ),
       ),
       child: Row(

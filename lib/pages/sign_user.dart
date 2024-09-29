@@ -20,7 +20,7 @@ class CadastroUsuarioPage extends StatefulWidget {
 }
 
 class CadastroUsuarioPageState extends State<CadastroUsuarioPage> {
-  final SignUserController _controller = SignUserController();
+  final AuthenticationController _controller = AuthenticationController();
   final _formKey = GlobalKey<FormState>();
   final _loginKey = GlobalKey<LoginPageState>();
 
