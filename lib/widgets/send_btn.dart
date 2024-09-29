@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 class SendBtn extends StatelessWidget {
   final String text;
   final Function onValidate;
+  final Function onSend;
 
-  const SendBtn({super.key, required this.text, required this.onValidate});
+  const SendBtn({super.key, required this.text, required this.onValidate, required this.onSend});
 
   @override
   Widget build(BuildContext context) {
@@ -12,8 +13,7 @@ class SendBtn extends StatelessWidget {
       onPressed: () {
         bool isValid = onValidate();
         if (isValid) {
-          // todo: implementar ação de envio
-          print('Formulário válido');
+          onSend();
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(

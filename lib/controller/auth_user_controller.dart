@@ -1,10 +1,17 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:tcc_ceclimar/pages/login.dart';
+
+import '../user_auth/firebase_auth_implementation/firebase_auth_services.dart';
 
 class AuthenticationController {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passController = TextEditingController();
   final TextEditingController passConfController = TextEditingController();
+  final FirebaseAuthService _auth = FirebaseAuthService();
+  final GoogleSignIn googleSignIn = GoogleSignIn();
 
   String? nameError;
   String? emailError;
@@ -105,5 +112,72 @@ class AuthenticationController {
     emailController.clear();
     passController.clear();
     passConfController.clear();
+  }
+
+  void signUpUser(BuildContext context) async {
+    String name = nameController.text;
+    String email = emailController.text;
+    String password = passController.text;
+
+    User? user = await _auth.signUpWithEmailAndPassword(email, password);
+
+    if(user != null) {
+      print('Usuário cadastrado com sucesso');
+      Navigator.pushNamed(context, LoginPage.routeName);
+    } else {
+      print('Erro ao cadastrar usuário');
+    }
+  }
+
+    void signInUser(BuildContext context) async {
+    String email = emailController.text;
+    String password = passController.text;
+
+    User? user = await _auth.signInWithEmailAndPassword(email, password);
+
+    if(user != null) {
+      print('Usuário logado com sucesso');
+      Navigator.pushNamed(context, '/login');
+    } else {
+      print('Erro ao logar');
+    }
+  }
+
+  void sendPasswordResetEmail() async {
+    String email = emailController.text;
+    await _auth.sendPasswordResetEmail(email);
+  }
+
+  void signOutUser() {
+    _auth.signOut();
+  }
+
+Future<void> signInWithGoogle() async {
+  try {
+    final GoogleSignInAccount? googleSignInAccount = await googleSignIn.signIn();
+    if (googleSignInAccount == null) {
+      print("User cancelled the sign-in.");
+      return;
+    }
+
+    final GoogleSignInAuthentication googleSignInAuthentication =
+        await googleSignInAccount.authentication;
+
+    final AuthCredential credential = GoogleAuthProvider.credential(
+      accessToken: googleSignInAuthentication.accessToken,
+      idToken: googleSignInAuthentication.idToken,
+    );
+
+    final UserCredential userCredential =
+        await FirebaseAuth.instance.signInWithCredential(credential);
+    final User? user = userCredential.user;
+
+    } catch (e) {
+      if (e is FirebaseAuthException) {
+        print('Google Sign-In Error: ${e.code} - ${e.message}');
+      } else {
+        print('Error during sign-in: ${e.toString()}');
+      }
+    }
   }
 }

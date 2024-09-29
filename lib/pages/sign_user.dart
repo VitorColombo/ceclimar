@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tcc_ceclimar/controller/sign_user_controller.dart';
+import 'package:tcc_ceclimar/controller/auth_user_controller.dart';
 import 'package:tcc_ceclimar/pages/login.dart';
 import 'package:tcc_ceclimar/widgets/header_widget.dart';
 import 'package:tcc_ceclimar/widgets/input_field.dart';
@@ -146,13 +146,16 @@ class CadastroUsuarioPageState extends State<CadastroUsuarioPage> {
                         SizedBox(
                           width: double.infinity,
                           height: 56,
-                          child: SendBtn(text: "Cadastrar", onValidate: _validateForm),
+                          child: SendBtn(text: "Cadastrar", onValidate: _validateForm, onSend: () => _controller.signUpUser(context)),
                         ),
                         const SizedBox(height: 16),
-                        const SizedBox(
+                        SizedBox(
                           width: double.infinity,
                           height: 56,
-                          child: SendGoogleBtn(text: "Cadastrar com Google"),
+                          child: SendGoogleBtn(
+                            text: "Cadastrar com Google",
+                            onSend: () => _controller.signInWithGoogle(),
+                          )
                         ),
                       ],
                     ),

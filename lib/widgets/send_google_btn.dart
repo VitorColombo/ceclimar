@@ -2,15 +2,19 @@ import 'package:flutter/material.dart';
 
 class SendGoogleBtn extends StatelessWidget {
   final String text;
+  final Function onSend;
   const SendGoogleBtn({
     super.key,
     required this.text,
+    required this.onSend,
   });
 
   @override
   Widget build(BuildContext context) {
     return TextButton(
-      onPressed: () {},
+      onPressed: () {
+        onSend();
+      },
       style: TextButton.styleFrom(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
