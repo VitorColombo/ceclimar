@@ -51,7 +51,7 @@ class _PasswordInputState extends State<PasswordInput> {
               borderRadius: BorderRadius.all(Radius.circular(10)),
             ),
             floatingLabelStyle: const TextStyle(
-              fontSize: 20,
+              fontSize: 17,
             ),
             errorBorder: const OutlineInputBorder(
               borderSide: BorderSide(color: Colors.red, width: 1.6),
@@ -66,6 +66,7 @@ class _PasswordInputState extends State<PasswordInput> {
               fontSize: 12, 
               height: 0.5, 
             ),
+            contentPadding: const EdgeInsets.symmetric(vertical: 17.0, horizontal: 10.0),
             suffixIcon: IconButton(
               icon: Icon(
                 _obscureText ? Icons.visibility : Icons.visibility_off,
@@ -73,7 +74,7 @@ class _PasswordInputState extends State<PasswordInput> {
               ),
               onPressed: _togglePasswordVisibility,
             ),
-          ),
+          ),  
         ),
       ],
     );

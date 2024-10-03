@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:tcc_ceclimar/pages/sign_user.dart';
+import 'package:tcc_ceclimar/pages/login.dart';
 import 'package:tcc_ceclimar/widgets/circular_image_widget.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -17,7 +17,7 @@ class SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     Timer(const Duration(seconds: 3), () {
-      Navigator.pushReplacementNamed(context, CadastroUsuarioPage.routeName);
+      Navigator.pushReplacementNamed(context, LoginPage.routeName);
     });
   }
 

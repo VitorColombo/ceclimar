@@ -22,6 +22,7 @@ class AuthenticationController {
     if (value == null || value.isEmpty) {
       return 'O campo não pode ser vazio';
     }
+    value = value.trim();
     final RegExp regex = RegExp(r'^[a-zA-Z\s]*$');
     if (!regex.hasMatch(value)) {
       return 'O campo não deve conter caracteres especiais';
@@ -129,7 +130,7 @@ class AuthenticationController {
     }
   }
 
-    void signInUser(BuildContext context) async {
+  void signInUser(BuildContext context) async {
     String email = emailController.text;
     String password = passController.text;
 
@@ -152,32 +153,32 @@ class AuthenticationController {
     _auth.signOut();
   }
 
-Future<void> signInWithGoogle() async {
-  try {
-    final GoogleSignInAccount? googleSignInAccount = await googleSignIn.signIn();
-    if (googleSignInAccount == null) {
-      print("User cancelled the sign-in.");
-      return;
-    }
+  Future<void> signInWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleSignInAccount = await googleSignIn.signIn();
+      if (googleSignInAccount == null) {
+        print("User cancelled the sign-in.");
+        return;
+      }
 
-    final GoogleSignInAuthentication googleSignInAuthentication =
-        await googleSignInAccount.authentication;
+      final GoogleSignInAuthentication googleSignInAuthentication =
+          await googleSignInAccount.authentication;
 
-    final AuthCredential credential = GoogleAuthProvider.credential(
-      accessToken: googleSignInAuthentication.accessToken,
-      idToken: googleSignInAuthentication.idToken,
-    );
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleSignInAuthentication.accessToken,
+        idToken: googleSignInAuthentication.idToken,
+      );
 
-    final UserCredential userCredential =
-        await FirebaseAuth.instance.signInWithCredential(credential);
-    final User? user = userCredential.user;
+      final UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithCredential(credential);
+      final User? user = userCredential.user;
 
-    } catch (e) {
-      if (e is FirebaseAuthException) {
-        print('Google Sign-In Error: ${e.code} - ${e.message}');
-      } else {
-        print('Error during sign-in: ${e.toString()}');
+      } catch (e) {
+        if (e is FirebaseAuthException) {
+          print('Google Sign-In Error: ${e.code} - ${e.message}');
+        } else {
+          print('Error during sign-in: ${e.toString()}');
+        }
       }
     }
-  }
-}
+  }//flutter app modular approach architecture
