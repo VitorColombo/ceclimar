@@ -34,7 +34,7 @@ class InputField extends StatelessWidget {
           borderRadius: BorderRadius.all(Radius.circular(10)),
         ),
         floatingLabelStyle: const TextStyle(
-          fontSize: 20
+          fontSize: 17
         ),
         errorBorder: const OutlineInputBorder(
           borderSide: BorderSide(color: Colors.red, width: 1.6),
@@ -48,8 +48,8 @@ class InputField extends StatelessWidget {
         errorStyle: const TextStyle(
           fontSize: 12, 
           height: 0.5, 
-          
         ),
+        contentPadding: const EdgeInsets.symmetric(vertical: 17.0, horizontal: 10.0),
       ),
     );
   }

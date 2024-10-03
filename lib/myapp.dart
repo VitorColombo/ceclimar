@@ -3,6 +3,7 @@ import 'package:tcc_ceclimar/pages/forgot_pass.dart';
 import 'package:tcc_ceclimar/pages/splashscreen.dart';
 import 'package:tcc_ceclimar/pages/sign_user.dart';
 import 'package:tcc_ceclimar/pages/login.dart';
+import 'package:tcc_ceclimar/pages/new_researcher_user.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -26,6 +27,7 @@ class MyApp extends StatelessWidget {
         ForgotPasswordScreen.routeName: (context) => const ForgotPasswordScreen(email: "",),
         CadastroUsuarioPage.routeName: (context) => const CadastroUsuarioPage(email: "",),
         LoginPage.routeName: (context) => const LoginPage(email: "",),
+        CadastroPesquisadorPage.routeName: (context) => const CadastroPesquisadorPage()
       },
     );
   }

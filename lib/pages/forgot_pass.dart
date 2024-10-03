@@ -3,7 +3,7 @@ import 'package:tcc_ceclimar/widgets/header_widget.dart';
 import 'package:tcc_ceclimar/widgets/input_field.dart';
 import 'package:tcc_ceclimar/widgets/send_btn.dart';
 
-import '../controller/sign_user_controller.dart';
+import '../controller/auth_user_controller.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   static const String routeName = '/forgot_password';
@@ -124,6 +124,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   }
                   return true; 
                 },
+                onSend: _controller.sendPasswordResetEmail,
               ),
             ),
           ],

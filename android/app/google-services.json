@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "281709662067",
+    "project_id": "tcc-ceclimar",
+    "storage_bucket": "tcc-ceclimar.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:281709662067:android:a453c4210c0be3f84fbf06",
+        "android_client_info": {
+          "package_name": "com.example.tcc_ceclimar"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "281709662067-mt9eu2hgknq5antl9i9qu7118evd6o7f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjvujUJOzV50bITcvQSWkUSzNUIy0Ub8s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "281709662067-mt9eu2hgknq5antl9i9qu7118evd6o7f.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

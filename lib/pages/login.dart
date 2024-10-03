@@ -6,7 +6,7 @@ import 'package:tcc_ceclimar/widgets/password_input.dart';
 import 'package:tcc_ceclimar/widgets/send_btn.dart';
 import 'package:tcc_ceclimar/widgets/send_google_btn.dart';
 
-import '../controller/sign_user_controller.dart';
+import '../controller/auth_user_controller.dart';
 import '../widgets/no_animation_push.dart';
 import 'sign_user.dart';
 
@@ -165,15 +165,17 @@ class LoginPageState extends State<LoginPage> {
                           child: 
                             SendBtn(
                               text: "Entrar", 
-                              onValidate: _validateForm
+                              onValidate: _validateForm,
+                              onSend: () => _controller.signInUser(context),
                             ),
                         ),
                         const SizedBox(height: 16),
-                        const SizedBox(
+                        SizedBox(
                           width: double.infinity,
                           height: 56,
                           child: SendGoogleBtn(
                             text: "Entrar com Google",
+                            onSend: () => _controller.signInWithGoogle(),
                           ),
                         ),
                       ],

@@ -1,28 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:tcc_ceclimar/controller/auth_user_controller.dart';
-import 'package:tcc_ceclimar/pages/login.dart';
 import 'package:tcc_ceclimar/widgets/header_widget.dart';
 import 'package:tcc_ceclimar/widgets/input_field.dart';
 import 'package:tcc_ceclimar/widgets/password_input.dart';
 import 'package:tcc_ceclimar/widgets/send_btn.dart';
 
-import '../widgets/no_animation_push.dart';
-import '../widgets/send_google_btn.dart';
+import '../widgets/modal_bottomsheet.dart';
 
-class CadastroUsuarioPage extends StatefulWidget {
-  static const String routeName = '/cadastrar';
-  final String email;
-
-  const CadastroUsuarioPage({Key? key, required this.email}) : super(key: key);
+class CadastroPesquisadorPage extends StatefulWidget {
+  static const String routeName = '/cadastrarPesquisador';
+  
+  const CadastroPesquisadorPage({Key? key}) : super(key: key);
 
   @override
-  CadastroUsuarioPageState createState() => CadastroUsuarioPageState();
+  CadastroPesquisadorPageState createState() => CadastroPesquisadorPageState();
 }
 
-class CadastroUsuarioPageState extends State<CadastroUsuarioPage> {
+class CadastroPesquisadorPageState extends State<CadastroPesquisadorPage> {
   final AuthenticationController _controller = AuthenticationController();
   final _formKey = GlobalKey<FormState>();
-  final _loginKey = GlobalKey<LoginPageState>();
 
   @override
   void dispose() {
@@ -31,13 +27,7 @@ class CadastroUsuarioPageState extends State<CadastroUsuarioPage> {
     super.dispose();
   }
 
-  @override
-  void initState() {
-    super.initState();
-    _controller.emailController.text = widget.email;
-  }
-
-    bool _validateForm() {
+  bool _validateForm() {
     setState(() {
       _controller.validateSignIn();
     });
@@ -68,44 +58,15 @@ class CadastroUsuarioPageState extends State<CadastroUsuarioPage> {
                     key: _formKey,
                     child: Column(
                       children: [
-                        const SizedBox(height: 20),
-                        Row(
+                        const Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
                             Expanded(
                               child: Column(
-                                children: [
-                                  InkWell(
-                                    onTap:() {
-                                      Navigator.pushReplacement(
-                                        context,
-                                        NoAnimationPageRoute(
-                                          builder: (context) => LoginPage(
-                                            key: _loginKey,
-                                            email: _controller.emailController.text,
-                                          ),
-                                        ),
-                                      );                                  
-                                    },
-                                    child: const Text(
-                                      'ENTRAR',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.normal,
-                                        color: Colors.grey,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const Expanded(
-                              child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   Text(
-                                    'CADASTRAR',
+                                    'CADASTRAR PESQUISADOR',
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
                                       fontSize: 18,
@@ -146,16 +107,13 @@ class CadastroUsuarioPageState extends State<CadastroUsuarioPage> {
                         SizedBox(
                           width: double.infinity,
                           height: 56,
-                          child: SendBtn(text: "Cadastrar", onValidate: _validateForm, onSend: () => _controller.signUpUser(context)),
-                        ),
-                        const SizedBox(height: 16),
-                        SizedBox(
-                          width: double.infinity,
-                          height: 56,
-                          child: SendGoogleBtn(
-                            text: "Cadastrar com Google",
-                            onSend: () => _controller.signInWithGoogle(),
-                          )
+                          child: SendBtn(
+                            text: "Cadastrar",
+                            onValidate: _validateForm,
+                            onSend: () => {
+                              _showModalBottomSheet(context),
+                            }
+                          ),
                         ),
                       ],
                     ),
@@ -167,6 +125,70 @@ class CadastroUsuarioPageState extends State<CadastroUsuarioPage> {
         ],
       ),
       backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+    );
+  }
+
+  void _showModalBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        return ModalBottomSheet(
+          text: "Usuário já cadastrado, deseja conceder o título de pesquisador?",
+          buttons: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              style: TextButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                backgroundColor: const Color.fromARGB(255, 93, 176, 117), 
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 40,
+                  vertical: 16,
+                ),
+                textStyle: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: "Inter"
+                ),
+              ),
+              child: const Text(
+                "Sim",
+                style: TextStyle(color: Colors.white), 
+              ),
+            ),
+            const SizedBox(height: 15),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              style: TextButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                backgroundColor: const Color.fromARGB(255, 232, 39, 39), 
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 40,
+                  vertical: 16,
+                ),
+                textStyle: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: "Inter"
+                ),
+              ),
+              child: const Text(
+                "Cancelar",
+                style: TextStyle(color: Colors.white), 
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }
