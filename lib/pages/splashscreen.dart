@@ -1,5 +1,7 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:tcc_ceclimar/pages/base_page.dart';
 import 'package:tcc_ceclimar/pages/login.dart';
 import 'package:tcc_ceclimar/widgets/circular_image_widget.dart';
 
@@ -9,31 +11,35 @@ class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
 
   @override
-  SplashScreenState createState() => SplashScreenState();
+  _SplashScreenState createState() => _SplashScreenState();
 }
 
-class SplashScreenState extends State<SplashScreen> {
+class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Timer(const Duration(seconds: 3), () {
-      Navigator.pushReplacementNamed(context, LoginPage.routeName);
-    });
+    _initializeFirebase();
+  }
+
+  Future<void> _initializeFirebase() async {
+    await Firebase.initializeApp();
+    User? user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      Navigator.of(context).pushReplacementNamed(BasePage.routeName);
+    } else {
+      Navigator.of(context).pushReplacementNamed(LoginPage.routeName);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       body: Stack(
-        fit: StackFit.expand,
-        children: <Widget>[
-          Image.asset(
-            'assets/images/background1.png',
-            fit: BoxFit.cover,
-          ),
-          const Column(
+        children: [
+          Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
+            children: [
               CircularImageWidget(
                 imageProvider: AssetImage('assets/images/logo.png'),
                 width: 249,

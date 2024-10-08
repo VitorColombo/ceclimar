@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tcc_ceclimar/controller/auth_user_controller.dart';
 import 'package:tcc_ceclimar/pages/login.dart';
-import 'package:tcc_ceclimar/widgets/header_widget.dart';
+import 'package:tcc_ceclimar/widgets/header_banner_widget.dart';
 import 'package:tcc_ceclimar/widgets/input_field.dart';
 import 'package:tcc_ceclimar/widgets/password_input.dart';
 import 'package:tcc_ceclimar/widgets/send_btn.dart';
@@ -9,17 +9,17 @@ import 'package:tcc_ceclimar/widgets/send_btn.dart';
 import '../widgets/no_animation_push.dart';
 import '../widgets/send_google_btn.dart';
 
-class CadastroUsuarioPage extends StatefulWidget {
+class NewUserPage extends StatefulWidget {
   static const String routeName = '/cadastrar';
   final String email;
 
-  const CadastroUsuarioPage({Key? key, required this.email}) : super(key: key);
+  const NewUserPage({Key? key, required this.email}) : super(key: key);
 
   @override
-  CadastroUsuarioPageState createState() => CadastroUsuarioPageState();
+  NewUserPageState createState() => NewUserPageState();
 }
 
-class CadastroUsuarioPageState extends State<CadastroUsuarioPage> {
+class NewUserPageState extends State<NewUserPage> {
   final AuthenticationController _controller = AuthenticationController();
   final _formKey = GlobalKey<FormState>();
   final _loginKey = GlobalKey<LoginPageState>();
@@ -54,7 +54,7 @@ class CadastroUsuarioPageState extends State<CadastroUsuarioPage> {
             backgroundColor: Colors.white,
             shadowColor: Colors.transparent,
             flexibleSpace: FlexibleSpaceBar(
-              background: HeaderWidget(),
+              background: HeaderBannerWidget(),
             ),
             pinned: true, 
             floating: false,
@@ -110,7 +110,7 @@ class CadastroUsuarioPageState extends State<CadastroUsuarioPage> {
                                     style: TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
-                                      color: Color.fromARGB(255, 0, 111, 130)
+                                      color: Color.fromARGB(255, 71, 169, 218)
                                     ),
                                   ),
                                 ],

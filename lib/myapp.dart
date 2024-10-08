@@ -1,5 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:tcc_ceclimar/pages/base_page.dart';
+import 'package:tcc_ceclimar/pages/evaluate_register.dart';
 import 'package:tcc_ceclimar/pages/forgot_pass.dart';
+import 'package:tcc_ceclimar/pages/home.dart';
+import 'package:tcc_ceclimar/pages/local_animals.dart';
+import 'package:tcc_ceclimar/pages/my_profile.dart';
+import 'package:tcc_ceclimar/pages/my_registers.dart';
+import 'package:tcc_ceclimar/pages/new_register.dart';
+import 'package:tcc_ceclimar/pages/register_pannel.dart';
 import 'package:tcc_ceclimar/pages/splashscreen.dart';
 import 'package:tcc_ceclimar/pages/sign_user.dart';
 import 'package:tcc_ceclimar/pages/login.dart';
@@ -17,7 +25,6 @@ class MyApp extends StatelessWidget {
           bodyLarge: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
           bodyMedium: TextStyle(fontSize: 18.0),
           bodySmall: TextStyle(fontSize: 14.0),
-
         ),
         fontFamily: "Inter"
       ),
@@ -25,9 +32,18 @@ class MyApp extends StatelessWidget {
       routes: {
         SplashScreen.routeName: (context) => const SplashScreen(),
         ForgotPasswordScreen.routeName: (context) => const ForgotPasswordScreen(email: "",),
-        CadastroUsuarioPage.routeName: (context) => const CadastroUsuarioPage(email: "",),
+        NewUserPage.routeName: (context) => const NewUserPage(email: "",),
         LoginPage.routeName: (context) => const LoginPage(email: "",),
-        CadastroPesquisadorPage.routeName: (context) => const CadastroPesquisadorPage()
+
+        NewResearcherPage.routeName: (context) => const NewResearcherPage(),
+        HomePage.routeName: (context) => HomePage(updateIndex: (int index) {}),
+        EvaluateRegister.routeName: (context) => const EvaluateRegister(),
+        LocalAnimals.routeName: (context) => const LocalAnimals(),
+        MyProfile.routeName: (context) => MyProfile(),
+        MyRegisters.routeName: (context) => const MyRegisters(),
+        NewRegister.routeName: (context) => const NewRegister(),
+        RegisterPannel.routeName: (context) => const RegisterPannel(),
+        BasePage.routeName: (context) => const BasePage(),
       },
     );
   }

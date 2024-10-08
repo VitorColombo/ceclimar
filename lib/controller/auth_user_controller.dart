@@ -22,7 +22,6 @@ class AuthenticationController {
     if (value == null || value.isEmpty) {
       return 'O campo não pode ser vazio';
     }
-    value = value.trim();
     final RegExp regex = RegExp(r'^[a-zA-Z\s]*$');
     if (!regex.hasMatch(value)) {
       return 'O campo não deve conter caracteres especiais';
@@ -78,12 +77,19 @@ class AuthenticationController {
   }
 
   bool validateLogin() {
+    emailController.text = emailController.text.trim();
+    passController.text = passController.text.trim();
     emailError = validateEmail(emailController.text);
     passError = validatePassword(passController.text);
     return emailError == null && passError == null;
   }
 
   bool validateSignIn() {
+    nameController.text = nameController.text.trim();
+    emailController.text = emailController.text.trim();
+    passController.text = passController.text.trim();
+    passConfController.text = passConfController.text.trim();
+
     nameError = validateName(nameController.text);
     emailError = validateEmail(emailController.text);
     passError = validatePassword(passController.text);
@@ -124,7 +130,7 @@ class AuthenticationController {
 
     if(user != null) {
       print('Usuário cadastrado com sucesso');
-      Navigator.pushNamed(context, LoginPage.routeName);
+      Navigator.pushNamed(context, LoginPage.routeName,);
     } else {
       print('Erro ao cadastrar usuário');
     }
@@ -137,8 +143,8 @@ class AuthenticationController {
     User? user = await _auth.signInWithEmailAndPassword(email, password);
 
     if(user != null) {
-      print('Usuário logado com sucesso');
-      Navigator.pushNamed(context, '/login');
+      //should load the basepage
+      Navigator.pushReplacementNamed(context, '/basePage');
     } else {
       print('Erro ao logar');
     }

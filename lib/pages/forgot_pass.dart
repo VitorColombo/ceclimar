@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tcc_ceclimar/widgets/header_widget.dart';
+import 'package:tcc_ceclimar/widgets/header_banner_widget.dart';
 import 'package:tcc_ceclimar/widgets/input_field.dart';
 import 'package:tcc_ceclimar/widgets/send_btn.dart';
 
@@ -58,7 +58,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             backgroundColor: Colors.white,
             shadowColor: Colors.transparent,
             flexibleSpace: FlexibleSpaceBar(
-              background: HeaderWidget(),
+              background: HeaderBannerWidget(),
             ),
             pinned: true,
             floating: false,
