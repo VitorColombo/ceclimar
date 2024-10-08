@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'circular_image_widget.dart';
 
-class HeaderWidget extends StatelessWidget {
-  const HeaderWidget({super.key});
+class HeaderBannerWidget extends StatelessWidget {
+  const HeaderBannerWidget({super.key});
 
   @override
   Widget build(BuildContext context) {

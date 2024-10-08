@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tcc_ceclimar/pages/forgot_pass.dart';
-import 'package:tcc_ceclimar/widgets/header_widget.dart';
+import 'package:tcc_ceclimar/widgets/header_banner_widget.dart';
 import 'package:tcc_ceclimar/widgets/input_field.dart';
 import 'package:tcc_ceclimar/widgets/password_input.dart';
 import 'package:tcc_ceclimar/widgets/send_btn.dart';
@@ -23,7 +23,7 @@ class LoginPage extends StatefulWidget {
 class LoginPageState extends State<LoginPage> {
   final AuthenticationController _controller = AuthenticationController();
   final _formKey = GlobalKey<FormState>();
-  final _cadastroKey = GlobalKey<CadastroUsuarioPageState>();
+  final _cadastroKey = GlobalKey<NewUserPageState>();
 
   @override
   void dispose() {
@@ -54,7 +54,7 @@ class LoginPageState extends State<LoginPage> {
             backgroundColor: Colors.white,
             shadowColor: Colors.transparent,
             flexibleSpace: FlexibleSpaceBar(
-              background: HeaderWidget(),
+              background: HeaderBannerWidget(),
             ),
             pinned: true, 
             floating: false,
@@ -81,7 +81,7 @@ class LoginPageState extends State<LoginPage> {
                                     style: TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
-                                      color: Color.fromARGB(255, 0, 111, 130)
+                                      color: Color.fromARGB(255, 71, 169, 218)
                                     ),
                                   ),
                                 ],
@@ -96,7 +96,7 @@ class LoginPageState extends State<LoginPage> {
                                       Navigator.pushReplacement(
                                         context,
                                         NoAnimationPageRoute(
-                                          builder: (context) => CadastroUsuarioPage(
+                                          builder: (context) => NewUserPage(
                                             key: _cadastroKey, 
                                             email: _controller.emailController.text,
                                           ),
@@ -149,8 +149,8 @@ class LoginPageState extends State<LoginPage> {
                                     'Esqueci minha senha',
                                     style: TextStyle(
                                       fontSize: 14,
-                                      fontWeight: FontWeight.bold,
-                                      color: Color.fromARGB(255, 0, 111, 130),
+                                      fontWeight: FontWeight.normal,
+                                      color: Color.fromARGB(255, 2, 2, 2),
                                     ),
                                   ),
                                 ),

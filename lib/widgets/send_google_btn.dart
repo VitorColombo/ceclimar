@@ -19,7 +19,7 @@ class SendGoogleBtn extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
           side: const BorderSide(
-            color: Color.fromARGB(255, 0, 111, 130),
+            color: Color.fromARGB(255, 71, 169, 218),
           ),
         ),
         backgroundColor: Colors.white,
@@ -47,7 +47,7 @@ class SendGoogleBtn extends StatelessWidget {
               child: Text(
                 text,
                 textAlign: TextAlign.center, 
-                style: const TextStyle(color: Color.fromARGB(255, 0, 111, 130)),
+                style: const TextStyle(color: Color.fromARGB(255, 71, 169, 218)),
               ),
             ),
           ),

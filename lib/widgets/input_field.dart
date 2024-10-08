@@ -27,13 +27,14 @@ class InputField extends StatelessWidget {
         labelStyle: const TextStyle(color: Colors.grey), 
         border: const OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(10)),
-          borderSide: BorderSide(color: Color(0xE8E8E8E8), width: .4), 
+          borderSide: BorderSide(color: Color(0xE8E8E8E8), width: 1.0), 
         ),
         focusedBorder: const OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.lightBlue, width: 1.6), 
+          borderSide: BorderSide(color: Colors.lightBlue, width: 1.0), 
           borderRadius: BorderRadius.all(Radius.circular(10)),
         ),
         floatingLabelStyle: const TextStyle(
+          color: Colors.grey,
           fontSize: 17
         ),
         errorBorder: const OutlineInputBorder(

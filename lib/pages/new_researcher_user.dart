@@ -1,22 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:tcc_ceclimar/controller/auth_user_controller.dart';
-import 'package:tcc_ceclimar/widgets/header_widget.dart';
+import 'package:tcc_ceclimar/widgets/header_banner_widget.dart';
 import 'package:tcc_ceclimar/widgets/input_field.dart';
 import 'package:tcc_ceclimar/widgets/password_input.dart';
 import 'package:tcc_ceclimar/widgets/send_btn.dart';
-
 import '../widgets/modal_bottomsheet.dart';
 
-class CadastroPesquisadorPage extends StatefulWidget {
-  static const String routeName = '/cadastrarPesquisador';
-  
-  const CadastroPesquisadorPage({Key? key}) : super(key: key);
+class NewResearcherPage extends StatefulWidget {
+  static const String routeName = '/newResearcher';
+  final Function(int) updateIndex;
 
+  const NewResearcherPage({super.key, this.updateIndex = _defaultUpdateIndex});
+
+  static void _defaultUpdateIndex(int index) {
+
+  }
   @override
-  CadastroPesquisadorPageState createState() => CadastroPesquisadorPageState();
+  NewResearcherPageState createState() => NewResearcherPageState();
 }
 
-class CadastroPesquisadorPageState extends State<CadastroPesquisadorPage> {
+class NewResearcherPageState extends State<NewResearcherPage> {
   final AuthenticationController _controller = AuthenticationController();
   final _formKey = GlobalKey<FormState>();
 
@@ -44,7 +47,7 @@ class CadastroPesquisadorPageState extends State<CadastroPesquisadorPage> {
             backgroundColor: Colors.white,
             shadowColor: Colors.transparent,
             flexibleSpace: FlexibleSpaceBar(
-              background: HeaderWidget(),
+              background: HeaderBannerWidget(),
             ),
             pinned: true, 
             floating: false,
