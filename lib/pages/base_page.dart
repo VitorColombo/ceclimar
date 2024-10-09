@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:tcc_ceclimar/pages/new_technical_register.dart';
 import '../widgets/new_register_floating_btn.dart';
 import 'home.dart';
 import 'my_registers.dart';
-import 'new_register.dart';
+import 'new_simple_register.dart';
 import 'my_profile.dart';
 import 'register_pannel.dart';
 import 'evaluate_register.dart';
@@ -40,11 +41,12 @@ class _BasePageState extends State<BasePage> {
     HomePage(updateIndex: updateIndex),
     MyRegisters(updateIndex: updateIndex),
     MyProfile(updateIndex: updateIndex),
-    NewRegister(updateIndex: updateIndex),
+    NewSimpleRegister(updateIndex: updateIndex),
     LocalAnimals(updateIndex: updateIndex),
     RegisterPannel(updateIndex: updateIndex),
     EvaluateRegister(updateIndex: updateIndex),
     NewResearcherPage(updateIndex: updateIndex),
+    NewTechnicalRegister(updateIndex: updateIndex),
   ];
 
   @override
@@ -127,10 +129,10 @@ class _BasePageState extends State<BasePage> {
                   updateIndex(1);
                 },
                 child: label("Registros", 1)
-              ),          
+              ),
             ],
           ),
-          const CustomFloatingActionButton(),
+          AddNewRegisterFloatingBtn(updateIndex: updateIndex),
           Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -196,7 +198,7 @@ class _BasePageState extends State<BasePage> {
     return  Transform.translate(
       offset: const Offset(0, -10),
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 2.0), // Adjust vertical spacing as needed
+        padding: const EdgeInsets.symmetric(vertical: 2.0),
         child: Text(
           textAlign: TextAlign.center,
           s,

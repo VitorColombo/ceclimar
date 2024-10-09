@@ -15,6 +15,7 @@ class NewResearcherPage extends StatefulWidget {
   static void _defaultUpdateIndex(int index) {
 
   }
+  
   @override
   NewResearcherPageState createState() => NewResearcherPageState();
 }

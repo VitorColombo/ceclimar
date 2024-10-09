@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tcc_ceclimar/widgets/new_register_floating_btn.dart';
 import 'package:tcc_ceclimar/widgets/page_header.dart';
 
 class HomePage extends StatelessWidget {
@@ -44,20 +45,28 @@ class HomeCard extends StatelessWidget {
   final Widget icon;
   final int index;
   final Function(int) updateIndex;
+  late final AddNewRegisterFloatingBtn addNewRegisterFloatingBtn;
 
-  const HomeCard({
+  HomeCard({
     super.key,
     required this.text,
     required this.icon,
     required this.index,
     required this.updateIndex,
-  });
+  }) {
+    addNewRegisterFloatingBtn = AddNewRegisterFloatingBtn(updateIndex: updateIndex);
+  }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
+        if (text == "Novo Registro"){
+          addNewRegisterFloatingBtn.showAddRegisterBottomSheet(context);
+        }
+        else{
           updateIndex(index);
+        }
       },
       child: Card(
         shadowColor: Colors.black.withOpacity(0.7),

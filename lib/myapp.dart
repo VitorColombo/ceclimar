@@ -6,7 +6,8 @@ import 'package:tcc_ceclimar/pages/home.dart';
 import 'package:tcc_ceclimar/pages/local_animals.dart';
 import 'package:tcc_ceclimar/pages/my_profile.dart';
 import 'package:tcc_ceclimar/pages/my_registers.dart';
-import 'package:tcc_ceclimar/pages/new_register.dart';
+import 'package:tcc_ceclimar/pages/new_simple_register.dart';
+import 'package:tcc_ceclimar/pages/new_technical_register.dart';
 import 'package:tcc_ceclimar/pages/register_pannel.dart';
 import 'package:tcc_ceclimar/pages/splashscreen.dart';
 import 'package:tcc_ceclimar/pages/sign_user.dart';
@@ -41,9 +42,10 @@ class MyApp extends StatelessWidget {
         LocalAnimals.routeName: (context) => const LocalAnimals(),
         MyProfile.routeName: (context) => MyProfile(),
         MyRegisters.routeName: (context) => const MyRegisters(),
-        NewRegister.routeName: (context) => const NewRegister(),
+        NewSimpleRegister.routeName: (context) => const NewSimpleRegister(),
         RegisterPannel.routeName: (context) => const RegisterPannel(),
         BasePage.routeName: (context) => const BasePage(),
+        NewTechnicalRegister.routeName: (context) => const NewTechnicalRegister(),
       },
     );
   }
