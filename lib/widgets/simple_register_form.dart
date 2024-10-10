@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:tcc_ceclimar/widgets/circular_image_widget.dart';
+import 'package:tcc_ceclimar/widgets/custom_switch.dart';
 import 'package:tcc_ceclimar/widgets/input_field.dart';
 
 import '../controller/new_register_form_controller.dart';
+import 'add_image_widget.dart';
 
 class SimpleRegisterForm extends StatefulWidget {
   @override
@@ -11,6 +14,7 @@ class SimpleRegisterForm extends StatefulWidget {
 class _SimpleRegisterFormState extends State<SimpleRegisterForm> {
   final _formController = NewRegisterFormController();
   final _formKey = GlobalKey<FormState>();
+  bool isSwitchOn = false;
 
   @override
   void dispose() {
@@ -25,6 +29,12 @@ class _SimpleRegisterFormState extends State<SimpleRegisterForm> {
     return _formKey.currentState?.validate() ?? false;
   }
 
+  void _onSwitchChanged(bool value) {
+    setState(() {
+      isSwitchOn = value;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -32,45 +42,22 @@ class _SimpleRegisterFormState extends State<SimpleRegisterForm> {
         key: _formKey,
         child: Column(
           children: [
-            const SizedBox(height: 20),
-          //   InputField(
-          //     text: "Nome",
-          //     controller: _controller.nameController,
-          //     validator: (value) => _controller.nameError
-          //   ),
-          //   const SizedBox(height: 16),
-          //   InputField(
-          //     text: "E-mail",
-          //     controller: _controller.emailController,
-          //     validator: (value) => _controller.emailError
-          //   ),
-          //   const SizedBox(height: 16),
-          //   PasswordInput(
-          //     text: "Senha",
-          //     controller: _controller.passController, 
-          //     validator: (value) => _controller.passError
-          //   ),
-          //   const SizedBox(height: 16),
-          //   PasswordInput(
-          //     text: "Confirme sua senha", 
-          //     controller: _controller.passConfController, 
-          //     validator: (value) => _controller.passConfError
-          //   ),
-          //   const SizedBox(height: 24),
-          //   SizedBox(
-          //     width: double.infinity,
-          //     height: 56,
-          //     child: SendBtn(text: "Cadastrar", onValidate: _validateForm, onSend: () => _controller.signUpUser(context)),
-          //   ),
-          //   const SizedBox(height: 16),
-          //   SizedBox(
-          //     width: double.infinity,
-          //     height: 56,
-          //     child: SendGoogleBtn(
-          //       text: "Cadastrar com Google",
-          //       onSend: () => _controller.signInWithGoogle(),
-          //     )
-          //   ),
+            const ImageSelector(),
+            const SizedBox(height: 16),
+            InputField(
+              text: "Nome Popular",
+              controller: _formController.nameController,
+              validator: (value) => _formController.nameError
+            ),
+            const SizedBox(height: 9),
+            CustomSwitch(text: "Presenciou o animal chegando na areia?", value: isSwitchOn, onChanged: _onSwitchChanged),
+            const SizedBox(height: 9),
+            if (isSwitchOn)
+              InputField(
+                text: "Horário aproximado",
+                controller: _formController.horaController,
+                validator: (value) => _formController.horaError,
+              ),
           ],
         ),
       ),

@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:tcc_ceclimar/widgets/register_circular_image.dart';
 
 class ImageSelector extends StatefulWidget {
  
@@ -43,22 +44,48 @@ class ImageSelectorState extends State<ImageSelector> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        if (_selectedImage != null)
-          Image.file(_selectedImage!, height: 200, width: 200),
-        const SizedBox(height: 20),
-        ElevatedButton(
-          onPressed: _pickImageFromCamera,
-          child: const Text('Open Camera'),
-        ),
-        const SizedBox(height: 10),
-        ElevatedButton(
-          onPressed: _pickImageFromGallery,
-          child: const Text('Open Gallery'),
-        ),
-      ],
+    return SingleChildScrollView(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+            RegisterCircularImageWidget(
+              imageProvider: _selectedImage, 
+              width: 132, 
+              heigth: 132, onTap: 
+              _showModalImagePicker
+            ),
+          ],
+      ),
+    );
+  }
+
+
+  void _showModalImagePicker(){
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            ListTile(
+              leading: const Icon(Icons.camera_alt),
+              title: const Text('Camera'),
+              onTap: () {
+                _pickImageFromCamera();
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_library),
+              title: const Text('Galeria'),
+              onTap: () {
+                _pickImageFromGallery();
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }

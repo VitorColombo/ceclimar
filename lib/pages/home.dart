@@ -76,7 +76,7 @@ class HomeCard extends StatelessWidget {
         ),
         color:  const Color.fromARGB(255, 71, 169, 218),
         child: Padding(
-          padding: const EdgeInsets.only(top: 8.0, bottom: 0.0, left: 15.0, right: 20.0),
+          padding: const EdgeInsets.only(top: 7.0, bottom: 5.0, left: 15.0, right: 15.0),
           child: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -85,13 +85,10 @@ class HomeCard extends StatelessWidget {
                   alignment: Alignment.topLeft,
                   child: Text(
                     text,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: Theme.of(context).textTheme.titleMedium,
                   ),
                 ),
-                const SizedBox(height: 16.0),
+                const SizedBox(height: 14.0),
                 Align(
                   alignment: Alignment.bottomRight,
                   child: icon

@@ -18,7 +18,7 @@ class InputField extends StatelessWidget {
       controller: controller,
       validator: validator,
       keyboardType: TextInputType.text, 
-      cursorColor: Colors.black,
+      cursorColor: Colors.grey,
       style: const TextStyle(color: Colors.black),
       decoration: InputDecoration(
         filled: true,
@@ -27,7 +27,7 @@ class InputField extends StatelessWidget {
         labelStyle: const TextStyle(color: Colors.grey), 
         border: const OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(10)),
-          borderSide: BorderSide(color: Color(0xE8E8E8E8), width: 1.0), 
+          borderSide: BorderSide(color: Color.fromARGB(150, 100, 99, 99), width: 1.0, style: BorderStyle.solid,), 
         ),
         focusedBorder: const OutlineInputBorder(
           borderSide: BorderSide(color: Colors.lightBlue, width: 1.0), 
@@ -50,7 +50,7 @@ class InputField extends StatelessWidget {
           fontSize: 12, 
           height: 0.5, 
         ),
-        contentPadding: const EdgeInsets.symmetric(vertical: 17.0, horizontal: 10.0),
+        contentPadding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 10.0),
       ),
     );
   }

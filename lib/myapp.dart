@@ -22,12 +22,21 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'TCC Ceclimar',
       theme: ThemeData(
+        useMaterial3: true,
         textTheme: const TextTheme(
-          bodyLarge: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
-          bodyMedium: TextStyle(fontSize: 18.0),
-          bodySmall: TextStyle(fontSize: 14.0),
+          titleMedium: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold, color: Colors.white),
+          bodyLarge: TextStyle(fontSize: 16.0, fontWeight: FontWeight.normal),
+          bodyMedium: TextStyle(fontSize: 14.0),
+          bodySmall: TextStyle(fontSize: 12.0),
         ),
-        fontFamily: "Inter"
+        fontFamily: "Inter",
+        colorScheme: ColorScheme.fromSwatch().copyWith(
+          primary: const Color.fromARGB(255, 71, 169, 218), 
+          secondary: const Color.fromARGB(255, 31, 73, 95),
+          background: Colors.white,
+          outline: const Color.fromARGB(150, 100, 99, 99),
+          surfaceVariant: const Color.fromARGB(149, 194, 194, 194),
+        ),
       ),
       initialRoute: SplashScreen.routeName,
       routes: {

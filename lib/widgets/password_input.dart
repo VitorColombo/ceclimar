@@ -36,7 +36,7 @@ class _PasswordInputState extends State<PasswordInput> {
           validator: widget.validator,
           obscureText: _obscureText,
           keyboardType: TextInputType.text,
-          cursorColor: Colors.black,
+          cursorColor: Colors.grey,
           style: const TextStyle(color: Colors.black),
           decoration: InputDecoration(
             filled: true,

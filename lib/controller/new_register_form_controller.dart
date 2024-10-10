@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 
 class NewRegisterFormController {
   final TextEditingController nameController = TextEditingController();
-  final TextEditingController emailController = TextEditingController();
+  final TextEditingController horaController = TextEditingController();
   final TextEditingController passController = TextEditingController();
   final TextEditingController passConfController = TextEditingController();
 
   String? nameError;
-  String? emailError;
+  String? horaError;
   String? passError;
   String? passConfError;
 
@@ -71,49 +71,17 @@ class NewRegisterFormController {
     return passController.text == passConfController.text;
   }
 
-  bool validateLogin() {
-    emailController.text = emailController.text.trim();
-    passController.text = passController.text.trim();
-    emailError = validateEmail(emailController.text);
-    passError = validatePassword(passController.text);
-    return emailError == null && passError == null;
-  }
-
-  bool validateSignIn() {
-    nameController.text = nameController.text.trim();
-    emailController.text = emailController.text.trim();
-    passController.text = passController.text.trim();
-    passConfController.text = passConfController.text.trim();
-
-    nameError = validateName(nameController.text);
-    emailError = validateEmail(emailController.text);
-    passError = validatePassword(passController.text);
-    passConfError = validateConfirmPassword(passConfController.text);
-    return nameError == null &&
-        emailError == null &&
-        passError == null &&
-        passConfError == null &&
-        checkPassMatch();
-  }
-
-  bool validateForgotPass() {
-    emailError = validateEmail(emailController.text);
-    passError = validatePassword(passController.text);
-    return emailError == null && passError == null;
-  }
-
   void dispose() {
     nameController.dispose();
-    emailController.dispose();
+    horaController.dispose();
     passController.dispose();
     passConfController.dispose();
   }
 
   void clear() {
     nameController.clear();
-    emailController.clear();
+    horaController.clear();
     passController.clear();
     passConfController.clear();
   }
-
 }

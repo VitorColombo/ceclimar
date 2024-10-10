@@ -75,7 +75,7 @@ class NewResearcherPageState extends State<NewResearcherPage> {
                                     style: TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
-                                      color: Color.fromARGB(255, 0, 111, 130)
+                                      color: Color.fromARGB(255, 71, 169, 218),
                                     ),
                                   ),
                                 ],
