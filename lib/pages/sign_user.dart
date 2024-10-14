@@ -146,7 +146,11 @@ class NewUserPageState extends State<NewUserPage> {
                         SizedBox(
                           width: double.infinity,
                           height: 56,
-                          child: SendBtn(text: "Cadastrar", onValidate: _validateForm, onSend: () => _controller.signUpUser(context)),
+                          child: SendBtn(
+                            text: "Cadastrar", 
+                            onValidate: _validateForm, 
+                            onSend: () => _controller.signUpUser(context)
+                          ),
                         ),
                         const SizedBox(height: 16),
                         SizedBox(

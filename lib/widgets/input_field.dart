@@ -4,12 +4,14 @@ class InputField extends StatelessWidget {
   final String text;
   final TextEditingController controller;
   final String? Function(String?)? validator;
+  final Function? onChanged;
 
   const InputField({
     Key? key,
     required this.text,
     required this.controller,
     this.validator,
+    this.onChanged,
   }) : super(key: key);
 
   @override
@@ -52,6 +54,9 @@ class InputField extends StatelessWidget {
         ),
         contentPadding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 10.0),
       ),
+      onChanged: (value) {
+        onChanged?.call(value);
+      },
     );
   }
 }

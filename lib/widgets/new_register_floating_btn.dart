@@ -34,7 +34,7 @@ class AddNewRegisterFloatingBtn extends StatelessWidget {
             padding: EdgeInsets.zero,
             elevation: 0,
           ),
-          child: Icon(icon, size: 50),
+          child: Icon(icon, size: 50, color: Colors.white,),
         ),
       ),
     );

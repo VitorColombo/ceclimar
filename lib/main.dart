@@ -4,8 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:tcc_ceclimar/myapp.dart';
 
 void main() async {
-  // ignore: prefer_const_constructors
-  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
       statusBarIconBrightness: Brightness.dark, 
     ));

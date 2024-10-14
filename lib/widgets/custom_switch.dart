@@ -22,7 +22,10 @@ class _CustomSwitchState extends State<CustomSwitch> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(widget.text),
+        Text(
+          widget.text,
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
         Switch(
           value: widget.value,
           activeColor: const Color.fromARGB(255, 71, 169, 218),

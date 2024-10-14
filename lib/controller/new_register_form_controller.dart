@@ -1,21 +1,16 @@
 import 'package:flutter/material.dart';
 
-//todo implement this controller for the new register form
-
 class NewRegisterFormController {
   final TextEditingController nameController = TextEditingController();
-  final TextEditingController horaController = TextEditingController();
-  final TextEditingController passController = TextEditingController();
-  final TextEditingController passConfController = TextEditingController();
+  final TextEditingController hourController = TextEditingController();
 
   String? nameError;
-  String? horaError;
-  String? passError;
-  String? passConfError;
+  String? hourError;
+  bool isSwitchOn = false;
 
   String? validateName(String? value) {
     if (value == null || value.isEmpty) {
-      return 'O campo não pode ser vazio';
+      return 'Campo obrigatório';
     }
     final RegExp regex = RegExp(r'^[a-zA-Z\s]*$');
     if (!regex.hasMatch(value)) {
@@ -27,61 +22,56 @@ class NewRegisterFormController {
     if (value.length > 40) {
       return 'O campo deve conter no máximo 50 caracteres';
     }
-    if (value.split(' ').length < 2) {
-      return 'O campo deve conter nome e sobrenome';
-    }
-    if (value.split(" ").last == '') {
-      return 'O campo deve conter nome e sobrenome';
-    }
     return null;
   }
 
-  String? validateEmail(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'O campo não pode ser vazio';
-    }
-    final RegExp regex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-    if (!regex.hasMatch(value)) {
-      return 'E-mail inválido';
+  String? validateHour(String? value, bool isInputChecked) {
+    if(isInputChecked){
+      if (value == null || value.isEmpty) {
+        return 'Campo obrigatório';
+      }
     }
     return null;
-  }
-
-  String? validatePassword(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Senha não pode ser vazia';
-    }
-    if (value.length < 6) {
-      return 'A senha deve conter no mínimo 6 caracteres';
-    }
-    return null;
-  }
-
-  String? validateConfirmPassword(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'O campo não pode ser vazio';
-    }
-    if (value != passController.text) {
-      return 'As senhas precisam ser iguais';
-    }
-    return null;
-  }
-
-  bool checkPassMatch() {
-    return passController.text == passConfController.text;
   }
 
   void dispose() {
     nameController.dispose();
-    horaController.dispose();
-    passController.dispose();
-    passConfController.dispose();
+    hourController.dispose();
   }
 
   void clear() {
     nameController.clear();
-    horaController.clear();
-    passController.clear();
-    passConfController.clear();
+    hourController.clear();
+  }
+
+  bool validateForm() {
+    nameController.text = nameController.text.trim();
+    nameError = validateName(nameController.text);
+    hourError = validateHour(hourController.text, isSwitchOn);
+    return nameError == null && hourError == null;
+  }
+
+  void sendRegister(BuildContext context) {
+    //todo
+  }
+
+  void changeSwitch() {
+    isSwitchOn = !isSwitchOn;
+  }
+
+  bool isBtnEnable() {
+    if (!isSwitchOn) {
+      if(nameController.text.isEmpty){
+        return false;
+      }
+      return true;
+    }
+    if (isSwitchOn) {
+      if(nameController.text.isEmpty || hourController.text.isEmpty){
+        return false;
+      }
+      return true;
+    }
+    return true;
   }
 }

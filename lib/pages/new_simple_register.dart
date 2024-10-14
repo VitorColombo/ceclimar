@@ -33,7 +33,7 @@ class _NewSimpleRegisterState extends State<NewSimpleRegister> {
           Padding(
             padding: const EdgeInsets.only(left: 16.0, right: 16.0),
             child: Column(
-              children: [SimpleRegisterForm()], 
+              children: [SimpleRegisterForm()],
             ),
           ),
         ],

@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:tcc_ceclimar/pages/home.dart';
+import 'package:tcc_ceclimar/widgets/modal_bottomsheet.dart';
 import 'package:tcc_ceclimar/widgets/register_circular_image.dart';
 
 class ImageSelector extends StatefulWidget {
@@ -59,33 +61,42 @@ class ImageSelectorState extends State<ImageSelector> {
     );
   }
 
-
   void _showModalImagePicker(){
     showModalBottomSheet(
       context: context,
       builder: (context) {
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            ListTile(
-              leading: const Icon(Icons.camera_alt),
-              title: const Text('Camera'),
-              onTap: () {
-                _pickImageFromCamera();
-                Navigator.pop(context);
-              },
+        return ModalBottomSheet(
+          text: "Escolha a forma de envio da imagem", 
+          buttons: [
+            Card(
+              shadowColor: Colors.black.withOpacity(0.7),
+              elevation: 6.0,
+              color: const Color.fromARGB(255, 71, 169, 218),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              child: ListTile(
+                leading: const Icon(Icons.camera_alt, color: Colors.white,),
+                title: const Text("Câmera", style: TextStyle(color: Colors.white)),
+                onTap: _pickImageFromCamera,
+              ),
             ),
-            ListTile(
-              leading: const Icon(Icons.photo_library),
-              title: const Text('Galeria'),
-              onTap: () {
-                _pickImageFromGallery();
-                Navigator.pop(context);
-              },
+            Card(
+              shadowColor: Colors.black.withOpacity(0.7),
+              elevation: 6.0,
+              color: const Color.fromARGB(255, 71, 169, 218),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              child: ListTile(
+                leading: const Icon(Icons.photo_library, color: Colors.white),
+                title: const Text("Galeria", style: TextStyle(color: Colors.white)),
+                onTap: _pickImageFromGallery,
+              ),
             ),
           ],
         );
-      },
+      }
     );
   }
 }

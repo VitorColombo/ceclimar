@@ -26,8 +26,8 @@ class MyApp extends StatelessWidget {
         textTheme: const TextTheme(
           titleMedium: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold, color: Colors.white),
           bodyLarge: TextStyle(fontSize: 16.0, fontWeight: FontWeight.normal),
-          bodyMedium: TextStyle(fontSize: 14.0),
-          bodySmall: TextStyle(fontSize: 12.0),
+          bodyMedium: TextStyle(fontSize: 15.0),
+          bodySmall: TextStyle(fontSize: 11.0, color:  Color.fromARGB(255, 31, 73, 95)),
         ),
         fontFamily: "Inter",
         colorScheme: ColorScheme.fromSwatch().copyWith(
@@ -44,7 +44,6 @@ class MyApp extends StatelessWidget {
         ForgotPasswordScreen.routeName: (context) => const ForgotPasswordScreen(email: "",),
         NewUserPage.routeName: (context) => const NewUserPage(email: "",),
         LoginPage.routeName: (context) => const LoginPage(email: "",),
-
         NewResearcherPage.routeName: (context) => const NewResearcherPage(),
         HomePage.routeName: (context) => HomePage(updateIndex: (int index) {}),
         EvaluateRegister.routeName: (context) => const EvaluateRegister(),
