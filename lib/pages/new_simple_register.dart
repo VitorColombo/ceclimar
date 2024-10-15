@@ -23,20 +23,22 @@ class _NewSimpleRegisterState extends State<NewSimpleRegister> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          PageHeader(
-            text: "Novo registro,Simples",
-            icon: const Icon(Icons.arrow_back),
-            onTap: () => widget.updateIndex(0),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 16.0, right: 16.0),
-            child: Column(
-              children: [SimpleRegisterForm()],
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            PageHeader(
+              text: "Novo registro,Simples",
+              icon: const Icon(Icons.arrow_back),
+              onTap: () => widget.updateIndex(0),
             ),
-          ),
-        ],
+            Padding(
+              padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+              child: Column(
+                children: [SimpleRegisterForm()],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -11,8 +11,7 @@ class SendBtn extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextButton(
       onPressed: () {
-        bool isValid = onValidate();
-        if (isValid) {
+        if (onValidate()) {
           onSend();
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -27,7 +26,7 @@ class SendBtn extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),
-        backgroundColor: const Color.fromARGB(255, 71, 169, 218),
+        backgroundColor: const Color.fromRGBO(71, 169, 218, 1),
         padding: const EdgeInsets.symmetric(
           horizontal: 40,
           vertical: 16,

@@ -31,8 +31,8 @@ class MyApp extends StatelessWidget {
         ),
         fontFamily: "Inter",
         colorScheme: ColorScheme.fromSwatch().copyWith(
-          primary: const Color.fromARGB(255, 71, 169, 218), 
-          secondary: const Color.fromARGB(255, 31, 73, 95),
+          primary:Colors.white,
+          secondary:  const Color.fromARGB(255, 71, 169, 218),
           background: Colors.white,
           outline: const Color.fromARGB(150, 100, 99, 99),
           surfaceVariant: const Color.fromARGB(149, 194, 194, 194),
