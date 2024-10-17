@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'TCC Ceclimar',
+      title: 'Fauna Marinha RS',
       theme: ThemeData(
         useMaterial3: true,
         textTheme: const TextTheme(
