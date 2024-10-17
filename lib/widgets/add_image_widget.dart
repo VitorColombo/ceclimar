@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:tcc_ceclimar/pages/home.dart';
 import 'package:tcc_ceclimar/widgets/modal_bottomsheet.dart';
 import 'package:tcc_ceclimar/widgets/register_circular_image.dart';
 

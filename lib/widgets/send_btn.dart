@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class SendBtn extends StatelessWidget {
+class SendBtn extends StatefulWidget {
   final String text;
   final Function onValidate;
   final Function onSend;
@@ -8,20 +8,39 @@ class SendBtn extends StatelessWidget {
   const SendBtn({super.key, required this.text, required this.onValidate, required this.onSend});
 
   @override
+  _SendBtnState createState() => _SendBtnState();
+}
+
+class _SendBtnState extends State<SendBtn> {
+  bool _isLoading = false;
+
+  void _handlePress() async {
+    if (widget.onValidate()) {
+      setState(() {
+        _isLoading = true;
+      });
+
+      try {
+        await widget.onSend();
+      } finally {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Por favor, verifique os dados de entrada.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return TextButton(
-      onPressed: () {
-        if (onValidate()) {
-          onSend();
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Por favor, verifique os dados de entrada.'),
-              backgroundColor: Colors.red,
-            ),
-          );
-        }
-      },
+      onPressed: _isLoading ? null : _handlePress,
       style: TextButton.styleFrom(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
@@ -37,9 +56,19 @@ class SendBtn extends StatelessWidget {
           fontFamily: "Inter"
         ),
       ),
-      child: Text(
-        text,
-        style: const TextStyle(color: Colors.white), 
+      child: Center(
+        child: _isLoading
+            ? const SizedBox(
+              height: 30,
+              width: 24,
+              child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                ),
+            )
+            : Text(
+                widget.text,
+                style: const TextStyle(color: Colors.white),
+              ),
       ),
     );
   }

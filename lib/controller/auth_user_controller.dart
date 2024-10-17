@@ -177,10 +177,8 @@ class AuthenticationController {
         accessToken: googleSignInAuthentication.accessToken,
         idToken: googleSignInAuthentication.idToken,
       );
-
-      final UserCredential userCredential =
-          await FirebaseAuth.instance.signInWithCredential(credential);
-      final User? user = userCredential.user;
+      
+      await FirebaseAuth.instance.signInWithCredential(credential);
 
       } catch (e) {
         if (e is FirebaseAuthException) {
