@@ -28,10 +28,11 @@ class MyApp extends StatelessWidget {
           bodyLarge: TextStyle(fontSize: 16.0, fontWeight: FontWeight.normal),
           bodyMedium: TextStyle(fontSize: 15.0),
           bodySmall: TextStyle(fontSize: 11.0, color:  Color.fromARGB(255, 31, 73, 95)),
+          labelLarge: TextStyle(fontSize: 16.0, fontWeight: FontWeight.normal, color: Colors.grey),
         ),
         fontFamily: "Inter",
         colorScheme: ColorScheme.fromSwatch().copyWith(
-          primary:Colors.white,
+          primary:const Color.fromARGB(255, 31, 73, 95),
           secondary:  const Color.fromARGB(255, 71, 169, 218),
           background: Colors.white,
           outline: const Color.fromARGB(150, 100, 99, 99),

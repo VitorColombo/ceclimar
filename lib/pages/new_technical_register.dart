@@ -30,13 +30,15 @@ class _NewTechnicalRegisterState extends State<NewTechnicalRegister> {
               icon: const Icon(Icons.arrow_back),
               onTap: () => widget.updateIndex(0),
             ),
-            SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.only(left: 16.0, right: 16.0),
-                child: Column(
-                  children: [
-                    TechnicalRegisterForm()
-                    ],
+            Expanded(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+                  child: Column(
+                    children: [
+                      TechnicalRegisterForm()
+                      ],
+                  ),
                 ),
               ),
             ),

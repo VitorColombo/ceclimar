@@ -13,13 +13,13 @@ class InputField extends StatelessWidget {
     required this.controller,
     this.validator,
     this.onChanged,
-    this.maxLines,
+    this.maxLines = 1,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-      maxLines: maxLines ?? 1,
+      maxLines: maxLines,
       controller: controller,
       validator: validator,
       keyboardType: TextInputType.text, 
@@ -29,13 +29,20 @@ class InputField extends StatelessWidget {
         filled: true,
         fillColor: const Color(0xF6F6F6F6),
         labelText: text,
-        labelStyle: const TextStyle(color: Colors.grey), 
-        border: const OutlineInputBorder(
+        labelStyle: Theme.of(context).textTheme.labelLarge,
+        enabledBorder: const OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(10)),
-          borderSide: BorderSide(color: Color.fromARGB(150, 100, 99, 99), width: 1.0, style: BorderStyle.solid,), 
+          borderSide: BorderSide(
+            color: Colors.grey,
+            width: 1.0,
+            style: BorderStyle.solid,
+          ),
         ),
         focusedBorder: const OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.lightBlue, width: 1.0), 
+          borderSide: BorderSide(
+            color: Colors.lightBlue, 
+            width: 1.0
+          ), 
           borderRadius: BorderRadius.all(Radius.circular(10)),
         ),
         floatingLabelStyle: const TextStyle(
@@ -43,11 +50,17 @@ class InputField extends StatelessWidget {
           fontSize: 17
         ),
         errorBorder: const OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.red, width: 1.6),
+          borderSide: BorderSide(
+            color: Colors.red, 
+            width: 1.6
+          ),
           borderRadius: BorderRadius.all(Radius.circular(10)),
         ),
         focusedErrorBorder: const OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.red, width: 1.6),
+          borderSide: BorderSide(
+            color: Colors.red,
+            width: 1.6
+          ),
           borderRadius: BorderRadius.all(Radius.circular(10)),
         ),
         errorText: validator != null ? validator!(controller.text) : null,

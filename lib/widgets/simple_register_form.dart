@@ -6,7 +6,7 @@ import 'package:tcc_ceclimar/widgets/send_btn_disabled.dart';
 
 import '../controller/new_register_form_controller.dart';
 import 'add_image_widget.dart';
-import 'modal_help_bottomsheet.dart';
+import 'modal_help_register_image_btnsheet.dart';
 
 class SimpleRegisterForm extends StatefulWidget {
   @override
@@ -129,39 +129,7 @@ class _SimpleRegisterFormState extends State<SimpleRegisterForm> {
     showModalBottomSheet(
       context: context,
       builder: (context) {
-        return ModalHelpBottomSheet(
-          text:
-              "Sugerimos o envio de 2 imagens da ocorrência, sendo uma com escala e outra sem. Para representar a escala, podem ser usados objetos ou até mesmo o pé.",
-          buttons: [
-            SizedBox(
-              width: double.infinity,
-              child: TextButton(
-                style: TextButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  backgroundColor: const Color.fromARGB(255, 71, 169, 218),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 40,
-                    vertical: 16,
-                  ),
-                  textStyle: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: "Inter",
-                  ),
-                ),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: const Text(
-                  "Fechar",
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
-            ),
-          ],
-        );
+        return const ModalHelpRegisterImageBottomSheet();
       },
     );
   }

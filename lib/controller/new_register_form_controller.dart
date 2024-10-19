@@ -7,6 +7,9 @@ class NewRegisterFormController {
   final TextEditingController cityController = TextEditingController();
   final TextEditingController beachSpotController = TextEditingController();
   final TextEditingController obsController = TextEditingController();
+  final TextEditingController familyController = TextEditingController();
+  final TextEditingController genderController = TextEditingController();
+  final TextEditingController orderController = TextEditingController();
 
   String? nameError;
   String? hourError;
@@ -14,6 +17,9 @@ class NewRegisterFormController {
   String? cityError;
   String? beachSpotError;
   String? obsError;
+  String? familyError;
+  String? genderError;
+  String? orderError;
   bool isSwitchOn = false;
 
   String? validateName(String? value) {

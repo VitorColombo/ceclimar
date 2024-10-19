@@ -6,7 +6,7 @@ import 'package:tcc_ceclimar/widgets/send_btn_disabled.dart';
 
 import '../controller/new_register_form_controller.dart';
 import 'add_image_widget.dart';
-import 'modal_help_bottomsheet.dart';
+import 'modal_help_register_image_btnsheet.dart';
 
 class TechnicalRegisterForm extends StatefulWidget {
   @override
@@ -18,6 +18,8 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
   final _formKey = GlobalKey<FormState>();
   bool isSwitchOn = false;
   bool isBtnEnabled = false;
+  final List<String> classes = ["teste1", "teste2", "teste3"]; //todo receber dados da API
+  String? _selectedClass;
 
   @override
   void initState() {
@@ -145,6 +147,60 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
               ),
             ),
             const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.only(right: 23, left: 15),
+              height: 56,
+              decoration: BoxDecoration(
+                color: const Color(0xF6F6F6F6),
+                border: Border.all(color: Colors.grey),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: DropdownButtonFormField<String>(
+                decoration: const InputDecoration(
+                  border: InputBorder.none,
+                ),
+                padding: const EdgeInsets.symmetric(vertical: 3.5),
+                menuMaxHeight: 400,
+                borderRadius: BorderRadius.circular(10),
+                style: Theme.of(context).textTheme.labelLarge,
+                isExpanded: true,
+                value: _selectedClass,
+                hint: Text("Classe (Opcional)", style: Theme.of(context).textTheme.labelLarge,),
+                items: classes.map((item) {
+                  return DropdownMenuItem<String>(
+                    value: item,
+                    child: Text(item),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    _selectedClass = value;
+                  });
+                },
+              ),
+            ),
+            const SizedBox(height: 16),
+            InputField(
+              text: "Ordem (Opcional)",
+              controller: _formController.orderController,
+              validator: (value) => _formController.orderError,
+              onChanged: (_) => _updateBtnStatus(),
+            ),
+            const SizedBox(height: 16),
+            InputField(
+              text: "Família (Opcional)",
+              controller: _formController.familyController,
+              validator: (value) => _formController.familyError,
+              onChanged: (_) => _updateBtnStatus(),
+            ),
+            const SizedBox(height: 16),
+            InputField(
+              text: "Gênero (Opcional)",
+              controller: _formController.genderController,
+              validator: (value) => _formController.genderError,
+              onChanged: (_) => _updateBtnStatus(),
+            ),
+            const SizedBox(height: 16),
             if(isBtnEnabled)
               SizedBox(
                 width: double.infinity,
@@ -160,9 +216,10 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
                 width: double.infinity,
                 height: 56,
                 child: DisabledSendBtn(
-                text: "Enviar Registro",
+                    text: "Enviar Registro",
                 ),
-              )
+              ),
+            const SizedBox(height: 26)
           ],
         ),
       ),
@@ -173,39 +230,7 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
     showModalBottomSheet(
       context: context,
       builder: (context) {
-        return ModalHelpBottomSheet(
-          text:
-              "Sugerimos o envio de 2 imagens da ocorrência, sendo uma com escala e outra sem. Para representar a escala, podem ser usados objetos ou até mesmo o pé.",
-          buttons: [
-            SizedBox(
-              width: double.infinity,
-              child: TextButton(
-                style: TextButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  backgroundColor: const Color.fromARGB(255, 71, 169, 218),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 40,
-                    vertical: 16,
-                  ),
-                  textStyle: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: "Inter",
-                  ),
-                ),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: const Text(
-                  "Fechar",
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
-            ),
-          ],
-        );
+        return const ModalHelpRegisterImageBottomSheet();
       },
     );
   }

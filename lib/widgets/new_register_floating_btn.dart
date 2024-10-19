@@ -58,7 +58,7 @@ class AddNewRegisterFloatingBtn extends StatelessWidget {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
-                backgroundColor: const Color.fromARGB(255, 31, 73, 95), 
+                backgroundColor: const Color.fromARGB(255, 31, 73, 95),
                 padding: const EdgeInsets.symmetric(
                   horizontal: 40,
                   vertical: 16,
