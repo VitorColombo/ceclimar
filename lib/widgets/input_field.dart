@@ -5,6 +5,7 @@ class InputField extends StatelessWidget {
   final TextEditingController controller;
   final String? Function(String?)? validator;
   final Function? onChanged;
+  final int? maxLines;
 
   const InputField({
     Key? key,
@@ -12,11 +13,13 @@ class InputField extends StatelessWidget {
     required this.controller,
     this.validator,
     this.onChanged,
+    this.maxLines,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      maxLines: maxLines ?? 1,
       controller: controller,
       validator: validator,
       keyboardType: TextInputType.text, 

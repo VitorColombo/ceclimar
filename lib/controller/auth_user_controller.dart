@@ -170,14 +170,14 @@ class AuthenticationController {
         return;
       }
 
-      final GoogleSignInAuthentication googleSignInAuthentication =
+      final GoogleSignInAuthentication googleAuth =
           await googleSignInAccount.authentication;
 
       final AuthCredential credential = GoogleAuthProvider.credential(
-        accessToken: googleSignInAuthentication.accessToken,
-        idToken: googleSignInAuthentication.idToken,
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
       );
-      
+
       await FirebaseAuth.instance.signInWithCredential(credential);
 
       } catch (e) {

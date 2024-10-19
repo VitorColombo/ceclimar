@@ -3,9 +3,17 @@ import 'package:flutter/material.dart';
 class NewRegisterFormController {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController hourController = TextEditingController();
+  final TextEditingController speciesController = TextEditingController();
+  final TextEditingController cityController = TextEditingController();
+  final TextEditingController beachSpotController = TextEditingController();
+  final TextEditingController obsController = TextEditingController();
 
   String? nameError;
   String? hourError;
+  String? speciesError;
+  String? cityError;
+  String? beachSpotError;
+  String? obsError;
   bool isSwitchOn = false;
 
   String? validateName(String? value) {

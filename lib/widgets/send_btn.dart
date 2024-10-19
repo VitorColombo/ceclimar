@@ -63,6 +63,7 @@ class _SendBtnState extends State<SendBtn> {
               width: 24,
               child: CircularProgressIndicator(
                   valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  strokeWidth: 3,
                 ),
             )
             : Text(
