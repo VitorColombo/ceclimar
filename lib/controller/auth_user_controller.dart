@@ -79,6 +79,7 @@ class AuthenticationController {
   bool validateLogin() {
     emailController.text = emailController.text.trim();
     passController.text = passController.text.trim();
+    
     emailError = validateEmail(emailController.text);
     passError = validatePassword(passController.text);
     return emailError == null && passError == null;
@@ -129,8 +130,11 @@ class AuthenticationController {
     User? user = await _auth.signUpWithEmailAndPassword(email, password);
 
     if(user != null) {
-      print('Usuário cadastrado com sucesso');
-      Navigator.pushNamed(context, LoginPage.routeName,);
+      await user.updateDisplayName(name);
+      user.reload;
+      user = FirebaseAuth.instance.currentUser;
+      
+      Navigator.pushNamed(context, LoginPage.routeName);
     } else {
       print('Erro ao cadastrar usuário');
     }
@@ -167,17 +171,15 @@ class AuthenticationController {
         return;
       }
 
-      final GoogleSignInAuthentication googleSignInAuthentication =
+      final GoogleSignInAuthentication googleAuth =
           await googleSignInAccount.authentication;
 
       final AuthCredential credential = GoogleAuthProvider.credential(
-        accessToken: googleSignInAuthentication.accessToken,
-        idToken: googleSignInAuthentication.idToken,
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
       );
 
-      final UserCredential userCredential =
-          await FirebaseAuth.instance.signInWithCredential(credential);
-      final User? user = userCredential.user;
+      await FirebaseAuth.instance.signInWithCredential(credential);
 
       } catch (e) {
         if (e is FirebaseAuthException) {
@@ -187,4 +189,8 @@ class AuthenticationController {
         }
       }
     }
-  }//flutter app modular approach architecture
+
+    User? getCurrentUser() {
+      return _auth.currentUser;
+  }
+}

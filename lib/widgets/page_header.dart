@@ -14,28 +14,44 @@ class PageHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    List<String> texts = text.split(',');
+
     return Container(
       padding: const EdgeInsets.only(top: 40.0, left: 16.0, right: 16.0),
-      child: Align(
-        alignment: Alignment.centerLeft,
-        child: Row(
+      child: SizedBox(
+        height: 80,
+        child: Stack(
           children: [
-            if (icon != null)
-              GestureDetector(
-                onTap: onTap,
-                child: icon
-              ),
-            if(icon == null)
-              const SizedBox(width: 24.0),
-            const SizedBox(width: 10.0),
-            Text(
-              text,
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+            Row(
+              children: [
+                if (icon != null)
+                  GestureDetector(
+                    onTap: onTap,
+                    child: icon,
+                  ),
+                const SizedBox(width: 10.0, height: 80.0),
+                Text(
+                  texts[0],
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 60),
+            if (texts.length > 1)
+              Positioned(
+                top: 55,
+                left: 34,
+                child: Text(
+                  texts[1],
+                  style: const TextStyle(
+                    color: Color.fromARGB(255, 71, 169, 218),
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
           ],
         ),
       ),

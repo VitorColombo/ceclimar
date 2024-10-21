@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tcc_ceclimar/widgets/new_register_floating_btn.dart';
 import 'package:tcc_ceclimar/widgets/page_header.dart';
 
 class HomePage extends StatelessWidget {
@@ -44,54 +45,68 @@ class HomeCard extends StatelessWidget {
   final Widget icon;
   final int index;
   final Function(int) updateIndex;
+  late final AddNewRegisterFloatingBtn addNewRegisterFloatingBtn;
 
-  const HomeCard({
+  HomeCard({
     super.key,
     required this.text,
     required this.icon,
     required this.index,
     required this.updateIndex,
-  });
+  }) {
+    addNewRegisterFloatingBtn = AddNewRegisterFloatingBtn(updateIndex: updateIndex);
+  }
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-          updateIndex(index);
-      },
-      child: Card(
-        shadowColor: Colors.black.withOpacity(0.7),
-        elevation: 6.0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10.0),
-        ),
-        color:  const Color.fromARGB(255, 71, 169, 218),
-        child: Padding(
-          padding: const EdgeInsets.only(top: 8.0, bottom: 0.0, left: 15.0, right: 20.0),
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Align(
-                  alignment: Alignment.topLeft,
-                  child: Text(
-                    text,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
+    return Stack(
+      children: [
+        Card(
+          shadowColor: Colors.black.withOpacity(0.7),
+          elevation: 6.0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+          color: const Color.fromARGB(255, 71, 169, 218),
+          child: Padding(
+            padding: const EdgeInsets.only(top: 7.0, bottom: 5.0, left: 15.0, right: 15.0),
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Align(
+                    alignment: Alignment.topLeft,
+                    child: Text(
+                      text,
+                      style: Theme.of(context).textTheme.titleMedium,
                     ),
                   ),
-                ),
-                const SizedBox(height: 16.0),
-                Align(
-                  alignment: Alignment.bottomRight,
-                  child: icon
-                ),
-              ],
+                  const SizedBox(height: 14.0),
+                  Align(
+                    alignment: Alignment.bottomRight,
+                    child: icon,
+                  ),
+                ],
+              ),
             ),
           ),
         ),
-      ),
+        Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () {
+              if (text == "Novo Registro") {
+                addNewRegisterFloatingBtn.showAddRegisterBottomSheet(context);
+              } else {
+                updateIndex(index);
+              }
+            },
+            splashColor: Colors.white.withOpacity(0.2),
+            highlightColor: Colors.white.withOpacity(0.2),
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+        ),
+      ],
     );
   }
 }

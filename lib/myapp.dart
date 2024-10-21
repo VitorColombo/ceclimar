@@ -6,7 +6,8 @@ import 'package:tcc_ceclimar/pages/home.dart';
 import 'package:tcc_ceclimar/pages/local_animals.dart';
 import 'package:tcc_ceclimar/pages/my_profile.dart';
 import 'package:tcc_ceclimar/pages/my_registers.dart';
-import 'package:tcc_ceclimar/pages/new_register.dart';
+import 'package:tcc_ceclimar/pages/new_simple_register.dart';
+import 'package:tcc_ceclimar/pages/new_technical_register.dart';
 import 'package:tcc_ceclimar/pages/register_pannel.dart';
 import 'package:tcc_ceclimar/pages/splashscreen.dart';
 import 'package:tcc_ceclimar/pages/sign_user.dart';
@@ -19,14 +20,25 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'TCC Ceclimar',
+      title: 'Fauna Marinha RS',
       theme: ThemeData(
+        useMaterial3: true,
         textTheme: const TextTheme(
-          bodyLarge: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
-          bodyMedium: TextStyle(fontSize: 18.0),
-          bodySmall: TextStyle(fontSize: 14.0),
+          titleMedium: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold, color: Colors.white),
+          bodyLarge: TextStyle(fontSize: 16.0, fontWeight: FontWeight.normal),
+          bodyMedium: TextStyle(fontSize: 15.0),
+          bodySmall: TextStyle(fontSize: 11.0, color:  Color.fromARGB(255, 31, 73, 95)),
+          labelLarge: TextStyle(fontSize: 16.0, fontWeight: FontWeight.normal, color: Colors.grey),
+          labelMedium: TextStyle(fontSize: 16.0, fontWeight: FontWeight.normal, color: Colors.black),
         ),
-        fontFamily: "Inter"
+        fontFamily: "Inter",
+        colorScheme: ColorScheme.fromSwatch().copyWith(
+          primary:const Color.fromARGB(255, 31, 73, 95),
+          secondary:  const Color.fromARGB(255, 71, 169, 218),
+          background: Colors.white,
+          outline: const Color.fromARGB(150, 100, 99, 99),
+          surfaceVariant: const Color.fromARGB(149, 194, 194, 194),
+        ),
       ),
       initialRoute: SplashScreen.routeName,
       routes: {
@@ -34,16 +46,16 @@ class MyApp extends StatelessWidget {
         ForgotPasswordScreen.routeName: (context) => const ForgotPasswordScreen(email: "",),
         NewUserPage.routeName: (context) => const NewUserPage(email: "",),
         LoginPage.routeName: (context) => const LoginPage(email: "",),
-
         NewResearcherPage.routeName: (context) => const NewResearcherPage(),
         HomePage.routeName: (context) => HomePage(updateIndex: (int index) {}),
         EvaluateRegister.routeName: (context) => const EvaluateRegister(),
         LocalAnimals.routeName: (context) => const LocalAnimals(),
         MyProfile.routeName: (context) => MyProfile(),
         MyRegisters.routeName: (context) => const MyRegisters(),
-        NewRegister.routeName: (context) => const NewRegister(),
+        NewSimpleRegister.routeName: (context) => const NewSimpleRegister(),
         RegisterPannel.routeName: (context) => const RegisterPannel(),
         BasePage.routeName: (context) => const BasePage(),
+        NewTechnicalRegister.routeName: (context) => const NewTechnicalRegister(),
       },
     );
   }

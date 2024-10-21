@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tcc_ceclimar/controller/auth_user_controller.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../widgets/page_header.dart';
 
 class MyProfile extends StatelessWidget {
@@ -22,9 +23,29 @@ class MyProfile extends StatelessWidget {
       body: Column(
         children: [
           PageHeader(text: "Meu perfil", icon: const Icon(Icons.arrow_back), onTap: () => updateIndex(0)),
-          ElevatedButton(
-            onPressed: () => _logout(context),
-            child: const Text('Logout'),
+          FutureBuilder<User?>(
+            future: Future.value(_controller.getCurrentUser()),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const CircularProgressIndicator();
+              } else if (snapshot.hasError) {
+                return const Text('Erro ao carregar os dados do usuário');
+              } else if (snapshot.hasData) {
+                User? user = snapshot.data;
+                return Column(
+                  children: [
+                    Text('Nome: ${user?.displayName ?? 'N/A'}'),
+                    Text('Email: ${user?.email ?? 'N/A'}'),
+                    ElevatedButton(
+                      onPressed: () => _logout(context),
+                      child: const Text('Logout'),
+                    ),
+                  ],
+                );
+              } else {
+                return const Text('Nenhum usuário logado');
+              }
+            },
           ),
         ],
       ),
