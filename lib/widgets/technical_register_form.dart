@@ -38,7 +38,9 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
   }
 
   bool _validateForm() {
-    _formKey.currentState?.save();
+    setState(() {
+      _formController.validateTechnicalForm();
+    });
     return _formKey.currentState?.validate() ?? false;
   }
 
@@ -52,7 +54,7 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
 
   void _updateBtnStatus() {
     setState(() {
-      isBtnEnabled = _formController.isBtnEnable();
+      isBtnEnabled = _formController.isBtnEnabledTechnical();
     });
   }
 
@@ -162,10 +164,10 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
                 padding: const EdgeInsets.symmetric(vertical: 3.5),
                 menuMaxHeight: 400,
                 borderRadius: BorderRadius.circular(10),
-                style: Theme.of(context).textTheme.labelLarge,
+                style: Theme.of(context).textTheme.labelMedium,
                 isExpanded: true,
                 value: _selectedClass,
-                hint: Text("Classe (Opcional)", style: Theme.of(context).textTheme.labelLarge,),
+                hint: Text("Classe (Opcional)", style: Theme.of(context).textTheme.labelLarge),
                 items: classes.map((item) {
                   return DropdownMenuItem<String>(
                     value: item,

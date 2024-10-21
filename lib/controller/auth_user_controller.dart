@@ -79,6 +79,7 @@ class AuthenticationController {
   bool validateLogin() {
     emailController.text = emailController.text.trim();
     passController.text = passController.text.trim();
+    
     emailError = validateEmail(emailController.text);
     passError = validatePassword(passController.text);
     return emailError == null && passError == null;
