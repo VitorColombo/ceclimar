@@ -1,15 +1,17 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 
 class PageHeader extends StatelessWidget {
   final String text;
   final Widget? icon;
   final Function()? onTap;
+  final Color color;
 
   const PageHeader({
     super.key,
     required this.text,
     this.onTap,
     this.icon,
+    this.color = Colors.black,
   });
 
   @override
@@ -32,7 +34,8 @@ class PageHeader extends StatelessWidget {
                 const SizedBox(width: 10.0, height: 80.0),
                 Text(
                   texts[0],
-                  style: const TextStyle(
+                  style: TextStyle(
+                    color: color,
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),

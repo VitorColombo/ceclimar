@@ -1,9 +1,13 @@
+import 'dart:typed_data';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:tcc_ceclimar/pages/login.dart';
-
+import 'package:firebase_storage/firebase_storage.dart';
 import '../user_auth/firebase_auth_implementation/firebase_auth_services.dart';
+import 'package:tcc_ceclimar/models/user_data.dart';
 
 class AuthenticationController {
   final TextEditingController nameController = TextEditingController();
@@ -159,13 +163,16 @@ class AuthenticationController {
     await _auth.sendPasswordResetEmail(email);
   }
 
-  void signOutUser() {
-    _auth.signOut();
-  }
+  Future<void> signInWithGoogle(context) async {
+    final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  Future<void> signInWithGoogle() async {
     try {
-      final GoogleSignInAccount? googleSignInAccount = await googleSignIn.signIn();
+      final GoogleSignInAccount? googleSignInAccount = await GoogleSignIn(
+        scopes:[
+          'email',
+          'profile',
+        ]
+      ).signIn();
       if (googleSignInAccount == null) {
         print("User cancelled the sign-in.");
         return;
@@ -179,18 +186,91 @@ class AuthenticationController {
         idToken: googleAuth.idToken,
       );
 
-      await FirebaseAuth.instance.signInWithCredential(credential);
+      UserCredential userCredential = await _auth.signInWithCredential(credential);
+      User? user = userCredential.user;
+      if (user != null) {
+        Navigator.pushReplacementNamed(context, '/basePage');
+      }
+    } catch (e) {
+      if (e is FirebaseAuthException) {
+        print('Google Sign-In Error: ${e.code} - ${e.message}');
+      } else {
+        print('Error during sign-in: ${e.toString()}');
+      }
+    }
+  }
 
-      } catch (e) {
-        if (e is FirebaseAuthException) {
-          print('Google Sign-In Error: ${e.code} - ${e.message}');
-        } else {
-          print('Error during sign-in: ${e.toString()}');
+  User? getCurrentUser() {
+      return _auth.currentUser;
+  }
+
+  void signOut() async {
+    try {
+      await googleSignIn.signOut();
+      await _auth.signOut();
+      print("User signed out from Google account.");
+    } catch (e) {
+      print("Error signing out from Google: $e");
+    }
+  }
+
+  ImageProvider getUserImage() {
+    User? user = getCurrentUser();
+    String defaultProfileImage = 'assets/images/imageProfile.png';
+
+    if (user != null) {
+      for (UserInfo userInfo in user.providerData) {
+        if (userInfo.providerId == 'google.com' || userInfo.providerId == 'password') {
+          String? photoURL = user.photoURL;
+          if (photoURL != null && photoURL.startsWith('http')) {
+            return NetworkImage(photoURL);
+          }
         }
       }
     }
+    return AssetImage(defaultProfileImage);
+  }
 
-    User? getCurrentUser() {
-      return _auth.currentUser;
+  Future<void> uploadImage(String userId, Uint8List imageBytes) async {
+    try {
+      final storageRef = FirebaseStorage.instance.ref();
+      final imageRef = storageRef.child('users/$userId/profile.jpg');
+
+      await imageRef.putData(imageBytes);
+      final downloadUrl = await imageRef.getDownloadURL();
+
+      await FirebaseFirestore.instance.collection('users').doc(userId).update({
+        'profilePictureUrl': downloadUrl,
+      });
+
+      print('Image uploaded successfully!');
+    } catch (e) {
+      print('Error uploading image: $e');
+    }
+  }
+
+  Future<void> updateImageProfile() async {
+   final picker = ImagePicker();
+   final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+   if (pickedFile != null) {
+     final imageBytes = await pickedFile.readAsBytes();
+     final userId = getCurrentUser()?.uid;
+     if (userId != null) {
+       await uploadImage(userId, imageBytes); 
+     }
+   }
+  }
+
+  UserResponse? getUserInfo() {
+    User? user = getCurrentUser();
+    if (user != null) {
+      return UserResponse(
+        uid: user.uid,
+        name: user.displayName,
+        email: user.email,
+        photoURL: user.photoURL,
+      );
+    }
+    return null;
   }
 }

@@ -54,7 +54,7 @@ class LoginPageState extends State<LoginPage> {
             backgroundColor: Colors.white,
             shadowColor: Colors.transparent,
             flexibleSpace: FlexibleSpaceBar(
-              background: HeaderBannerWidget(),
+              background: HeaderBannerWidget(image: AssetImage('assets/images/logo.png')),
             ),
             pinned: true, 
             floating: false,
@@ -175,7 +175,7 @@ class LoginPageState extends State<LoginPage> {
                           height: 56,
                           child: SendGoogleBtn(
                             text: "Entrar com Google",
-                            onSend: () => _controller.signInWithGoogle(),
+                            onSend: () => _controller.signInWithGoogle(context),
                           ),
                         ),
                       ],
