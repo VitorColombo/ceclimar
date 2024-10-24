@@ -100,22 +100,26 @@ class NewRegisterFormController {
 
   String? validateGender(String gender) {
     final RegExp regex = RegExp(r'^[a-zA-Z\s]*$');
-    if (gender.length < 3) {
-      return 'Caracteres mínimos: 3';
-    }
-    if (!regex.hasMatch(gender)) {
-      return 'Caractere inválido';
+    if (gender.isNotEmpty) {
+      if (gender.length < 3) {
+        return 'Caracteres mínimos: 3';
+      }
+      if (!regex.hasMatch(gender)) {
+        return 'Caractere inválido';
+      }
     }
     return null;
   }
 
   String? validateFamily(String family) {
     final RegExp regex = RegExp(r'^[a-zA-Z\s]*$');
-    if (family.length < 3) {
-      return 'Caracteres mínimos: 3';
-    }
-    if (!regex.hasMatch(family)) {
-      return 'Caractere inválido';
+    if (family.isNotEmpty) {
+      if (family.length < 3) {
+        return 'Caracteres mínimos: 3';
+      }
+      if (!regex.hasMatch(family)) {
+        return 'Caractere inválido';
+      }
     }
     return null;
   }
@@ -133,26 +137,32 @@ class NewRegisterFormController {
 
   String? validateBeachSpot(String beachSpot) {
     final RegExp regex = RegExp(r'^[0-9]*$');
-    if (!regex.hasMatch(beachSpot)) {
-      return 'Apenas número';
+    if (beachSpot.isNotEmpty) {
+      if (!regex.hasMatch(beachSpot)) {
+        return 'Apenas número';
+      }
     }
     return null;
   }
 
   String? validateObs(String obs) {
-    if (obs.length < 5) {
-      return 'Caracteres mínimos: 5';
+    if (obs.isNotEmpty) {
+      if (obs.length < 5) {
+        return 'Caracteres mínimos: 5';
+      }
     }
     return null;
   }
 
   String? validateOrder(String order) {
     final RegExp regex = RegExp(r'^[a-zA-Z\s]*$');
-    if (order.length < 3) {
-      return 'Caracteres mínimos: 3';
-    }
-    if (!regex.hasMatch(order)) {
-      return 'Caractere inválido';
+    if (order.isNotEmpty) {
+      if (order.length < 3) {
+        return 'Caracteres mínimos: 3';
+      }
+      if (!regex.hasMatch(order)) {
+        return 'Caractere inválido';
+      }
     }
     return null;
   }
@@ -182,8 +192,7 @@ class NewRegisterFormController {
     if (!isSwitchOn) {
       if(nameController.text.isEmpty ||
         speciesController.text.isEmpty ||
-        cityController.text.isEmpty ||
-        beachSpotController.text.isEmpty){
+        cityController.text.isEmpty){
         return false;
       }
       return true;

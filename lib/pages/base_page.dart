@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tcc_ceclimar/pages/about_us.dart';
 import 'package:tcc_ceclimar/pages/new_technical_register.dart';
 import '../widgets/new_register_floating_btn.dart';
 import 'home.dart';
@@ -47,6 +48,7 @@ class _BasePageState extends State<BasePage> {
     EvaluateRegister(updateIndex: updateIndex),
     NewResearcherPage(updateIndex: updateIndex),
     NewTechnicalRegister(updateIndex: updateIndex),
+    AboutUs(updateIndex:updateIndex),
   ];
 
   @override
@@ -167,9 +169,9 @@ class _BasePageState extends State<BasePage> {
               IconButton(
                 enableFeedback: false,
                 onPressed: () {
-                  updateIndex(3);
+                  updateIndex(9);
                 },
-                icon: selectedIndex == 3
+                icon: selectedIndex == 9
                     ? const Icon(
                         Icons.info,
                         color: Colors.black,
@@ -183,9 +185,9 @@ class _BasePageState extends State<BasePage> {
               ),
               GestureDetector(
                 onTap: () {
-                  updateIndex(3);
+                  updateIndex(9);
                 }, 
-                child: label("Sobre", 3)
+                child: label("Sobre", 9)
               ),
             ],
           ),

@@ -92,11 +92,27 @@ class _SimpleRegisterFormState extends State<SimpleRegisterForm> {
             if (isSwitchOn)
               Column(
                 children: [
-                  InputField(
-                    text: "Horário aproximado",
-                    controller: _formController.hourController,
-                    validator: (value) => _formController.hourError,
-                    onChanged: (_) => _updateBtnStatus(),
+                  GestureDetector(
+                    onTap: () async {
+                      TimeOfDay? pickedTime = await showTimePicker(
+                      context: context,
+                      initialTime: TimeOfDay.now(),
+                      );
+                      if (pickedTime != null) {
+                      setState(() {
+                        _formController.hourController.text = pickedTime.format(context);
+                        _updateBtnStatus();
+                      });
+                      }
+                    },
+                    child: AbsorbPointer(
+                      child: InputField(
+                      text: "Horário aproximado",
+                      controller: _formController.hourController,
+                      validator: (value) => _formController.hourError,
+                      onChanged: (_) => _updateBtnStatus(),
+                      ),
+                    ),
                   ),
                   const SizedBox(height: 20),
                 ],

@@ -36,7 +36,7 @@ class _MyProfileState extends State<MyProfile> {
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
-            expandedHeight: 266,
+            expandedHeight: 280,
             backgroundColor: Colors.white,
             shadowColor: Color.fromARGB(0, 173, 145, 145),
             flexibleSpace: FlexibleSpaceBar(
@@ -60,8 +60,6 @@ class _MyProfileState extends State<MyProfile> {
                 ],
               ),
             ),
-            pinned: true,
-            floating: false,
           ),
           SliverToBoxAdapter(
             child: Column(
