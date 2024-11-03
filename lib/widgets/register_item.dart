@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/register_response.dart';
 
 class RegisterItem extends StatelessWidget {
-  final RegisterResponse register; // Use RegisterResponse model
+  final RegisterResponse register;
 
   const RegisterItem({super.key, required this.register});
 
@@ -31,7 +31,7 @@ class RegisterItem extends StatelessWidget {
                 ),
               ),
               title: Text(
-                register.popularName,
+                register.animal.popularName,
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
               subtitle: Column(

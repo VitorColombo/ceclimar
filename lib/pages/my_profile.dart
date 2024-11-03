@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:tcc_ceclimar/controller/auth_user_controller.dart';
+import 'package:tcc_ceclimar/models/animal_response.dart';
 import 'package:tcc_ceclimar/models/register_response.dart';
+import 'package:tcc_ceclimar/widgets/badge_item.dart';
 import 'package:tcc_ceclimar/widgets/header_banner_widget.dart';
 import 'package:tcc_ceclimar/widgets/register_item.dart';
 import '../models/user_data.dart';
@@ -25,6 +27,7 @@ class _MyProfileState extends State<MyProfile> {
   final ValueNotifier<bool> isUltimosRegistrosNotifier = ValueNotifier<bool>(false);
   bool isLoading = true;
   List<RegisterResponse> registers = [];
+  List<AnimalResponse> animals = [];
 
   void _logout(BuildContext context) {
     _controller.signOut();
@@ -35,171 +38,232 @@ class _MyProfileState extends State<MyProfile> {
   void initState() {
     super.initState();
     fetchMockedRegisters();
+    
   }
   
   Future<void> fetchMockedRegisters() async { //todo remover mocks
-    await Future.delayed(const Duration(milliseconds: 2000)); 
+    await Future.delayed(const Duration(milliseconds: 500)); 
     if (!mounted) return;
     setState(() {
       registers = [
         RegisterResponse(
           uid: '1',
           date: '20/10/2020',
-          popularName: 'Lobo Marinho',
           city: 'Xangri-lá',
           state: true,
           authorName: 'John Doe',
-          species: 'Otaria flavescens',
           location: const GeoPoint(-30.0345, -50.6452),
           registerImage: Image.asset(
             'assets/images/logo.png',
             fit: BoxFit.cover
+          ),
+          animal: AnimalResponse(
+            uid: '1',
+            popularName: 'Pinguim-de-magalhaes',
+            image: Image.asset('assets/images/logo.png'),
+            badge: Image.asset('assets/images/logo.png'),
+            species: 'Spheniscus magellanicus'
           )
         ),
         RegisterResponse(
           uid: '2',
           date: '25/10/2020',
-          popularName: 'Pinguim-de-magalhaes',
           city: 'Xangri-lá',
           state: false,
-          species: 'Spheniscus magellanicus',
           location: const GeoPoint(-30.0345, -50.6452),
           registerImage: Image.asset(
             'assets/images/logo.png',
             fit: BoxFit.cover
+          ),
+          animal: AnimalResponse(
+            uid: '1',
+            popularName: 'Foca',
+            image: Image.asset('assets/images/logo.png'),
+            badge: Image.asset('assets/images/logo.png'),
+            species: 'Spheniscus magellanicus'
           )
         ),
         RegisterResponse(
           uid: '3',
           date: '30/10/2020',
-          popularName: 'Pinguim-de-magalhaes',
           city: 'Xangri-lá',
           state: true,
-          species: 'Spheniscus magellanicus',
           location: const GeoPoint(-30.0345, -50.6452),
           registerImage: Image.asset(
             'assets/images/logo.png',
             fit: BoxFit.cover
+          ),
+          animal: AnimalResponse(
+            uid: '1',
+            popularName: 'Pinguim',
+            image: Image.asset('assets/images/logo.png'),
+            badge: Image.asset('assets/images/logo.png'),
+            species: 'Spheniscus magellanicus'
           )
         ),
         RegisterResponse(
           uid: '1',
           date: '20/10/2020',
-          popularName: 'Lobo Marinho',
           city: 'Xangri-lá',
           state: true,
           authorName: 'John Doe',
-          species: 'Otaria flavescens',
           location: const GeoPoint(-30.0345, -50.6452),
           registerImage: Image.asset(
             'assets/images/logo.png',
             fit: BoxFit.cover
+          ),
+          animal: AnimalResponse(
+            uid: '1',
+            popularName: 'Jacaré-do-papo-amarelo',
+            image: Image.asset('assets/images/logo.png'),
+            badge: Image.asset('assets/images/logo.png'),
+            species: 'Spheniscus magellanicus'
           )
         ),
         RegisterResponse(
           uid: '2',
           date: '25/10/2020',
-          popularName: 'Pinguim-de-magalhaes',
           city: 'Xangri-lá',
           state: false,
-          species: 'Spheniscus magellanicus',
           location: const GeoPoint(-30.0345, -50.6452),
           registerImage: Image.asset(
             'assets/images/logo.png',
             fit: BoxFit.cover
+          ),
+          animal: AnimalResponse(
+            uid: '1',
+            popularName: 'Coruja-buraqueira',
+            image: Image.asset('assets/images/logo.png'),
+            badge: Image.asset('assets/images/logo.png'),
+            species: 'Spheniscus magellanicus'
           )
         ),
         RegisterResponse(
           uid: '3',
           date: '30/10/2020',
-          popularName: 'Pinguim-de-magalhaes',
           city: 'Xangri-lá',
           state: true,
-          species: 'Spheniscus magellanicus',
           location: const GeoPoint(-30.0345, -50.6452),
           registerImage: Image.asset(
             'assets/images/logo.png',
             fit: BoxFit.cover
+          ),
+          animal: AnimalResponse(
+            uid: '1',
+            popularName: 'Albatroz',
+            image: Image.asset('assets/images/logo.png'),
+            badge: Image.asset('assets/images/logo.png'),
+            species: 'Spheniscus magellanicus'
+          )
+        ),
+                RegisterResponse(
+          uid: '1',
+          date: '20/10/2020',
+          city: 'Xangri-lá',
+          state: true,
+          authorName: 'John Doe',
+          location: const GeoPoint(-30.0345, -50.6452),
+          registerImage: Image.asset(
+            'assets/images/logo.png',
+            fit: BoxFit.cover
+          ),
+          animal: AnimalResponse(
+            uid: '1',
+            popularName: 'Lobo-marinho',
+            image: Image.asset('assets/images/logo.png'),
+            badge: Image.asset('assets/images/logo.png'),
+            species: 'Spheniscus magellanicus'
+          )
+        ),
+        RegisterResponse(
+          uid: '2',
+          date: '25/10/2020',
+          city: 'Xangri-lá',
+          state: false,
+          location: const GeoPoint(-30.0345, -50.6452),
+          registerImage: Image.asset(
+            'assets/images/logo.png',
+            fit: BoxFit.cover
+          ),
+          animal: AnimalResponse(
+            uid: '1',
+            popularName: 'Quero-quero',
+            image: Image.asset('assets/images/logo.png'),
+            badge: Image.asset('assets/images/logo.png'),
+            species: 'Spheniscus magellanicus'
+          )
+        ),
+        RegisterResponse(
+          uid: '3',
+          date: '30/10/2020',
+          city: 'Xangri-lá',
+          state: true,
+          location: const GeoPoint(-30.0345, -50.6452),
+          registerImage: Image.asset(
+            'assets/images/logo.png',
+            fit: BoxFit.cover
+          ),
+          animal: AnimalResponse(
+            uid: '1',
+            popularName: 'Tuim-de-asa-branca',
+            image: Image.asset('assets/images/logo.png'),
+            badge: Image.asset('assets/images/logo.png'),
+            species: 'Spheniscus magellanicus'
           )
         ),
         RegisterResponse(
           uid: '1',
           date: '20/10/2020',
-          popularName: 'Lobo Marinho',
           city: 'Xangri-lá',
           state: true,
           authorName: 'John Doe',
-          species: 'Otaria flavescens',
           location: const GeoPoint(-30.0345, -50.6452),
           registerImage: Image.asset(
             'assets/images/logo.png',
             fit: BoxFit.cover
+          ),
+          animal: AnimalResponse(
+            uid: '1',
+            popularName: 'Tartaruga verde',
+            image: Image.asset('assets/images/logo.png'),
+            badge: Image.asset('assets/images/logo.png'),
+            species: 'Spheniscus magellanicus'
           )
         ),
         RegisterResponse(
           uid: '2',
           date: '25/10/2020',
-          popularName: 'Pinguim-de-magalhaes',
           city: 'Xangri-lá',
           state: false,
-          species: 'Spheniscus magellanicus',
           location: const GeoPoint(-30.0345, -50.6452),
           registerImage: Image.asset(
             'assets/images/logo.png',
             fit: BoxFit.cover
+          ),
+          animal: AnimalResponse(
+            uid: '1',
+            popularName: 'Pinguim-de-magalhaes',
+            image: Image.asset('assets/images/logo.png'),
+            badge: Image.asset('assets/images/logo.png'),
+            species: 'Spheniscus magellanicus'
           )
         ),
         RegisterResponse(
           uid: '3',
           date: '30/10/2020',
-          popularName: 'Pinguim-de-magalhaes',
           city: 'Xangri-lá',
           state: true,
-          species: 'Spheniscus magellanicus',
           location: const GeoPoint(-30.0345, -50.6452),
           registerImage: Image.asset(
             'assets/images/logo.png',
             fit: BoxFit.cover
-          )
-        ),
-        RegisterResponse(
-          uid: '1',
-          date: '20/10/2020',
-          popularName: 'Lobo Marinho',
-          city: 'Xangri-lá',
-          state: true,
-          authorName: 'John Doe',
-          species: 'Otaria flavescens',
-          location: const GeoPoint(-30.0345, -50.6452),
-          registerImage: Image.asset(
-            'assets/images/logo.png',
-            fit: BoxFit.cover
-          )
-        ),
-        RegisterResponse(
-          uid: '2',
-          date: '25/10/2020',
-          popularName: 'Pinguim-de-magalhaes',
-          city: 'Xangri-lá',
-          state: false,
-          species: 'Spheniscus magellanicus',
-          location: const GeoPoint(-30.0345, -50.6452),
-          registerImage: Image.asset(
-            'assets/images/logo.png',
-            fit: BoxFit.cover
-          )
-        ),
-        RegisterResponse(
-          uid: '3',
-          date: '30/10/2020',
-          popularName: 'Pinguim-de-magalhaes',
-          city: 'Xangri-lá',
-          state: true,
-          species: 'Spheniscus magellanicus',
-          location: const GeoPoint(-30.0345, -50.6452),
-          registerImage: Image.asset(
-            'assets/images/logo.png',
-            fit: BoxFit.cover
+          ),
+          animal: AnimalResponse(
+            uid: '1',
+            popularName: 'Lobo-marinho',
+            image: Image.asset('assets/images/logo.png'),
+            badge: Image.asset('assets/images/logo.png'),
+            species: 'Spheniscus magellanicus'
           )
         ),
       ];
@@ -253,7 +317,7 @@ class _MyProfileState extends State<MyProfile> {
                     ),
                     SizedBox(height: 9),
                     Text(
-                      "Registros realizados: 123", //todo integração
+                      "Registros realizados: ${registers.length}", //todo integração
                       style: Theme.of(context).textTheme.bodyLarge,
                     ),
                     SizedBox(height: 20),
@@ -280,7 +344,7 @@ class _MyProfileState extends State<MyProfile> {
                         )
                         : !isUltimosRegistros
                             ? UltimosRegistrosContent(registers: registers)
-                            : AnimaisEncontradosContent();
+                            : AnimaisEncontradosContent(registers: registers);
                   },
                 ),
               ]
@@ -316,31 +380,26 @@ class UltimosRegistrosContent extends StatelessWidget {
 }
 
 class AnimaisEncontradosContent extends StatelessWidget {
+  final List<dynamic> registers;
+
+  const AnimaisEncontradosContent({super.key, required this.registers});
+
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        ListTile(
-          title: Text('Baleia Jubarte'),
-          subtitle: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Torres'),
-              Text('Enviado em 20/10/2020'),
-            ],
-          ),
+    return SizedBox(
+      height: 400,
+      child: GridView.builder(
+        padding: EdgeInsets.only(top: 0, bottom: 70, left: 1, right: 1),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 3,
+          crossAxisSpacing: 9,
+          mainAxisSpacing: 1,
         ),
-        ListTile(
-          title: Text('Golfinho'),
-          subtitle: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Tramandaí'),
-              Text('Enviado em 20/10/2020'),
-            ],
-          ),
-        ),
-      ],
+        itemCount: registers.length,
+        itemBuilder: (context, index) {
+          return BadgeItem(register: registers[index]);
+        },
+      ),
     );
   }
 }
