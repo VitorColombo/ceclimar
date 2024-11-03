@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:tcc_ceclimar/widgets/custom_switch.dart';
 import 'package:tcc_ceclimar/widgets/input_field.dart';
+import 'package:tcc_ceclimar/widgets/search_input_field.dart';
 import 'package:tcc_ceclimar/widgets/send_btn.dart';
 import 'package:tcc_ceclimar/widgets/send_btn_disabled.dart';
 
 import '../controller/new_register_form_controller.dart';
-import 'add_image_widget.dart';
+import 'image_selector.dart';
 import 'modal_help_register_image_btnsheet.dart';
 
 class TechnicalRegisterForm extends StatefulWidget {
@@ -18,8 +19,7 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
   final _formKey = GlobalKey<FormState>();
   bool isSwitchOn = false;
   bool isBtnEnabled = false;
-  final List<String> classes = ["teste1", "teste2", "teste3"]; //todo receber dados da API
-  String? _selectedClass;
+  final List<String> species = ["penguim", "gaviao", "arubinha", "lobo marinho", "pardal", "gaviao", "arubinha", "lobo marinho", "pardal""gaviao", "arubinha", "lobo marinho", "pardal"];
 
   @override
   void initState() {
@@ -65,7 +65,15 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
         key: _formKey,
         child: Column(
           children: [
-            const ImageSelector(),
+            Stack(
+              children: [
+                const ImageSelector(),
+                Positioned(
+                  top: 82,
+                  child: const ImageSelector(width: 50, height: 50)
+                ),
+              ],
+            ),
             GestureDetector(
               onTap: () {
                 _showImageObservationBottomSheet();
@@ -89,12 +97,13 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
               validator: (value) => _formController.nameError,
               onChanged: (_) => _updateBtnStatus(),
             ),
-            const SizedBox(height: 16), 
-            InputField(
+            const SizedBox(height: 16),
+            SearchInputField(
               text: "Espécie",
               controller: _formController.speciesController,
               validator: (value) => _formController.speciesError,
               onChanged: (_) => _updateBtnStatus(),
+              items: species, //todo
             ),
             const SizedBox(height: 16),
             Row(
@@ -123,17 +132,34 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
             CustomSwitch(
               text: "Presenciou o animal encalhando?",
               value: isSwitchOn,
-              onChanged: _onSwitchChanged
+              onChanged: _onSwitchChanged,
+              onTap: _showSwitchInfoBottomSheet,
             ),
             const SizedBox(height: 9),
             if (isSwitchOn)
               Column(
                 children: [
-                  InputField(
-                    text: "Horário aproximado",
-                    controller: _formController.hourController,
-                    validator: (value) => _formController.hourError,
-                    onChanged: (_) => _updateBtnStatus(),
+                  GestureDetector(
+                    onTap: () async {
+                      TimeOfDay? pickedTime = await showTimePicker(
+                      context: context,
+                      initialTime: TimeOfDay.now(),
+                      );
+                      if (pickedTime != null) {
+                      setState(() {
+                        _formController.hourController.text = pickedTime.format(context);
+                        _updateBtnStatus();
+                      });
+                      }
+                    },
+                    child: AbsorbPointer(
+                      child: InputField(
+                      text: "Horário aproximado",
+                      controller: _formController.hourController,
+                      validator: (value) => _formController.hourError,
+                      onChanged: (_) => _updateBtnStatus(),
+                      ),
+                    ),
                   ),
                   const SizedBox(height: 20),
                 ],
@@ -149,58 +175,36 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
               ),
             ),
             const SizedBox(height: 16),
-            Container(
-              padding: const EdgeInsets.only(right: 23, left: 15),
-              height: 56,
-              decoration: BoxDecoration(
-                color: const Color(0xF6F6F6F6),
-                border: Border.all(color: Colors.grey),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: DropdownButtonFormField<String>(
-                decoration: const InputDecoration(
-                  border: InputBorder.none,
-                ),
-                padding: const EdgeInsets.symmetric(vertical: 3.5),
-                menuMaxHeight: 400,
-                borderRadius: BorderRadius.circular(10),
-                style: Theme.of(context).textTheme.labelMedium,
-                isExpanded: true,
-                value: _selectedClass,
-                hint: Text("Classe (Opcional)", style: Theme.of(context).textTheme.labelLarge),
-                items: classes.map((item) {
-                  return DropdownMenuItem<String>(
-                    value: item,
-                    child: Text(item),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  setState(() {
-                    _selectedClass = value;
-                  });
-                },
-              ),
+            SearchInputField(
+              text: "Classe (Opcional)",
+              controller: _formController.classController,
+              validator: (value) => _formController.classError,
+              onChanged: (_) => _updateBtnStatus(),
+              items: species, //todo
             ),
             const SizedBox(height: 16),
-            InputField(
+            SearchInputField(
               text: "Ordem (Opcional)",
               controller: _formController.orderController,
               validator: (value) => _formController.orderError,
               onChanged: (_) => _updateBtnStatus(),
+              items: species, //todo
             ),
             const SizedBox(height: 16),
-            InputField(
+            SearchInputField(
               text: "Família (Opcional)",
               controller: _formController.familyController,
               validator: (value) => _formController.familyError,
               onChanged: (_) => _updateBtnStatus(),
+              items: species,//todo
             ),
             const SizedBox(height: 16),
-            InputField(
+            SearchInputField(
               text: "Gênero (Opcional)",
               controller: _formController.genderController,
               validator: (value) => _formController.genderError,
               onChanged: (_) => _updateBtnStatus(),
+              items: species, //todo
             ),
             const SizedBox(height: 16),
             if(isBtnEnabled)
@@ -232,7 +236,16 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
     showModalBottomSheet(
       context: context,
       builder: (context) {
-        return const ModalHelpRegisterImageBottomSheet();
+        return const ModalHelpRegisterImageBottomSheet(text: "Sugerimos o envio de 2 imagens da ocorrência, sendo uma com escala e outra sem. Para representar a escala, podem ser usados objetos ou até mesmo o pé.");
+      },
+    );
+  }
+
+  void _showSwitchInfoBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return const ModalHelpRegisterImageBottomSheet(text: "Marque esse campo se você presenciou o mar trazendo o animal para a faixa de areia.");
       },
     );
   }

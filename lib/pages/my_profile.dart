@@ -82,15 +82,6 @@ class _MyProfileState extends State<MyProfile> {
       )
     );
   }
-
-  void _showImageObservationBottomSheet() {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        return const ModalHelpRegisterImageBottomSheet();
-      },
-    );
-  }
 }
 
 class UltimosRegistrosContent extends StatelessWidget {
