@@ -1,12 +1,9 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:tcc_ceclimar/pages/about_us.dart';
 import 'package:tcc_ceclimar/pages/base_page.dart';
 import 'package:tcc_ceclimar/pages/evaluate_register.dart';
 import 'package:tcc_ceclimar/pages/forgot_pass.dart';
 import 'package:tcc_ceclimar/pages/home.dart';
-import 'package:tcc_ceclimar/pages/image_screen.dart';
 import 'package:tcc_ceclimar/pages/local_animals.dart';
 import 'package:tcc_ceclimar/pages/my_profile.dart';
 import 'package:tcc_ceclimar/pages/my_registers.dart';
