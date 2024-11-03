@@ -10,7 +10,9 @@ class NewRegisterFormController {
   final TextEditingController familyController = TextEditingController();
   final TextEditingController genderController = TextEditingController();
   final TextEditingController orderController = TextEditingController();
-
+  final TextEditingController classController = TextEditingController();
+  //todo as validacoes dos controllers do registro tecnico devem ser feitas com base nas regras da biologia presentes no back, se tornarao campos com preenchimento e pesquisa
+  
   String? nameError;
   String? hourError;
   String? speciesError;
@@ -20,6 +22,7 @@ class NewRegisterFormController {
   String? familyError;
   String? genderError;
   String? orderError;
+  String? classError;
   bool isSwitchOn = false;
 
   void dispose() {

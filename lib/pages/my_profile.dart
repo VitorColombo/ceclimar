@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:tcc_ceclimar/controller/auth_user_controller.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:tcc_ceclimar/widgets/header_banner_widget.dart';
 import '../models/user_data.dart';
 import '../widgets/modal_help_register_image_btnsheet.dart';
@@ -11,7 +10,7 @@ class MyProfile extends StatefulWidget {
   static const String routeName = '/myprofile'; 
   final Function(int) updateIndex;
 
-  MyProfile({super.key, this.updateIndex = _defaultUpdateIndex,});
+  const MyProfile({super.key, this.updateIndex = _defaultUpdateIndex,});
   
   static void _defaultUpdateIndex(int index) {}
 
@@ -81,15 +80,6 @@ class _MyProfileState extends State<MyProfile> {
           )
         ]
       )
-    );
-  }
-
-  void _showImageObservationBottomSheet() {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        return const ModalHelpRegisterImageBottomSheet();
-      },
     );
   }
 }

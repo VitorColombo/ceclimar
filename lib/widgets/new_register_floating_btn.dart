@@ -9,13 +9,13 @@ class AddNewRegisterFloatingBtn extends StatelessWidget {
   final Function(int) updateIndex;
 
   const AddNewRegisterFloatingBtn({
-    Key? key,
+    super.key,
     this.icon = Icons.add,
     this.backgroundColor = const Color.fromARGB(255, 2, 52, 87),
     this.hoverColor = const Color.fromARGB(255, 31, 73, 95),
     this.size = 60,
     required this.updateIndex,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -68,6 +68,7 @@ class AddNewRegisterFloatingBtn extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                   fontFamily: "Inter"
                 ),
+                overlayColor: Colors.white,
               ),
               child: const Text(
                 "Registro simples",

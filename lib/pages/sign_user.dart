@@ -13,7 +13,7 @@ class NewUserPage extends StatefulWidget {
   static const String routeName = '/cadastrar';
   final String email;
 
-  const NewUserPage({Key? key, required this.email}) : super(key: key);
+  const NewUserPage({super.key, required this.email});
 
   @override
   NewUserPageState createState() => NewUserPageState();

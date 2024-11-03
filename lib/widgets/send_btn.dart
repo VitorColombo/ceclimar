@@ -5,7 +5,12 @@ class SendBtn extends StatefulWidget {
   final Function onValidate;
   final Function onSend;
 
-  const SendBtn({super.key, required this.text, required this.onValidate, required this.onSend});
+  const SendBtn({
+    super.key, 
+    required this.text, 
+    required this.onValidate, 
+    required this.onSend
+  });
 
   @override
   _SendBtnState createState() => _SendBtnState();

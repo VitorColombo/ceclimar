@@ -1,42 +1,62 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
+import '../pages/image_screen.dart';
 
-class RegisterCircularImageWidget extends StatelessWidget {
+class RegisterCircularImageWidget extends StatefulWidget {
   final File? imageProvider;
   final double width;
   final double heigth;
-  final Function()? onTap;
+  final Function() onTap;
 
   const RegisterCircularImageWidget({
     super.key, 
     required this.imageProvider,
     required this.width,
     required this.heigth,
-    this.onTap,
+    required this.onTap,
   });
 
   @override
+  State<RegisterCircularImageWidget> createState() => _RegisterCircularImageWidgetState();
+}
+
+class _RegisterCircularImageWidgetState extends State<RegisterCircularImageWidget> {
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: () {
+        if (widget.imageProvider != null) {
+          showModalBottomSheet(
+            context: context,
+            builder: (context) {
+              return ImageScreen(
+                imageProvider: widget.imageProvider,
+                onEditTap: widget.onTap,
+              );
+            },
+          );
+        } else {
+          widget.onTap();
+        }
+      },      
       child: Container(
-        height: heigth,
-        width: width,
+        height: widget.heigth,
+        width: widget.width,
         decoration: BoxDecoration(
+          border: Border.all(width: 0.5, color: Colors.white),
           color: const Color.fromARGB(255, 191, 219, 224),
           shape: BoxShape.circle,
-          image: imageProvider != null
+          image: widget.imageProvider != null
               ? DecorationImage(
                   fit: BoxFit.cover,
-                  image: FileImage(imageProvider!),
+                  image: FileImage(widget.imageProvider!),
                 )
               : null,
         ),
-        child: imageProvider == null
+        child: widget.imageProvider == null
             ? Icon(
                 Icons.add_a_photo,
-                size: width / 2.5,
+                size: widget.width / 2.5,
                 color: Colors.white,
               )
             : null,

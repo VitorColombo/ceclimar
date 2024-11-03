@@ -4,12 +4,14 @@ class CustomSwitch extends StatefulWidget {
   final String text;
   final bool value;
   final ValueChanged<bool> onChanged;
+  final void Function()? onTap;
 
   const CustomSwitch({
     super.key,
     required this.text,
     required this.value,
     required this.onChanged,
+    this.onTap
   });
 
   @override
@@ -25,6 +27,14 @@ class _CustomSwitchState extends State<CustomSwitch> {
         Text(
           widget.text,
           style: Theme.of(context).textTheme.bodyMedium,
+        ),
+        GestureDetector(
+          onTap: widget.onTap ?? () {},
+          child: 
+            Icon(
+              Icons.info_outline, 
+              size: 16
+            )
         ),
         Switch(
           value: widget.value,
