@@ -7,11 +7,11 @@ class PasswordInput extends StatefulWidget {
   final String? Function(String?)? validator;
 
   const PasswordInput({
-    Key? key,
+    super.key,
     required this.text,
     required this.controller,
     this.validator,
-  }) : super(key: key);
+  });
 
   @override
   State<PasswordInput> createState() => _PasswordInputState();

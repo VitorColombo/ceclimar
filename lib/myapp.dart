@@ -1,9 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:tcc_ceclimar/pages/about_us.dart';
 import 'package:tcc_ceclimar/pages/base_page.dart';
 import 'package:tcc_ceclimar/pages/evaluate_register.dart';
 import 'package:tcc_ceclimar/pages/forgot_pass.dart';
 import 'package:tcc_ceclimar/pages/home.dart';
+import 'package:tcc_ceclimar/pages/image_screen.dart';
 import 'package:tcc_ceclimar/pages/local_animals.dart';
 import 'package:tcc_ceclimar/pages/my_profile.dart';
 import 'package:tcc_ceclimar/pages/my_registers.dart';
@@ -17,7 +20,7 @@ import 'package:tcc_ceclimar/pages/new_researcher_user.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -48,9 +51,9 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSwatch().copyWith(
           primary:const Color.fromARGB(255, 31, 73, 95),
           secondary:  const Color.fromARGB(255, 71, 169, 218),
-          background: Colors.white,
+          surface: Colors.white,
           outline: const Color.fromARGB(150, 100, 99, 99),
-          surfaceVariant: const Color.fromARGB(149, 194, 194, 194),
+          surfaceContainerHighest: const Color.fromARGB(149, 194, 194, 194),
         ),
       ),
       initialRoute: SplashScreen.routeName,
@@ -69,7 +72,7 @@ class MyApp extends StatelessWidget {
         RegisterPannel.routeName: (context) => const RegisterPannel(),
         BasePage.routeName: (context) => const BasePage(),
         NewTechnicalRegister.routeName: (context) => const NewTechnicalRegister(),
-        AboutUs.routeName:(context) => const AboutUs()
+        AboutUs.routeName:(context) => const AboutUs(),
       },
     );
   }

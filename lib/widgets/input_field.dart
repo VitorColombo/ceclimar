@@ -8,13 +8,13 @@ class InputField extends StatelessWidget {
   final int? maxLines;
 
   const InputField({
-    Key? key,
+    super.key,
     required this.text,
     required this.controller,
     this.validator,
     this.onChanged,
     this.maxLines = 1,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

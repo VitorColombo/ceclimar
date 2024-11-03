@@ -5,7 +5,7 @@ import 'package:tcc_ceclimar/widgets/send_btn.dart';
 import 'package:tcc_ceclimar/widgets/send_btn_disabled.dart';
 
 import '../controller/new_register_form_controller.dart';
-import 'add_image_widget.dart';
+import 'image_selector.dart';
 import 'modal_help_register_image_btnsheet.dart';
 
 class SimpleRegisterForm extends StatefulWidget {
@@ -86,7 +86,8 @@ class _SimpleRegisterFormState extends State<SimpleRegisterForm> {
             CustomSwitch(
               text: "Presenciou o animal encalhando?",
               value: isSwitchOn,
-              onChanged: _onSwitchChanged
+              onChanged: _onSwitchChanged,
+              onTap: _showSwitchInfoBottomSheet,
             ),
             const SizedBox(height: 9),
             if (isSwitchOn)
@@ -145,7 +146,16 @@ class _SimpleRegisterFormState extends State<SimpleRegisterForm> {
     showModalBottomSheet(
       context: context,
       builder: (context) {
-        return const ModalHelpRegisterImageBottomSheet();
+        return const ModalHelpRegisterImageBottomSheet(text: "Sugerimos o envio de 2 imagens da ocorrência, sendo uma com escala e outra sem. Para representar a escala, podem ser usados objetos ou até mesmo o pé.");
+      },
+    );
+  }
+
+    void _showSwitchInfoBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return const ModalHelpRegisterImageBottomSheet(text: "Marque esse campo se você presenciou o mar trazendo o animal para a faixa de areia.");
       },
     );
   }
