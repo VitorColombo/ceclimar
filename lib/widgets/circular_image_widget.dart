@@ -18,12 +18,13 @@ class CircularImageWidget extends StatelessWidget {
         height: heigth,
         width: width,
         decoration: BoxDecoration(
-            color: Colors.white,
-            shape: BoxShape.circle, 
-            image: DecorationImage(
-              fit: BoxFit.cover,
-              image: imageProvider,
-            )
+          border: Border.all(width: 4, color: Colors.white),
+          color: Colors.white,
+          shape: BoxShape.circle, 
+          image: DecorationImage(
+            fit: BoxFit.cover,
+            image: imageProvider,
+          )
         )
     );
   } //build

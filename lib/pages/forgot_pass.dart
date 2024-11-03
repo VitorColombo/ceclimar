@@ -58,7 +58,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             backgroundColor: Colors.white,
             shadowColor: Colors.transparent,
             flexibleSpace: FlexibleSpaceBar(
-              background: HeaderBannerWidget(),
+              background: HeaderBannerWidget(image: AssetImage('assets/images/logo.png')),
             ),
             pinned: true,
             floating: false,
@@ -142,7 +142,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           Text(
             'Envio realizado com sucesso!',
             style: TextStyle(
-              fontSize: 20.0,
+              fontSize: 24.0,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -151,10 +151,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             'Cheque seu e-mail para recuperar o acesso a partir do link enviado',
             textAlign: TextAlign.center,
             style: TextStyle(
-              fontSize: 24.0,
+              fontSize: 20.0,
             ),
           ),
-          SizedBox(height: 150),
+          SizedBox(height: 120),
           Icon(Icons.check_circle, size: 120, color: Colors.green),
         ],
       ),

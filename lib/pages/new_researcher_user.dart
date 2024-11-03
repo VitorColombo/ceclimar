@@ -48,7 +48,7 @@ class NewResearcherPageState extends State<NewResearcherPage> {
             backgroundColor: Colors.white,
             shadowColor: Colors.transparent,
             flexibleSpace: FlexibleSpaceBar(
-              background: HeaderBannerWidget(),
+              background: HeaderBannerWidget(image: AssetImage('assets/images/logo.png')),
             ),
             pinned: true, 
             floating: false,

@@ -43,9 +43,13 @@ class _PasswordInputState extends State<PasswordInput> {
             fillColor: const Color(0xF6F6F6F6),
             labelText: widget.text,
             labelStyle: const TextStyle(color: Colors.grey),
-            border: const OutlineInputBorder(
+            enabledBorder: const OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(10)),
-              borderSide: BorderSide(color: Color(0xE8E8E8E8), width: 1.0),
+              borderSide: BorderSide(
+                color: Colors.grey,
+                width: 1.0,
+                style: BorderStyle.solid,
+              ),
             ),
             focusedBorder: const OutlineInputBorder(
               borderSide: BorderSide(color: Colors.lightBlue, width: 1.0),

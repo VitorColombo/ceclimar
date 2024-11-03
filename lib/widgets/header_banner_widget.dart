@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'circular_image_widget.dart';
 
 class HeaderBannerWidget extends StatelessWidget {
-  const HeaderBannerWidget({super.key});
-
+  final ImageProvider? image;
+  const HeaderBannerWidget({super.key, required this.image});
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -17,15 +18,15 @@ class HeaderBannerWidget extends StatelessWidget {
               child: Image.asset(
                 'assets/images/header.png',
                 fit: BoxFit.cover
-              ),
+              )
             )
         ),
-          const Column(
+          Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
               SizedBox(height: 130),
               CircularImageWidget(
-                imageProvider: AssetImage('assets/images/logo.png'),
+                imageProvider: image!,
                 width: 148,
                 heigth: 170,
               ),

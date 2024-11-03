@@ -11,20 +11,23 @@ dependencies:
   flutter:
     sdk: flutter
 
+  flutter_localizations:
+    sdk: flutter
   cupertino_icons: ^1.0.2
-  firebase_core: ^2.0.0
-  firebase_auth: ^4.0.0
-  cloud_firestore: ^4.0.0
-  firebase_analytics: ^10.0.0
-  google_sign_in: ^5.0.0
+  firebase_core: 3.6.0
+  firebase_auth: 5.3.1
+  cloud_firestore: ^5.4.4
+  firebase_analytics: ^11.3.3
+  google_sign_in: 6.2.1
   persistent_bottom_nav_bar: ^6.2.1
-  image_picker: ^0.8.4+4
+  image_picker: ^1.1.2
+  firebase_storage: ^12.3.4
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  flutter_lints: ^2.0.0
+  flutter_lints: ^5.0.0
   
 flutter:
 

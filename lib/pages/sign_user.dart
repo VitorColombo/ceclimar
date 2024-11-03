@@ -52,9 +52,9 @@ class NewUserPageState extends State<NewUserPage> {
           const SliverAppBar( 
             expandedHeight: 300,
             backgroundColor: Colors.white,
-            shadowColor: Colors.transparent,
+            shadowColor: Color.fromARGB(0, 173, 145, 145),
             flexibleSpace: FlexibleSpaceBar(
-              background: HeaderBannerWidget(),
+              background: HeaderBannerWidget(image: AssetImage('assets/images/logo.png')),
             ),
             pinned: true, 
             floating: false,
@@ -158,7 +158,7 @@ class NewUserPageState extends State<NewUserPage> {
                           height: 56,
                           child: SendGoogleBtn(
                             text: "Cadastrar com Google",
-                            onSend: () => _controller.signInWithGoogle(),
+                            onSend: () => _controller.signInWithGoogle(context),
                           )
                         ),
                       ],

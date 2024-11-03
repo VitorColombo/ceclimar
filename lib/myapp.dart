@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tcc_ceclimar/pages/about_us.dart';
 import 'package:tcc_ceclimar/pages/base_page.dart';
 import 'package:tcc_ceclimar/pages/evaluate_register.dart';
 import 'package:tcc_ceclimar/pages/forgot_pass.dart';
@@ -13,6 +14,7 @@ import 'package:tcc_ceclimar/pages/splashscreen.dart';
 import 'package:tcc_ceclimar/pages/sign_user.dart';
 import 'package:tcc_ceclimar/pages/login.dart';
 import 'package:tcc_ceclimar/pages/new_researcher_user.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -21,9 +23,20 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Fauna Marinha RS',
+      locale: Locale('pt', 'BR'),
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: [
+        const Locale('en', 'US'),
+        const Locale('pt', 'BR'),
+      ],
       theme: ThemeData(
         useMaterial3: true,
         textTheme: const TextTheme(
+          titleLarge: TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold, color: Colors.black),
           titleMedium: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold, color: Colors.white),
           bodyLarge: TextStyle(fontSize: 16.0, fontWeight: FontWeight.normal),
           bodyMedium: TextStyle(fontSize: 15.0),
@@ -56,6 +69,7 @@ class MyApp extends StatelessWidget {
         RegisterPannel.routeName: (context) => const RegisterPannel(),
         BasePage.routeName: (context) => const BasePage(),
         NewTechnicalRegister.routeName: (context) => const NewTechnicalRegister(),
+        AboutUs.routeName:(context) => const AboutUs()
       },
     );
   }
