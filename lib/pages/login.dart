@@ -14,7 +14,7 @@ class LoginPage extends StatefulWidget {
   static const String routeName = '/login';
   final String email;
 
-  const LoginPage({Key? key, required this.email}) : super(key: key);
+  const LoginPage({super.key, required this.email});
 
   @override
   LoginPageState createState() => LoginPageState();

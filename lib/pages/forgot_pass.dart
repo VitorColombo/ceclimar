@@ -9,7 +9,7 @@ class ForgotPasswordScreen extends StatefulWidget {
   static const String routeName = '/forgot_password';
   final String email;
 
-  const ForgotPasswordScreen({Key? key, required this.email}) : super(key: key);
+  const ForgotPasswordScreen({super.key, required this.email});
 
   @override
   State<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();

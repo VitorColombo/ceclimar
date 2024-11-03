@@ -8,7 +8,7 @@ import 'package:tcc_ceclimar/widgets/circular_image_widget.dart';
 class SplashScreen extends StatefulWidget {
   static const String routeName = '/splash';
 
-  const SplashScreen({Key? key}) : super(key: key);
+  const SplashScreen({super.key});
 
   @override
   SplashScreenState createState() => SplashScreenState();

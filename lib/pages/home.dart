@@ -7,9 +7,9 @@ class HomePage extends StatelessWidget {
   final Function(int) updateIndex;
 
   const HomePage({
-    Key? key,
+    super.key,
     required this.updateIndex,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
