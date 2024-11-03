@@ -1,7 +1,5 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:tcc_ceclimar/pages/new_technical_register.dart';
-import '../widgets/page_header.dart';
 
 class ImageScreen extends StatefulWidget {
   final File? imageProvider;

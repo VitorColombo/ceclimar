@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:tcc_ceclimar/controller/auth_user_controller.dart';
 import 'package:tcc_ceclimar/widgets/header_banner_widget.dart';
 import '../models/user_data.dart';
-import '../widgets/modal_help_register_image_btnsheet.dart';
 import '../widgets/page_header.dart';
 import '../widgets/profile_switch.dart';
 
