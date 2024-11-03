@@ -1,6 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:tcc_ceclimar/controller/auth_user_controller.dart';
+import 'package:tcc_ceclimar/models/animal_response.dart';
+import 'package:tcc_ceclimar/models/register_response.dart';
+import 'package:tcc_ceclimar/widgets/badge_item.dart';
 import 'package:tcc_ceclimar/widgets/header_banner_widget.dart';
+import 'package:tcc_ceclimar/widgets/register_item.dart';
 import '../models/user_data.dart';
 import '../widgets/page_header.dart';
 import '../widgets/profile_switch.dart';
@@ -19,11 +24,251 @@ class MyProfile extends StatefulWidget {
 
 class _MyProfileState extends State<MyProfile> {
   final AuthenticationController _controller = AuthenticationController();
-  bool isUltimosRegistros = true;
+  final ValueNotifier<bool> isUltimosRegistrosNotifier = ValueNotifier<bool>(false);
+  bool isLoading = true;
+  List<RegisterResponse> registers = [];
+  List<AnimalResponse> animals = [];
 
   void _logout(BuildContext context) {
     _controller.signOut();
     Navigator.pushReplacementNamed(context, '/login');
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchMockedRegisters();
+    
+  }
+  
+  Future<void> fetchMockedRegisters() async { //todo remover mocks
+    await Future.delayed(const Duration(milliseconds: 500)); 
+    if (!mounted) return;
+    setState(() {
+      registers = [
+        RegisterResponse(
+          uid: '1',
+          date: '20/10/2020',
+          city: 'Xangri-lá',
+          state: true,
+          authorName: 'John Doe',
+          location: const GeoPoint(-30.0345, -50.6452),
+          registerImage: Image.asset(
+            'assets/images/logo.png',
+            fit: BoxFit.cover
+          ),
+          animal: AnimalResponse(
+            uid: '1',
+            popularName: 'Pinguim-de-magalhaes',
+            image: Image.asset('assets/images/logo.png'),
+            badge: Image.asset('assets/images/logo.png'),
+            species: 'Spheniscus magellanicus'
+          )
+        ),
+        RegisterResponse(
+          uid: '2',
+          date: '25/10/2020',
+          city: 'Xangri-lá',
+          state: false,
+          location: const GeoPoint(-30.0345, -50.6452),
+          registerImage: Image.asset(
+            'assets/images/logo.png',
+            fit: BoxFit.cover
+          ),
+          animal: AnimalResponse(
+            uid: '1',
+            popularName: 'Foca',
+            image: Image.asset('assets/images/logo.png'),
+            badge: Image.asset('assets/images/logo.png'),
+            species: 'Spheniscus magellanicus'
+          )
+        ),
+        RegisterResponse(
+          uid: '3',
+          date: '30/10/2020',
+          city: 'Xangri-lá',
+          state: true,
+          location: const GeoPoint(-30.0345, -50.6452),
+          registerImage: Image.asset(
+            'assets/images/logo.png',
+            fit: BoxFit.cover
+          ),
+          animal: AnimalResponse(
+            uid: '1',
+            popularName: 'Pinguim',
+            image: Image.asset('assets/images/logo.png'),
+            badge: Image.asset('assets/images/logo.png'),
+            species: 'Spheniscus magellanicus'
+          )
+        ),
+        RegisterResponse(
+          uid: '1',
+          date: '20/10/2020',
+          city: 'Xangri-lá',
+          state: true,
+          authorName: 'John Doe',
+          location: const GeoPoint(-30.0345, -50.6452),
+          registerImage: Image.asset(
+            'assets/images/logo.png',
+            fit: BoxFit.cover
+          ),
+          animal: AnimalResponse(
+            uid: '1',
+            popularName: 'Jacaré-do-papo-amarelo',
+            image: Image.asset('assets/images/logo.png'),
+            badge: Image.asset('assets/images/logo.png'),
+            species: 'Spheniscus magellanicus'
+          )
+        ),
+        RegisterResponse(
+          uid: '2',
+          date: '25/10/2020',
+          city: 'Xangri-lá',
+          state: false,
+          location: const GeoPoint(-30.0345, -50.6452),
+          registerImage: Image.asset(
+            'assets/images/logo.png',
+            fit: BoxFit.cover
+          ),
+          animal: AnimalResponse(
+            uid: '1',
+            popularName: 'Coruja-buraqueira',
+            image: Image.asset('assets/images/logo.png'),
+            badge: Image.asset('assets/images/logo.png'),
+            species: 'Spheniscus magellanicus'
+          )
+        ),
+        RegisterResponse(
+          uid: '3',
+          date: '30/10/2020',
+          city: 'Xangri-lá',
+          state: true,
+          location: const GeoPoint(-30.0345, -50.6452),
+          registerImage: Image.asset(
+            'assets/images/logo.png',
+            fit: BoxFit.cover
+          ),
+          animal: AnimalResponse(
+            uid: '1',
+            popularName: 'Albatroz',
+            image: Image.asset('assets/images/logo.png'),
+            badge: Image.asset('assets/images/logo.png'),
+            species: 'Spheniscus magellanicus'
+          )
+        ),
+                RegisterResponse(
+          uid: '1',
+          date: '20/10/2020',
+          city: 'Xangri-lá',
+          state: true,
+          authorName: 'John Doe',
+          location: const GeoPoint(-30.0345, -50.6452),
+          registerImage: Image.asset(
+            'assets/images/logo.png',
+            fit: BoxFit.cover
+          ),
+          animal: AnimalResponse(
+            uid: '1',
+            popularName: 'Lobo-marinho',
+            image: Image.asset('assets/images/logo.png'),
+            badge: Image.asset('assets/images/logo.png'),
+            species: 'Spheniscus magellanicus'
+          )
+        ),
+        RegisterResponse(
+          uid: '2',
+          date: '25/10/2020',
+          city: 'Xangri-lá',
+          state: false,
+          location: const GeoPoint(-30.0345, -50.6452),
+          registerImage: Image.asset(
+            'assets/images/logo.png',
+            fit: BoxFit.cover
+          ),
+          animal: AnimalResponse(
+            uid: '1',
+            popularName: 'Quero-quero',
+            image: Image.asset('assets/images/logo.png'),
+            badge: Image.asset('assets/images/logo.png'),
+            species: 'Spheniscus magellanicus'
+          )
+        ),
+        RegisterResponse(
+          uid: '3',
+          date: '30/10/2020',
+          city: 'Xangri-lá',
+          state: true,
+          location: const GeoPoint(-30.0345, -50.6452),
+          registerImage: Image.asset(
+            'assets/images/logo.png',
+            fit: BoxFit.cover
+          ),
+          animal: AnimalResponse(
+            uid: '1',
+            popularName: 'Tuim-de-asa-branca',
+            image: Image.asset('assets/images/logo.png'),
+            badge: Image.asset('assets/images/logo.png'),
+            species: 'Spheniscus magellanicus'
+          )
+        ),
+        RegisterResponse(
+          uid: '1',
+          date: '20/10/2020',
+          city: 'Xangri-lá',
+          state: true,
+          authorName: 'John Doe',
+          location: const GeoPoint(-30.0345, -50.6452),
+          registerImage: Image.asset(
+            'assets/images/logo.png',
+            fit: BoxFit.cover
+          ),
+          animal: AnimalResponse(
+            uid: '1',
+            popularName: 'Tartaruga verde',
+            image: Image.asset('assets/images/logo.png'),
+            badge: Image.asset('assets/images/logo.png'),
+            species: 'Spheniscus magellanicus'
+          )
+        ),
+        RegisterResponse(
+          uid: '2',
+          date: '25/10/2020',
+          city: 'Xangri-lá',
+          state: false,
+          location: const GeoPoint(-30.0345, -50.6452),
+          registerImage: Image.asset(
+            'assets/images/logo.png',
+            fit: BoxFit.cover
+          ),
+          animal: AnimalResponse(
+            uid: '1',
+            popularName: 'Pinguim-de-magalhaes',
+            image: Image.asset('assets/images/logo.png'),
+            badge: Image.asset('assets/images/logo.png'),
+            species: 'Spheniscus magellanicus'
+          )
+        ),
+        RegisterResponse(
+          uid: '3',
+          date: '30/10/2020',
+          city: 'Xangri-lá',
+          state: true,
+          location: const GeoPoint(-30.0345, -50.6452),
+          registerImage: Image.asset(
+            'assets/images/logo.png',
+            fit: BoxFit.cover
+          ),
+          animal: AnimalResponse(
+            uid: '1',
+            popularName: 'Lobo-marinho',
+            image: Image.asset('assets/images/logo.png'),
+            badge: Image.asset('assets/images/logo.png'),
+            species: 'Spheniscus magellanicus'
+          )
+        ),
+      ];
+      isLoading = false;
+    });
   }
 
   @override
@@ -34,6 +279,8 @@ class _MyProfileState extends State<MyProfile> {
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
+            pinned: true,
+            collapsedHeight: 280,
             expandedHeight: 280,
             backgroundColor: Colors.white,
             shadowColor: Color.fromARGB(0, 173, 145, 145),
@@ -59,21 +306,47 @@ class _MyProfileState extends State<MyProfile> {
               ),
             ),
           ),
-          SliverToBoxAdapter(
-            child: Column(
-              children: [
-                Text(
-                  '${userData?.name}',
-                  style: Theme.of(context).textTheme.titleLarge,
+          SliverList(
+            delegate: SliverChildListDelegate(
+              [
+                Column(
+                  children: [
+                    Text(
+                      '${userData?.name}',
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                    SizedBox(height: 9),
+                    Text(
+                      "Registros realizados: ${registers.length}", //todo integração
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
+                    SizedBox(height: 20),
+                    ProfileSwitch(
+                        size: 600,
+                        isUltimosRegistrosNotifier: isUltimosRegistrosNotifier),
+                    SizedBox(height: 10),
+                  ],
                 ),
-                SizedBox(height: 9),
-                Text(
-                  "Registros realizados: 123",//todo integração
-                  style: Theme.of(context).textTheme.bodyLarge,
+                ValueListenableBuilder<bool>(
+                  valueListenable: isUltimosRegistrosNotifier,
+                  builder: (context, isUltimosRegistros, child) {
+                    return isLoading
+                        ? Padding(
+                          padding: const EdgeInsets.all(40.0),
+                          child: Align(
+                            alignment: Alignment.center,
+                            child: const LinearProgressIndicator(
+                                color: Color.fromRGBO(71, 169, 218, 1), 
+                                backgroundColor: Color.fromARGB(255, 31, 73, 95),
+                                minHeight: 4,
+                              ),
+                          ),
+                        )
+                        : !isUltimosRegistros
+                            ? UltimosRegistrosContent(registers: registers)
+                            : AnimaisEncontradosContent(registers: registers);
+                  },
                 ),
-                SizedBox(height: 20),
-                ProfileSwitch(size: 600),
-                SizedBox(height: 20),
               ]
             )
           )
@@ -84,61 +357,49 @@ class _MyProfileState extends State<MyProfile> {
 }
 
 class UltimosRegistrosContent extends StatelessWidget {
+  final List<RegisterResponse> registers;
+
+  const UltimosRegistrosContent({super.key, required this.registers});
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        ListTile(
-          title: Text('Pinguim de Magalhães'),
-          subtitle: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Xangri-lá'),
-              Text('Enviado em 20/10/2020'),
-            ],
-          ),
-        ),
-        ListTile(
-          title: Text('Lobo Marinho'),
-          subtitle: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Imbé'),
-              Text('Enviado em 20/10/2020'),
-            ],
-          ),
-        ),
-      ],
+    final limitedRegisters = registers.take(10).toList();
+
+    return SizedBox(
+      height: 400,
+      child: ListView.builder(
+        padding: EdgeInsets.only(top: 0, bottom: 70),
+        physics: AlwaysScrollableScrollPhysics(),
+        shrinkWrap: true,
+        itemCount: limitedRegisters.length,
+        itemBuilder: (context, index) {
+          return RegisterItem(register: limitedRegisters[index]);
+        },
+      ),
     );
   }
 }
 
 class AnimaisEncontradosContent extends StatelessWidget {
+  final List<dynamic> registers;
+
+  const AnimaisEncontradosContent({super.key, required this.registers});
+
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        ListTile(
-          title: Text('Baleia Jubarte'),
-          subtitle: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Torres'),
-              Text('Enviado em 20/10/2020'),
-            ],
-          ),
+    return SizedBox(
+      height: 400,
+      child: GridView.builder(
+        padding: EdgeInsets.only(top: 0, bottom: 70, left: 1, right: 1),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 3,
+          crossAxisSpacing: 9,
+          mainAxisSpacing: 1,
         ),
-        ListTile(
-          title: Text('Golfinho'),
-          subtitle: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Tramandaí'),
-              Text('Enviado em 20/10/2020'),
-            ],
-          ),
-        ),
-      ],
+        itemCount: registers.length,
+        itemBuilder: (context, index) {
+          return BadgeItem(register: registers[index]);
+        },
+      ),
     );
   }
 }
