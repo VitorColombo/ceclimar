@@ -30,7 +30,8 @@ class _MyRegistersState extends State<MyRegisters> {
   }
 
   Future<void> fetchMockedRegisters() async { //todo remover mocks
-    await Future.delayed(const Duration(seconds: 1)); 
+    await Future.delayed(const Duration(milliseconds: 500)); 
+    if (!mounted) return;
     setState(() {
       registers = [
         RegisterResponse(
@@ -205,15 +206,26 @@ class _MyRegistersState extends State<MyRegisters> {
         child: Column(
           children: [
             PageHeader(text: "Meus registros", icon: const Icon(Icons.arrow_back), onTap: () => widget.updateIndex(0)),
-            Container(
-              height: MediaQuery.of(context).size.height - kToolbarHeight,
-              child: ListView.builder(
-                itemCount: registers.length,
-                itemBuilder: (context, index) {
-                  return RegisterItem(register: registers[index]);
-                },
-              ),
-            ),
+            isLoading
+                ? Container(
+                  padding: const EdgeInsets.only(top: 250),
+                  alignment: Alignment.center,
+                  child: const Center(
+                      child: CircularProgressIndicator()
+                    ),
+                )
+                : SizedBox(
+                    height: MediaQuery.of(context).size.height - kToolbarHeight,
+                    child: ListView.builder(
+                      padding: EdgeInsets.only(top: 0, bottom: 40),
+                      physics: AlwaysScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: registers.length,
+                      itemBuilder: (context, index) {
+                        return RegisterItem(register: registers[index]);
+                      },
+                    ),
+                  ),
           ],
         ),
       ),
