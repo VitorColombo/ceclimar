@@ -89,7 +89,7 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
               validator: (value) => _formController.nameError,
               onChanged: (_) => _updateBtnStatus(),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 16), 
             InputField(
               text: "Espécie",
               controller: _formController.speciesController,
