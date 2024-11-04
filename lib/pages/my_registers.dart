@@ -103,7 +103,7 @@ class _MyRegistersState extends State<MyRegisters> {
           ),
           animal: AnimalResponse(
             uid: '1',
-            popularName: 'Jacaré-do-papo-amarelo',
+            popularName: 'Golfinho',
             image: Image.asset('assets/images/logo.png'),
             badge: Image.asset('assets/images/logo.png'),
             species: 'Spheniscus magellanicus'
