@@ -91,7 +91,7 @@ class _MyRegistersState extends State<MyRegisters> {
           )
         ),
         RegisterResponse(
-          uid: '1',
+          uid: '4',
           date: '20/10/2020',
           city: 'Xangri-lá',
           state: true,
@@ -110,7 +110,7 @@ class _MyRegistersState extends State<MyRegisters> {
           )
         ),
         RegisterResponse(
-          uid: '2',
+          uid: '5',
           date: '25/10/2020',
           city: 'Xangri-lá',
           state: false,
@@ -128,7 +128,7 @@ class _MyRegistersState extends State<MyRegisters> {
           )
         ),
         RegisterResponse(
-          uid: '3',
+          uid: '6',
           date: '30/10/2020',
           city: 'Xangri-lá',
           state: true,
@@ -145,8 +145,8 @@ class _MyRegistersState extends State<MyRegisters> {
             species: 'Spheniscus magellanicus'
           )
         ),
-                RegisterResponse(
-          uid: '1',
+        RegisterResponse(
+          uid: '7',
           date: '20/10/2020',
           city: 'Xangri-lá',
           state: true,
@@ -165,7 +165,7 @@ class _MyRegistersState extends State<MyRegisters> {
           )
         ),
         RegisterResponse(
-          uid: '2',
+          uid: '8',
           date: '25/10/2020',
           city: 'Xangri-lá',
           state: false,
@@ -183,7 +183,7 @@ class _MyRegistersState extends State<MyRegisters> {
           )
         ),
         RegisterResponse(
-          uid: '3',
+          uid: '9',
           date: '30/10/2020',
           city: 'Xangri-lá',
           state: true,
@@ -201,7 +201,7 @@ class _MyRegistersState extends State<MyRegisters> {
           )
         ),
         RegisterResponse(
-          uid: '1',
+          uid: '10',
           date: '20/10/2020',
           city: 'Xangri-lá',
           state: true,
@@ -220,7 +220,7 @@ class _MyRegistersState extends State<MyRegisters> {
           )
         ),
         RegisterResponse(
-          uid: '2',
+          uid: '11',
           date: '25/10/2020',
           city: 'Xangri-lá',
           state: false,
@@ -238,7 +238,7 @@ class _MyRegistersState extends State<MyRegisters> {
           )
         ),
         RegisterResponse(
-          uid: '3',
+          uid: '12',
           date: '30/10/2020',
           city: 'Xangri-lá',
           state: true,
@@ -278,7 +278,7 @@ class _MyRegistersState extends State<MyRegisters> {
                 : SizedBox(
                     height: MediaQuery.of(context).size.height - kToolbarHeight,
                     child: ListView.builder(
-                      padding: EdgeInsets.only(top: 0, bottom: 40),
+                      padding: EdgeInsets.only(top: 0, bottom: 160),
                       physics: AlwaysScrollableScrollPhysics(),
                       shrinkWrap: true,
                       itemCount: registers.length,
