@@ -9,7 +9,7 @@ class RegisterResponse {
   final String date;
   final bool state;
   final String? beachSpot;
-  final String? sampleState;
+  final int? sampleState;
   final GeoPoint? location;
   final String? scientistReturn;
   final String? observation;

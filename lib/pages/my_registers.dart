@@ -48,6 +48,7 @@ class _MyRegistersState extends State<MyRegisters> {
             'assets/images/logo.png',
             fit: BoxFit.cover
           ),
+          sampleState: 4,
           animal: AnimalResponse(
             uid: '1',
             popularName: 'Pinguim-de-magalhaes',
@@ -67,6 +68,7 @@ class _MyRegistersState extends State<MyRegisters> {
             'assets/images/logo.png',
             fit: BoxFit.cover
           ),
+          sampleState: 1,
           animal: AnimalResponse(
             uid: '1',
             popularName: 'Foca',
@@ -83,13 +85,14 @@ class _MyRegistersState extends State<MyRegisters> {
           location: const GeoPoint(-30.0345, -50.6452),
           status: "Enviado",
           registerImage: Image.asset(
-            'assets/images/logo.png',
+            'assets/images/pinguim.png',
             fit: BoxFit.cover
           ),
+          sampleState: 3,
           animal: AnimalResponse(
             uid: '1',
             popularName: 'Pinguim',
-            image: Image.asset('assets/images/logo.png'),
+            image: Image.asset('assets/images/pinguim.png'),
             badge: Image.asset('assets/images/logo.png'),
             species: 'Spheniscus magellanicus'
           )
@@ -106,10 +109,11 @@ class _MyRegistersState extends State<MyRegisters> {
             'assets/images/logo.png',
             fit: BoxFit.cover
           ),
+          sampleState: 2,
           animal: AnimalResponse(
             uid: '1',
             popularName: 'Golfinho',
-            image: Image.asset('assets/images/logo.png'),
+            image: Image.asset('assets/images/logo.png'), //todo imagem de fauna local
             badge: Image.asset('assets/images/logo.png'),
             species: 'Spheniscus magellanicus'
           )
@@ -125,6 +129,7 @@ class _MyRegistersState extends State<MyRegisters> {
             'assets/images/logo.png',
             fit: BoxFit.cover
           ),
+          sampleState: 5,
           animal: AnimalResponse(
             uid: '1',
             popularName: 'Coruja-buraqueira',
@@ -219,13 +224,13 @@ class _MyRegistersState extends State<MyRegisters> {
           location: const GeoPoint(-30.0345, -50.6452),
           status: "Enviado",
           registerImage: Image.asset(
-            'assets/images/logo.png',
+            'assets/images/tartaruga.png',
             fit: BoxFit.cover
           ),
           animal: AnimalResponse(
             uid: '1',
             popularName: 'Tartaruga verde',
-            image: Image.asset('assets/images/logo.png'),
+            image: Image.asset('assets/images/tartaruga.png'),
             badge: Image.asset('assets/images/logo.png'),
             species: 'Spheniscus magellanicus'
           )
@@ -257,14 +262,14 @@ class _MyRegistersState extends State<MyRegisters> {
           location: const GeoPoint(-30.0345, -50.6452),
           status: "Validado",
           registerImage: Image.asset(
-            'assets/images/logo.png',
+            'assets/images/tartaruga.png',
             fit: BoxFit.cover
           ),
           animal: AnimalResponse(
             uid: '1',
             popularName: 'Lobo-marinho',
-            image: Image.asset('assets/images/logo.png'),
-            badge: Image.asset('assets/images/logo.png'),
+            image: Image.asset('assets/images/tartaruga.png'),
+            badge: Image.asset('assets/images/loboMarinhoBadge.png'),
             species: 'Spheniscus magellanicus'
           )
         ),

@@ -28,17 +28,21 @@ class RegisterItem extends StatelessWidget {
                 side: const BorderSide(color: Colors.transparent),
               ),
               child: ListTile(
-                leading: SizedBox(
-                  width: 64,
-                  height: 64,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: Align(
-                      alignment: Alignment.center,
-                      child: register.registerImage
-                      ),
+              leading: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  color: Colors.grey[200],
+                ),
+                width: 70,
+                height: 60,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: Image(
+                    image: register.registerImage.image,
+                    fit: BoxFit.cover,
                   ),
                 ),
+              ),
                 title: Row(
                   children: [
                     Text(
