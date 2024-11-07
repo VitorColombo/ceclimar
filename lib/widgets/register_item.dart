@@ -39,9 +39,26 @@ class RegisterItem extends StatelessWidget {
                       ),
                   ),
                 ),
-                title: Text(
-                  register.animal.popularName,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                title: Row(
+                  children: [
+                    Text(
+                      register.animal.popularName,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(width: 8),
+                    Baseline(
+                      baseline: 14,
+                      baselineType: TextBaseline.alphabetic,
+                      child: Container(
+                        width: 10,
+                        height: 10,
+                        decoration: BoxDecoration(
+                          color: register.status == "Validado" ? Color.fromARGB(255, 178, 227, 170) : Colors.grey[200],
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 subtitle: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

@@ -144,7 +144,7 @@ class RegisterDetailPage extends StatelessWidget {
                           ],
                         ),
                         const SizedBox(height: 8),
-                        const StatusLabel(status: 'Enviado'),
+                        StatusLabel(status: '${register?.status}'),
                         const SizedBox(height: 8),
                         Text(
                           'Nome Popular: ${register!.animal.popularName}',

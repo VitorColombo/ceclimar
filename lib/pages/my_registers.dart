@@ -43,6 +43,7 @@ class _MyRegistersState extends State<MyRegisters> {
           state: true,
           authorName: 'John Doe',
           location: const GeoPoint(-30.0345, -50.6452),
+          status: "Validado",
           registerImage: Image.asset(
             'assets/images/logo.png',
             fit: BoxFit.cover
@@ -61,6 +62,7 @@ class _MyRegistersState extends State<MyRegisters> {
           city: 'Xangri-lá',
           state: false,
           location: const GeoPoint(-30.0345, -50.6452),
+          status: "Validado",
           registerImage: Image.asset(
             'assets/images/logo.png',
             fit: BoxFit.cover
@@ -79,6 +81,7 @@ class _MyRegistersState extends State<MyRegisters> {
           city: 'Xangri-lá',
           state: true,
           location: const GeoPoint(-30.0345, -50.6452),
+          status: "Enviado",
           registerImage: Image.asset(
             'assets/images/logo.png',
             fit: BoxFit.cover
@@ -98,6 +101,7 @@ class _MyRegistersState extends State<MyRegisters> {
           state: true,
           authorName: 'John Doe',
           location: const GeoPoint(-30.0345, -50.6452),
+          status: "Validado",
           registerImage: Image.asset(
             'assets/images/logo.png',
             fit: BoxFit.cover
@@ -116,6 +120,7 @@ class _MyRegistersState extends State<MyRegisters> {
           city: 'Xangri-lá',
           state: false,
           location: const GeoPoint(-30.0345, -50.6452),
+          status: "Validado",
           registerImage: Image.asset(
             'assets/images/logo.png',
             fit: BoxFit.cover
@@ -134,6 +139,7 @@ class _MyRegistersState extends State<MyRegisters> {
           city: 'Xangri-lá',
           state: true,
           location: const GeoPoint(-30.0345, -50.6452),
+          status: "Enviado",
           registerImage: Image.asset(
             'assets/images/logo.png',
             fit: BoxFit.cover
@@ -153,6 +159,7 @@ class _MyRegistersState extends State<MyRegisters> {
           state: true,
           authorName: 'John Doe',
           location: const GeoPoint(-30.0345, -50.6452),
+          status: "Validado",
           registerImage: Image.asset(
             'assets/images/logo.png',
             fit: BoxFit.cover
@@ -171,6 +178,7 @@ class _MyRegistersState extends State<MyRegisters> {
           city: 'Xangri-lá',
           state: false,
           location: const GeoPoint(-30.0345, -50.6452),
+          status: "Enviado",
           registerImage: Image.asset(
             'assets/images/logo.png',
             fit: BoxFit.cover
@@ -189,6 +197,7 @@ class _MyRegistersState extends State<MyRegisters> {
           city: 'Xangri-lá',
           state: true,
           location: const GeoPoint(-30.0345, -50.6452),
+          status: "Validado",
           registerImage: Image.asset(
             'assets/images/logo.png',
             fit: BoxFit.cover
@@ -208,6 +217,7 @@ class _MyRegistersState extends State<MyRegisters> {
           state: true,
           authorName: 'John Doe',
           location: const GeoPoint(-30.0345, -50.6452),
+          status: "Enviado",
           registerImage: Image.asset(
             'assets/images/logo.png',
             fit: BoxFit.cover
@@ -226,6 +236,7 @@ class _MyRegistersState extends State<MyRegisters> {
           city: 'Xangri-lá',
           state: false,
           location: const GeoPoint(-30.0345, -50.6452),
+          status: "Validado",
           registerImage: Image.asset(
             'assets/images/logo.png',
             fit: BoxFit.cover
@@ -244,6 +255,7 @@ class _MyRegistersState extends State<MyRegisters> {
           city: 'Xangri-lá',
           state: true,
           location: const GeoPoint(-30.0345, -50.6452),
+          status: "Validado",
           registerImage: Image.asset(
             'assets/images/logo.png',
             fit: BoxFit.cover
@@ -303,7 +315,7 @@ class _MyRegistersState extends State<MyRegisters> {
                 : SizedBox(
                     height: MediaQuery.of(context).size.height - kToolbarHeight,
                     child: ListView.builder(
-                      padding: EdgeInsets.only(top: 0, bottom: 160),
+                      padding: EdgeInsets.only(top: 0, bottom: 180),
                       physics: AlwaysScrollableScrollPhysics(),
                       shrinkWrap: true,
                       itemCount: registers.length,
