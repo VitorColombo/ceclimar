@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tcc_ceclimar/models/animal_response.dart';
+import 'package:tcc_ceclimar/widgets/register_status_label.dart';
 import '../models/register_response.dart';
 import '../widgets/page_header.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -267,6 +268,30 @@ class _MyRegistersState extends State<MyRegisters> {
         child: Column(
           children: [
             PageHeader(text: "Meus registros", icon: const Icon(Icons.arrow_back), onTap: () => widget.updateIndex(0)),
+            Padding(
+              padding: const EdgeInsets.only(top: 0, left: 20.0, bottom: 10),
+              child: Row(
+                children: [
+                  Text("Filtro", style: TextStyle(color: Colors.grey[500])),
+                  SizedBox(width: 10),
+                  InkWell(
+                    onTap: () => _filterRegisters("Validado"),
+                    child: 
+                      StatusLabel(
+                        status: "Validado"
+                      )
+                  ),
+                  SizedBox(width: 10),
+                  InkWell(
+                    onTap: () => _filterRegisters("Enviado"),
+                    child: 
+                      StatusLabel(
+                        status: "Enviado"
+                      )
+                  ),
+                ],
+              ),
+            ),
             isLoading
                 ? Container(
                   padding: const EdgeInsets.only(top: 250),
@@ -291,5 +316,9 @@ class _MyRegistersState extends State<MyRegisters> {
         ),
       ),
     );
+  }
+  
+  _filterRegisters(String status) {
+    print(status);
   }
 }
