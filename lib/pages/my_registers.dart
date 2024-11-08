@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tcc_ceclimar/models/animal_response.dart';
+import 'package:tcc_ceclimar/widgets/register_status_label.dart';
 import '../models/register_response.dart';
 import '../widgets/page_header.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -23,14 +24,17 @@ class MyRegisters extends StatefulWidget {
 class _MyRegistersState extends State<MyRegisters> {
   List<RegisterResponse> registers = [];
   bool isLoading = true;
+  bool isFiltered = false;
+  String selectedFilter = "Todos";
+  Color selectedFilterColor = Colors.transparent;
 
   @override
   void initState() {
     super.initState();
-    fetchMockedRegisters();
+    fetchMockedRegisters(selectedFilter);
   }
 
-  Future<void> fetchMockedRegisters() async { //todo remover mocks
+  Future<void> fetchMockedRegisters(String status) async { //todo remover mocks
     await Future.delayed(const Duration(milliseconds: 500)); 
     if (!mounted) return;
     setState(() {
@@ -42,10 +46,12 @@ class _MyRegistersState extends State<MyRegisters> {
           state: true,
           authorName: 'John Doe',
           location: const GeoPoint(-30.0345, -50.6452),
+          status: "Validado",
           registerImage: Image.asset(
             'assets/images/logo.png',
             fit: BoxFit.cover
           ),
+          sampleState: 4,
           animal: AnimalResponse(
             uid: '1',
             popularName: 'Pinguim-de-magalhaes',
@@ -60,10 +66,12 @@ class _MyRegistersState extends State<MyRegisters> {
           city: 'Xangri-lá',
           state: false,
           location: const GeoPoint(-30.0345, -50.6452),
+          status: "Validado",
           registerImage: Image.asset(
             'assets/images/logo.png',
             fit: BoxFit.cover
           ),
+          sampleState: 1,
           animal: AnimalResponse(
             uid: '1',
             popularName: 'Foca',
@@ -78,47 +86,53 @@ class _MyRegistersState extends State<MyRegisters> {
           city: 'Xangri-lá',
           state: true,
           location: const GeoPoint(-30.0345, -50.6452),
+          status: "Enviado",
           registerImage: Image.asset(
-            'assets/images/logo.png',
+            'assets/images/pinguim.png',
             fit: BoxFit.cover
           ),
+          sampleState: 3,
           animal: AnimalResponse(
             uid: '1',
             popularName: 'Pinguim',
-            image: Image.asset('assets/images/logo.png'),
+            image: Image.asset('assets/images/pinguim.png'),
             badge: Image.asset('assets/images/logo.png'),
             species: 'Spheniscus magellanicus'
           )
         ),
         RegisterResponse(
-          uid: '1',
+          uid: '4',
           date: '20/10/2020',
           city: 'Xangri-lá',
           state: true,
           authorName: 'John Doe',
           location: const GeoPoint(-30.0345, -50.6452),
+          status: "Validado",
           registerImage: Image.asset(
             'assets/images/logo.png',
             fit: BoxFit.cover
           ),
+          sampleState: 2,
           animal: AnimalResponse(
             uid: '1',
-            popularName: 'Jacaré-do-papo-amarelo',
-            image: Image.asset('assets/images/logo.png'),
+            popularName: 'Golfinho',
+            image: Image.asset('assets/images/logo.png'), //todo imagem de fauna local
             badge: Image.asset('assets/images/logo.png'),
             species: 'Spheniscus magellanicus'
           )
         ),
         RegisterResponse(
-          uid: '2',
+          uid: '5',
           date: '25/10/2020',
           city: 'Xangri-lá',
           state: false,
           location: const GeoPoint(-30.0345, -50.6452),
+          status: "Validado",
           registerImage: Image.asset(
             'assets/images/logo.png',
             fit: BoxFit.cover
           ),
+          sampleState: 5,
           animal: AnimalResponse(
             uid: '1',
             popularName: 'Coruja-buraqueira',
@@ -128,11 +142,12 @@ class _MyRegistersState extends State<MyRegisters> {
           )
         ),
         RegisterResponse(
-          uid: '3',
+          uid: '6',
           date: '30/10/2020',
           city: 'Xangri-lá',
           state: true,
           location: const GeoPoint(-30.0345, -50.6452),
+          status: "Enviado",
           registerImage: Image.asset(
             'assets/images/logo.png',
             fit: BoxFit.cover
@@ -145,13 +160,14 @@ class _MyRegistersState extends State<MyRegisters> {
             species: 'Spheniscus magellanicus'
           )
         ),
-                RegisterResponse(
-          uid: '1',
+        RegisterResponse(
+          uid: '7',
           date: '20/10/2020',
           city: 'Xangri-lá',
           state: true,
           authorName: 'John Doe',
           location: const GeoPoint(-30.0345, -50.6452),
+          status: "Validado",
           registerImage: Image.asset(
             'assets/images/logo.png',
             fit: BoxFit.cover
@@ -165,11 +181,12 @@ class _MyRegistersState extends State<MyRegisters> {
           )
         ),
         RegisterResponse(
-          uid: '2',
+          uid: '8',
           date: '25/10/2020',
           city: 'Xangri-lá',
           state: false,
           location: const GeoPoint(-30.0345, -50.6452),
+          status: "Enviado",
           registerImage: Image.asset(
             'assets/images/logo.png',
             fit: BoxFit.cover
@@ -183,11 +200,12 @@ class _MyRegistersState extends State<MyRegisters> {
           )
         ),
         RegisterResponse(
-          uid: '3',
+          uid: '9',
           date: '30/10/2020',
           city: 'Xangri-lá',
           state: true,
           location: const GeoPoint(-30.0345, -50.6452),
+          status: "Validado",
           registerImage: Image.asset(
             'assets/images/logo.png',
             fit: BoxFit.cover
@@ -201,30 +219,32 @@ class _MyRegistersState extends State<MyRegisters> {
           )
         ),
         RegisterResponse(
-          uid: '1',
+          uid: '10',
           date: '20/10/2020',
           city: 'Xangri-lá',
           state: true,
           authorName: 'John Doe',
           location: const GeoPoint(-30.0345, -50.6452),
+          status: "Enviado",
           registerImage: Image.asset(
-            'assets/images/logo.png',
+            'assets/images/tartaruga.png',
             fit: BoxFit.cover
           ),
           animal: AnimalResponse(
             uid: '1',
             popularName: 'Tartaruga verde',
-            image: Image.asset('assets/images/logo.png'),
+            image: Image.asset('assets/images/tartaruga.png'),
             badge: Image.asset('assets/images/logo.png'),
             species: 'Spheniscus magellanicus'
           )
         ),
         RegisterResponse(
-          uid: '2',
+          uid: '11',
           date: '25/10/2020',
           city: 'Xangri-lá',
           state: false,
           location: const GeoPoint(-30.0345, -50.6452),
+          status: "Validado",
           registerImage: Image.asset(
             'assets/images/logo.png',
             fit: BoxFit.cover
@@ -238,25 +258,35 @@ class _MyRegistersState extends State<MyRegisters> {
           )
         ),
         RegisterResponse(
-          uid: '3',
+          uid: '12',
           date: '30/10/2020',
           city: 'Xangri-lá',
           state: true,
           location: const GeoPoint(-30.0345, -50.6452),
+          status: "Validado",
           registerImage: Image.asset(
-            'assets/images/logo.png',
+            'assets/images/tartaruga.png',
             fit: BoxFit.cover
           ),
           animal: AnimalResponse(
             uid: '1',
             popularName: 'Lobo-marinho',
-            image: Image.asset('assets/images/logo.png'),
-            badge: Image.asset('assets/images/logo.png'),
+            image: Image.asset('assets/images/tartaruga.png'),
+            badge: Image.asset('assets/images/loboMarinhoBadge.png'),
             species: 'Spheniscus magellanicus'
           )
         ),
       ];
       isLoading = false;
+      if(status == selectedFilter){
+        selectedFilter = "Todos";
+        return;
+      }
+      if(status == "Todos"){ 
+        return;
+      }
+      registers = registers.where((element) => element.status == status).toList();
+      selectedFilter = status;
     });
   }
 
@@ -267,6 +297,38 @@ class _MyRegistersState extends State<MyRegisters> {
         child: Column(
           children: [
             PageHeader(text: "Meus registros", icon: const Icon(Icons.arrow_back), onTap: () => widget.updateIndex(0)),
+            Padding(
+              padding: const EdgeInsets.only(top: 0, left: 20.0, bottom: 10),
+              child: Row(
+                children: [
+                  Text("Filtro", style: TextStyle(color: Colors.grey[500])),
+                  SizedBox(width: 10),
+                  InkWell(
+                    onTap: () => {
+                      fetchMockedRegisters("Validado")
+                    },
+                    child: StatusLabel(
+                      status: "Validado",
+                      borderColor: selectedFilter == "Validado"
+                          ? Colors.blue
+                          : Colors.transparent,
+                    ),
+                  ),
+                  SizedBox(width: 10),
+                  InkWell(
+                    onTap: () => {
+                      fetchMockedRegisters("Enviado")
+                    },
+                    child: StatusLabel(
+                      status: "Enviado",
+                      borderColor: selectedFilter == "Enviado"
+                          ? Colors.blue
+                          : Colors.transparent,
+                    ),
+                  ),
+                ],
+              ),
+            ),
             isLoading
                 ? Container(
                   padding: const EdgeInsets.only(top: 250),
@@ -278,7 +340,7 @@ class _MyRegistersState extends State<MyRegisters> {
                 : SizedBox(
                     height: MediaQuery.of(context).size.height - kToolbarHeight,
                     child: ListView.builder(
-                      padding: EdgeInsets.only(top: 0, bottom: 40),
+                      padding: EdgeInsets.only(top: 0, bottom: 180),
                       physics: AlwaysScrollableScrollPhysics(),
                       shrinkWrap: true,
                       itemCount: registers.length,

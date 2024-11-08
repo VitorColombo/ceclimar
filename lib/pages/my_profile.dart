@@ -53,6 +53,7 @@ class _MyProfileState extends State<MyProfile> {
           state: true,
           authorName: 'John Doe',
           location: const GeoPoint(-30.0345, -50.6452),
+          status: "Validado",
           registerImage: Image.asset(
             'assets/images/logo.png',
             fit: BoxFit.cover
@@ -71,6 +72,7 @@ class _MyProfileState extends State<MyProfile> {
           city: 'Xangri-lá',
           state: false,
           location: const GeoPoint(-30.0345, -50.6452),
+          status: "Validado",
           registerImage: Image.asset(
             'assets/images/logo.png',
             fit: BoxFit.cover
@@ -89,6 +91,7 @@ class _MyProfileState extends State<MyProfile> {
           city: 'Xangri-lá',
           state: true,
           location: const GeoPoint(-30.0345, -50.6452),
+          status: "Enviado",
           registerImage: Image.asset(
             'assets/images/logo.png',
             fit: BoxFit.cover
@@ -102,30 +105,32 @@ class _MyProfileState extends State<MyProfile> {
           )
         ),
         RegisterResponse(
-          uid: '1',
+          uid: '4',
           date: '20/10/2020',
           city: 'Xangri-lá',
           state: true,
           authorName: 'John Doe',
           location: const GeoPoint(-30.0345, -50.6452),
+          status: "Validado",
           registerImage: Image.asset(
             'assets/images/logo.png',
             fit: BoxFit.cover
           ),
           animal: AnimalResponse(
             uid: '1',
-            popularName: 'Jacaré-do-papo-amarelo',
+            popularName: 'Golfinho',
             image: Image.asset('assets/images/logo.png'),
             badge: Image.asset('assets/images/logo.png'),
             species: 'Spheniscus magellanicus'
           )
         ),
         RegisterResponse(
-          uid: '2',
+          uid: '5',
           date: '25/10/2020',
           city: 'Xangri-lá',
           state: false,
           location: const GeoPoint(-30.0345, -50.6452),
+          status: "Validado",
           registerImage: Image.asset(
             'assets/images/logo.png',
             fit: BoxFit.cover
@@ -139,11 +144,12 @@ class _MyProfileState extends State<MyProfile> {
           )
         ),
         RegisterResponse(
-          uid: '3',
+          uid: '6',
           date: '30/10/2020',
           city: 'Xangri-lá',
           state: true,
           location: const GeoPoint(-30.0345, -50.6452),
+          status: "Enviado",
           registerImage: Image.asset(
             'assets/images/logo.png',
             fit: BoxFit.cover
@@ -156,13 +162,14 @@ class _MyProfileState extends State<MyProfile> {
             species: 'Spheniscus magellanicus'
           )
         ),
-                RegisterResponse(
-          uid: '1',
+        RegisterResponse(
+          uid: '7',
           date: '20/10/2020',
           city: 'Xangri-lá',
           state: true,
           authorName: 'John Doe',
           location: const GeoPoint(-30.0345, -50.6452),
+          status: "Validado",
           registerImage: Image.asset(
             'assets/images/logo.png',
             fit: BoxFit.cover
@@ -176,11 +183,12 @@ class _MyProfileState extends State<MyProfile> {
           )
         ),
         RegisterResponse(
-          uid: '2',
+          uid: '8',
           date: '25/10/2020',
           city: 'Xangri-lá',
           state: false,
           location: const GeoPoint(-30.0345, -50.6452),
+          status: "Enviado",
           registerImage: Image.asset(
             'assets/images/logo.png',
             fit: BoxFit.cover
@@ -194,11 +202,12 @@ class _MyProfileState extends State<MyProfile> {
           )
         ),
         RegisterResponse(
-          uid: '3',
+          uid: '9',
           date: '30/10/2020',
           city: 'Xangri-lá',
           state: true,
           location: const GeoPoint(-30.0345, -50.6452),
+          status: "Validado",
           registerImage: Image.asset(
             'assets/images/logo.png',
             fit: BoxFit.cover
@@ -212,12 +221,13 @@ class _MyProfileState extends State<MyProfile> {
           )
         ),
         RegisterResponse(
-          uid: '1',
+          uid: '10',
           date: '20/10/2020',
           city: 'Xangri-lá',
           state: true,
           authorName: 'John Doe',
           location: const GeoPoint(-30.0345, -50.6452),
+          status: "Enviado",
           registerImage: Image.asset(
             'assets/images/logo.png',
             fit: BoxFit.cover
@@ -231,11 +241,12 @@ class _MyProfileState extends State<MyProfile> {
           )
         ),
         RegisterResponse(
-          uid: '2',
+          uid: '11',
           date: '25/10/2020',
           city: 'Xangri-lá',
           state: false,
           location: const GeoPoint(-30.0345, -50.6452),
+          status: "Validado",
           registerImage: Image.asset(
             'assets/images/logo.png',
             fit: BoxFit.cover
@@ -249,11 +260,12 @@ class _MyProfileState extends State<MyProfile> {
           )
         ),
         RegisterResponse(
-          uid: '3',
+          uid: '12',
           date: '30/10/2020',
           city: 'Xangri-lá',
           state: true,
           location: const GeoPoint(-30.0345, -50.6452),
+          status: "Validado",
           registerImage: Image.asset(
             'assets/images/logo.png',
             fit: BoxFit.cover

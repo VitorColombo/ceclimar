@@ -9,12 +9,13 @@ class RegisterResponse {
   final String date;
   final bool state;
   final String? beachSpot;
-  final String? sampleState;
+  final int? sampleState;
   final GeoPoint? location;
   final String? scientistReturn;
   final String? observation;
   final Image registerImage;
   final AnimalResponse animal;
+  final String? status;
 
   RegisterResponse({
     required this.uid,
@@ -23,6 +24,7 @@ class RegisterResponse {
     required this.state,
     required this.registerImage,
     required this.animal,
+    required this.status,
     this.authorName,
     this.beachSpot,
     this.sampleState,

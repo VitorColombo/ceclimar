@@ -58,7 +58,15 @@ class _SimpleRegisterFormState extends State<SimpleRegisterForm> {
         key: _formKey,
         child: Column(
           children: [
-            const ImageSelector(),
+            Stack(
+              children: [
+                const ImageSelector(),
+                Positioned(
+                  top: 82,
+                  child: const ImageSelector(width: 50, height: 50)
+                ),
+              ],
+            ),
             GestureDetector(
               onTap: () {
                 _showImageObservationBottomSheet();

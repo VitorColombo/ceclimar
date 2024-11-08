@@ -40,6 +40,10 @@ flutter:
     - assets/images/
     - assets/images/background.jpg
     - assets/images/logo.png
+    - assets/images/tartaruga.png
+    - assets/images/loboMarinhoBadge.png
+    - assets/images/gaivotaBadge.png
+    - assets/images/pinguim.png
 
   fonts:
     - family: Inter

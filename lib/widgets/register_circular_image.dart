@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import '../pages/image_screen.dart';
+import 'image_screen.dart';
 
 class RegisterCircularImageWidget extends StatefulWidget {
   final File? imageProvider;

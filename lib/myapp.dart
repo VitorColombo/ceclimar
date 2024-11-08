@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tcc_ceclimar/models/register_response.dart';
 import 'package:tcc_ceclimar/pages/about_us.dart';
 import 'package:tcc_ceclimar/pages/base_page.dart';
 import 'package:tcc_ceclimar/pages/evaluate_register.dart';
@@ -10,6 +11,7 @@ import 'package:tcc_ceclimar/pages/my_registers.dart';
 import 'package:tcc_ceclimar/pages/new_simple_register.dart';
 import 'package:tcc_ceclimar/pages/new_technical_register.dart';
 import 'package:tcc_ceclimar/pages/register_pannel.dart';
+import 'package:tcc_ceclimar/pages/register_view.dart';
 import 'package:tcc_ceclimar/pages/splashscreen.dart';
 import 'package:tcc_ceclimar/pages/sign_user.dart';
 import 'package:tcc_ceclimar/pages/login.dart';
@@ -70,6 +72,9 @@ class MyApp extends StatelessWidget {
         BasePage.routeName: (context) => const BasePage(),
         NewTechnicalRegister.routeName: (context) => const NewTechnicalRegister(),
         AboutUs.routeName:(context) => const AboutUs(),
+        RegisterDetailPage.routeName:(context) => RegisterDetailPage(
+                register: ModalRoute.of(context)!.settings.arguments as RegisterResponse,
+              ),
       },
     );
   }
