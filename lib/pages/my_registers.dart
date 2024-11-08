@@ -24,14 +24,17 @@ class MyRegisters extends StatefulWidget {
 class _MyRegistersState extends State<MyRegisters> {
   List<RegisterResponse> registers = [];
   bool isLoading = true;
+  bool isFiltered = false;
+  String selectedFilter = "Todos";
+  Color selectedFilterColor = Colors.transparent;
 
   @override
   void initState() {
     super.initState();
-    fetchMockedRegisters();
+    fetchMockedRegisters(selectedFilter);
   }
 
-  Future<void> fetchMockedRegisters() async { //todo remover mocks
+  Future<void> fetchMockedRegisters(String status) async { //todo remover mocks
     await Future.delayed(const Duration(milliseconds: 500)); 
     if (!mounted) return;
     setState(() {
@@ -275,6 +278,15 @@ class _MyRegistersState extends State<MyRegisters> {
         ),
       ];
       isLoading = false;
+      if(status == selectedFilter){
+        selectedFilter = "Todos";
+        return;
+      }
+      if(status == "Todos"){ 
+        return;
+      }
+      registers = registers.where((element) => element.status == status).toList();
+      selectedFilter = status;
     });
   }
 
@@ -292,19 +304,27 @@ class _MyRegistersState extends State<MyRegisters> {
                   Text("Filtro", style: TextStyle(color: Colors.grey[500])),
                   SizedBox(width: 10),
                   InkWell(
-                    onTap: () => _filterRegisters("Validado"),
-                    child: 
-                      StatusLabel(
-                        status: "Validado"
-                      )
+                    onTap: () => {
+                      fetchMockedRegisters("Validado")
+                    },
+                    child: StatusLabel(
+                      status: "Validado",
+                      borderColor: selectedFilter == "Validado"
+                          ? Colors.blue
+                          : Colors.transparent,
+                    ),
                   ),
                   SizedBox(width: 10),
                   InkWell(
-                    onTap: () => _filterRegisters("Enviado"),
-                    child: 
-                      StatusLabel(
-                        status: "Enviado"
-                      )
+                    onTap: () => {
+                      fetchMockedRegisters("Enviado")
+                    },
+                    child: StatusLabel(
+                      status: "Enviado",
+                      borderColor: selectedFilter == "Enviado"
+                          ? Colors.blue
+                          : Colors.transparent,
+                    ),
                   ),
                 ],
               ),
@@ -333,9 +353,5 @@ class _MyRegistersState extends State<MyRegisters> {
         ),
       ),
     );
-  }
-  
-  _filterRegisters(String status) {
-    print(status);
   }
 }
