@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tcc_ceclimar/models/simple_register_request.dart';
 import 'package:tcc_ceclimar/widgets/custom_switch.dart';
 import 'package:tcc_ceclimar/widgets/input_field.dart';
 import 'package:tcc_ceclimar/widgets/send_btn.dart';
@@ -60,10 +61,10 @@ class _SimpleRegisterFormState extends State<SimpleRegisterForm> {
           children: [
             Stack(
               children: [
-                const ImageSelector(),
+                ImageSelector(onImageSelected: _formController.setImage),
                 Positioned(
                   top: 82,
-                  child: const ImageSelector(width: 50, height: 50)
+                  child: ImageSelector(width: 50, height: 50, onImageSelected: _formController.setImage2)
                 ),
               ],
             ),
@@ -131,7 +132,7 @@ class _SimpleRegisterFormState extends State<SimpleRegisterForm> {
                 width: double.infinity,
                 height: 56,
                 child: SendBtn(
-                    onSend: () => _formController.sendRegister(context),
+                    onSend: () => _formController.sendSimpleRegister(context),
                     onValidate: _validateForm,
                     text: "Enviar Registro",
                 ),

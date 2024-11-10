@@ -67,10 +67,10 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
           children: [
             Stack(
               children: [
-                const ImageSelector(),
+                ImageSelector(onImageSelected: _formController.setImage),
                 Positioned(
                   top: 82,
-                  child: const ImageSelector(width: 50, height: 50)
+                  child: ImageSelector(width: 50, height: 50, onImageSelected: _formController.setImage2)
                 ),
               ],
             ),
@@ -212,7 +212,7 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
                 width: double.infinity,
                 height: 56,
                 child: SendBtn(
-                    onSend: () => _formController.sendRegister(context),
+                    onSend: () => _formController.sendTechnicalRegister(context),
                     onValidate: _validateForm,
                     text: "Enviar Registro",
                 ),
