@@ -14,8 +14,8 @@ class TechnicalRegisterRequest {
   final String? gender;
   final String latitude;
   final String longitude;
-  final Uint8List image;
-  final Uint8List? image2;
+  final String? image;
+  final String? image2;
 
   TechnicalRegisterRequest({
     required this.name,
@@ -31,7 +31,7 @@ class TechnicalRegisterRequest {
     required this.gender,
     required this.latitude,
     required this.longitude,
-    required this.image,
+    this.image,
     this.image2,
   });
 

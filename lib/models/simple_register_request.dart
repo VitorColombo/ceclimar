@@ -4,15 +4,15 @@ class SimpleRegisterRequest {
   final String name;
   final String? hour;
   final bool witnessed;
-  final Uint8List image;
-  final Uint8List? image2;
+  final String? image;
+  final String? image2;
   final String latitude;
   final String longitude;
 
   SimpleRegisterRequest({
     required this.name,
     required this.witnessed,
-    required this.image,
+    this.image,
     required this.latitude,
     required this.longitude,
     this.hour,

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:tcc_ceclimar/widgets/custom_switch.dart';
 import 'package:tcc_ceclimar/widgets/input_field.dart';
 import 'package:tcc_ceclimar/widgets/search_input_field.dart';
@@ -55,6 +57,78 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
   void _updateBtnStatus() {
     setState(() {
       isBtnEnabled = _formController.isBtnEnabledTechnical();
+    });
+  }
+
+  Future<bool> _handleLocationPermission() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text(
+              'Por favor, habilite o serviço de localização para que possamos obter as coordenadas do animal'
+              )
+            )
+          );
+      return false;
+    }
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              backgroundColor: Colors.red,
+              content: Text('As permissões de localização foram negadas',
+                style: TextStyle(color: Colors.white),
+              )
+            )
+          );
+        return false;
+      }
+    }
+    if (permission == LocationPermission.deniedForever) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          backgroundColor: Colors.red,
+          content: Text(
+              'As permissões de localização foram negadas, para enviar o registro é necessário habilitar a localização nas configurações do dispositivo',
+              style: TextStyle(color: Colors.white),
+              )
+            )
+          );
+      return false;
+    }
+    return true;
+  }
+
+  Future<void> _getCurrentPosition() async {
+    final hasPermission = await _handleLocationPermission();
+
+    if (!hasPermission){
+      return;
+    }
+    await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
+        .then((Position position) {
+      setState(() => _formController.currentPosition = position);
+      _getAddressFromLatLng(_formController.currentPosition!);
+    }).catchError((e) {
+      debugPrint(e);
+    });
+  }
+
+  Future<void> _getAddressFromLatLng(Position position) async {
+    await placemarkFromCoordinates(
+            position.latitude, position.longitude)
+        .then((List<Placemark> placemarks) {
+      Placemark place = placemarks[0];
+      setState(() {
+        _formController.currentAddress =
+            '${place.street}, ${place.subLocality}, ${place.subAdministrativeArea}, ${place.postalCode}';
+      });
+    }).catchError((e) {
+      debugPrint(e);
     });
   }
 
@@ -212,7 +286,7 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
                 width: double.infinity,
                 height: 56,
                 child: SendBtn(
-                    onSend: () => _formController.sendTechnicalRegister(context),
+                    onSend: () => _formController.sendTechnicalRegister(context, _getCurrentPosition),
                     onValidate: _validateForm,
                     text: "Enviar Registro",
                 ),

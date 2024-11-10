@@ -1,6 +1,9 @@
+import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:tcc_ceclimar/models/simple_register_request.dart';
 import 'package:tcc_ceclimar/models/technical_register_request.dart';
@@ -18,6 +21,8 @@ class NewRegisterFormController {
   final TextEditingController classController = TextEditingController();
   File? _image;
   File? _image2;
+  String? currentAddress;
+  Position? currentPosition;
   final String newRegisterEndpoint = '';
   //todo as validacoes dos controllers do registro tecnico devem ser feitas com base nas regras da biologia presentes no back, se tornarao campos com preenchimento e pesquisa
   
@@ -31,6 +36,8 @@ class NewRegisterFormController {
   String? genderError;
   String? orderError;
   String? classError;
+  String? imageError;
+  String? image2Error;
   bool isSwitchOn = false;
 
   List<SimpleRegisterRequest> _simpleMockData = [];
@@ -50,7 +57,9 @@ class NewRegisterFormController {
     nameController.text = nameController.text.trim();
     nameError = validateName(nameController.text);
     hourError = validateHour(hourController.text, isSwitchOn);
-    return nameError == null && hourError == null && isImageValid();
+    imageError = validateImages();
+
+    return nameError == null && hourError == null && validateImages() == null;
   }
 
   bool validateTechnicalForm() {
@@ -72,7 +81,15 @@ class NewRegisterFormController {
     familyError = validateFamily(familyController.text);
     genderError = validateGender(genderController.text);
     orderError = validateOrder(orderController.text);
-    return nameError == null && hourError == null && isImageValid(); //todo
+
+    return nameError == null && hourError == null && validateImages() == null; //todo
+  }
+
+  String? validateImages() {
+    if (_image == null && _image2 == null) {
+      return 'É obrigatorio o envio de, no mínimo, uma imagem';
+    }
+    return null;
   }
 
   String? validateName(String? value) {
@@ -181,10 +198,6 @@ class NewRegisterFormController {
     return null;
   }
 
-  bool isImageValid() {
-    return _image != null && _image2 != null;
-  }
-
   void setImage(File? image) {
     _image = image;
     print("imagem 1 setada");
@@ -193,30 +206,6 @@ class NewRegisterFormController {
   void setImage2(File? image) {
     _image2 = image;
     print("imagem 2 setada");
-  }
-
-  Future<Position> _determineLocation() async {
-    bool serviceEnabled;
-    LocationPermission permission;
-
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      return Future.error('Serviços de localização estão desabilitados.');
-    }
-
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        return Future.error('Permissão de localização negada.');
-      }
-    }
-
-    if (permission == LocationPermission.deniedForever) {
-      return Future.error(
-          'Permissão de localização negada permanentemente, não podemos continuar.');
-    }
-    return await Geolocator.getCurrentPosition();
   }
 
   void changeSwitch() {
@@ -251,44 +240,63 @@ class NewRegisterFormController {
     return true;
   }
 
-  Future<void> sendSimpleRegister(BuildContext context) async {
+  Future<void> sendSimpleRegister(BuildContext context, Function getPosition) async {
     if (_validateForm()) {
       String name = nameController.text;
       String hour = hourController.text;
       bool witnessed = isSwitchOn;
+      await getPosition();
 
-      try {
-        Position position = await _determineLocation();
-        double latitude = position.latitude;
-        double longitude = position.longitude;
+      if (currentPosition != null) {
+        double latitude = currentPosition!.latitude;
+        double longitude = currentPosition!.longitude;
         print("latitude: $latitude, longitude: $longitude");
 
-        final response = await sendSimpleRegisterToApiMocked(
-          name,
-          hour,
-          witnessed,
-          latitude,
-          longitude,
-        );
-
-        if (response != null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Registro enviado com sucesso!')),
+        try {
+          final response = await sendSimpleRegisterToApiMocked(
+            name,
+            hour,
+            witnessed,
+            latitude,
+            longitude,
           );
-        } else {
+          if (response != null) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Registro enviado com sucesso!',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontFamily: "Inter"
+                  ),
+                ),
+                backgroundColor: Colors.green,
+              )
+            );
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Falha ao enviar o registro.')),
+            );
+          }
+        } catch (e) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Falha ao enviar o registro.')),
+            SnackBar(content: Text('Falha ao obter a localização: $e')),
           );
         }
-      } catch (e) {
+      }
+    } else {
+      if (imageError != null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Falha ao obter a localização: $e')),
+          SnackBar(
+            content: Text(imageError!),
+            backgroundColor: Colors.red,
+            ),
         );
       }
     }
   }
 
-  Future<void> sendTechnicalRegister(BuildContext context) async {
+  Future<void> sendTechnicalRegister(BuildContext context, Function getPosition) async {
     if (validateTechnicalForm()) {
       String name = nameController.text;
       String hour = hourController.text;
@@ -301,61 +309,81 @@ class NewRegisterFormController {
       String gender = genderController.text;
       String order = orderController.text;
       String classe = classController.text;
+      await getPosition();
 
-      try {
-        Position position = await _determineLocation();
-        double latitude = position.latitude;
-        double longitude = position.longitude;
+      if (currentPosition != null) {
+        double latitude = currentPosition!.latitude;
+        double longitude = currentPosition!.longitude;
+        print("latitude: $latitude, longitude: $longitude");
 
-        final response = await sendTechnicalRegisterToApiMocked(
-          name,
-          hour,
-          witnessed,
-          species,
-          city,
-          beachSpot,
-          obs,
-          family,
-          gender,
-          order,
-          classe,
-          latitude,
-          longitude,
-        );
-
-        if (response != null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Registro técnico enviado com sucesso!')),
+        try {
+          final response = await sendTechnicalRegisterToApiMocked(
+            name,
+            hour,
+            witnessed,
+            species,
+            city,
+            beachSpot,
+            obs,
+            family,
+            gender,
+            order,
+            classe,
+            latitude,
+            longitude,
           );
-        } else {
+          if (response != null) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Registro enviado com sucesso!',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontFamily: "Inter"
+                  ),
+                ),
+                backgroundColor: Colors.green,
+              )
+            );
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Falha ao enviar o registro.')),
+            );
+          }
+        } catch (e) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Falha ao enviar o registro técnico.')),
+            SnackBar(content: Text('Falha ao obter a localização: $e')),
           );
         }
-      } catch (e) {
+      }
+    } else {
+      if (imageError != null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Falha ao obter a localização: $e')),
+          SnackBar(
+            content: Text(imageError!),
+            backgroundColor: Colors.red,
+            ),
         );
       }
     }
   }
 
-  Future<SimpleRegisterRequest?> sendSimpleRegisterToApiMocked(
+Future<SimpleRegisterRequest?> sendSimpleRegisterToApiMocked(
     String name,
     String hour,
     bool witnessed,
     double latitude,
     double longitude,
   ) async {
-    final imageBytes = await _image!.readAsBytes();
-    final image2Bytes = await _image2!.readAsBytes();
+    final Uint8List imageBytes = _image != null ? await _image!.readAsBytes() : Uint8List(0);
+    final Uint8List image2Bytes = _image2 != null ? await _image2!.readAsBytes() : Uint8List(0);
 
     final newRegister = SimpleRegisterRequest(
       name: name,
       hour: hour,
       witnessed: witnessed,
-      image: imageBytes,
-      image2: image2Bytes,
+      image: base64Encode(imageBytes),
+      image2: base64Encode(image2Bytes),
       latitude: latitude.toString(),
       longitude: longitude.toString(),
     );
@@ -370,8 +398,8 @@ class NewRegisterFormController {
       String classe, double latitude, double longitude
       ) async {
 
-    final imageBytes = await _image!.readAsBytes();
-    final image2Bytes = await _image2!.readAsBytes();
+    final Uint8List imageBytes = _image != null ? await _image!.readAsBytes() : Uint8List(0);
+    final Uint8List image2Bytes = _image2 != null ? await _image2!.readAsBytes() : Uint8List(0);
 
     final newRegister = TechnicalRegisterRequest(
       name: name,
@@ -387,8 +415,8 @@ class NewRegisterFormController {
       classe: classe,
       latitude: latitude.toString(),
       longitude: longitude.toString(),
-      image: imageBytes,
-      image2: image2Bytes,
+      image: base64Encode(imageBytes),
+      image2: base64Encode(image2Bytes),
     );
     _technicalMockData.add(newRegister);
 
