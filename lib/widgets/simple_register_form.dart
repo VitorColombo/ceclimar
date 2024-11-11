@@ -42,6 +42,7 @@ class _SimpleRegisterFormState extends State<SimpleRegisterForm> {
   void _onSwitchChanged(bool value) {
     setState(() {
       _formController.changeSwitch();
+      _formController.hourController.text = '';
       isSwitchOn = value;
       _updateBtnStatus();
     });

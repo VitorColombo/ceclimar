@@ -1,21 +1,19 @@
-import 'dart:typed_data';
-
 class SimpleRegisterRequest {
   final String name;
   final String? hour;
   final bool witnessed;
-  final String? image;
-  final String? image2;
   final String latitude;
   final String longitude;
+  final String? image;
+  final String? image2;
 
   SimpleRegisterRequest({
     required this.name,
     required this.witnessed,
-    this.image,
     required this.latitude,
     required this.longitude,
     this.hour,
+    this.image,
     this.image2,
   });
 
@@ -24,10 +22,10 @@ class SimpleRegisterRequest {
       'name': name,
       'hour': hour,
       'witnessed': witnessed,
-      'image': image,
-      'image2': image2,
       'latitude': latitude,
       'longitude': longitude,
+      'image': image,
+      'image2': image2,
     };
   }
 
@@ -36,7 +34,7 @@ class SimpleRegisterRequest {
       hour = json['hour'],
       witnessed = json['witnessed'],
       image = json['image'],
-      image2 = json['image2'],
       latitude = json['latitude'],
-      longitude = json['longitude'];
+      longitude = json['longitude'],
+      image2 = json['image2'];
 }

@@ -388,6 +388,7 @@ Future<SimpleRegisterRequest?> sendSimpleRegisterToApiMocked(
       longitude: longitude.toString(),
     );
     _simpleMockData.add(newRegister);
+    print(newRegister.toJson());
 
     return newRegister;
   }
@@ -419,7 +420,8 @@ Future<SimpleRegisterRequest?> sendSimpleRegisterToApiMocked(
       image2: base64Encode(image2Bytes),
     );
     _technicalMockData.add(newRegister);
-
+    print(newRegister.toJson());
+    
     return newRegister;
   }
 }

@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 class TechnicalRegisterRequest {
   final String name;
   final String species;
