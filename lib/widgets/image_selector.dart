@@ -7,11 +7,13 @@ import 'package:tcc_ceclimar/widgets/register_circular_image.dart';
 class ImageSelector extends StatefulWidget {
   final double? width;
   final double? height;
+  final Function onImageSelected;
 
   const ImageSelector({
     super.key,
     this.height,
     this.width,
+    required this.onImageSelected,
   });
  
   @override
@@ -32,6 +34,7 @@ class ImageSelectorState extends State<ImageSelector> {
       setState(() {
         _selectedImage = File(pickedFile.path);
       });
+      widget.onImageSelected(_selectedImage);
     }
   }
 
@@ -45,7 +48,8 @@ class ImageSelectorState extends State<ImageSelector> {
     if (pickedFile != null) {
       setState(() {
         _selectedImage = File(pickedFile.path);
-      });    
+      });
+      widget.onImageSelected(_selectedImage);
     }
   }
 

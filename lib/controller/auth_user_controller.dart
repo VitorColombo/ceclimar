@@ -6,7 +6,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tcc_ceclimar/pages/login.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import '../user_auth/firebase_auth_implementation/firebase_auth_services.dart';
+import '../utils/firebase_auth_services.dart';
 import 'package:tcc_ceclimar/models/user_data.dart';
 
 class AuthenticationController {
