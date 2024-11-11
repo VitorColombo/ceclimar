@@ -35,7 +35,9 @@ class _SimpleRegisterFormState extends State<SimpleRegisterForm> {
   }
 
   bool _validateForm() {
-    _formKey.currentState?.save();
+    setState(() {
+      _formController.validateForm();
+    });
     return _formKey.currentState?.validate() ?? false;
   }
 

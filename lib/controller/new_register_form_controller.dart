@@ -53,7 +53,7 @@ class NewRegisterFormController {
     hourController.clear();
   }
 
-  bool _validateForm() {
+  bool validateForm() {
     nameController.text = nameController.text.trim();
     nameError = validateName(nameController.text);
     hourError = validateHour(hourController.text, isSwitchOn);
@@ -241,7 +241,7 @@ class NewRegisterFormController {
   }
 
   Future<void> sendSimpleRegister(BuildContext context, Function getPosition) async {
-    if (_validateForm()) {
+    if (validateForm()) {
       String name = nameController.text;
       String hour = hourController.text;
       bool witnessed = isSwitchOn;
@@ -421,7 +421,7 @@ Future<SimpleRegisterRequest?> sendSimpleRegisterToApiMocked(
     );
     _technicalMockData.add(newRegister);
     print(newRegister.toJson());
-    
+
     return newRegister;
   }
 }
