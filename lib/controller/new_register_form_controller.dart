@@ -40,8 +40,16 @@ class NewRegisterFormController {
   String? image2Error;
   bool isSwitchOn = false;
 
-  List<SimpleRegisterRequest> _simpleMockData = [];
-  List<TechnicalRegisterRequest> _technicalMockData = [];
+  final List<SimpleRegisterRequest> _simpleMockData = [];
+  final List<TechnicalRegisterRequest> _technicalMockData = [];
+
+  List<TechnicalRegisterRequest> get technicalMockData{
+    return [..._technicalMockData];
+  }
+
+  List<SimpleRegisterRequest> get simpleMockData{
+    return [..._simpleMockData];
+  }
 
   void dispose() {
     nameController.dispose();
