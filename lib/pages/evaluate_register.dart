@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:tcc_ceclimar/models/register_response.dart';
 import 'package:tcc_ceclimar/widgets/circular_image_widget.dart';
 import 'package:tcc_ceclimar/widgets/evaluate_register_form.dart';
-import 'package:tcc_ceclimar/widgets/image_screen.dart';
 import 'package:tcc_ceclimar/widgets/view_register_image.dart';
 import '../widgets/page_header.dart';
 
@@ -34,7 +33,7 @@ class _EvaluateRegisterState extends State<EvaluateRegister> {
             PageHeader(
               text: "Avaliar Registro",
               icon: const Icon(Icons.arrow_back),
-              onTap: () => widget.updateIndex(0),
+              onTap: Navigator.of(context).pop,
             ),
             Expanded(
               child: SingleChildScrollView(

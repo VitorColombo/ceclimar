@@ -3,32 +3,36 @@ import 'package:flutter/material.dart';
 enum AnimalStateValues { state1, state2, state3, state4, state5 }
 
 extension AnimalStateValuesExtension on AnimalStateValues {
-  int get value {
+  String get value {
     switch (this) {
       case AnimalStateValues.state1:
-        return 1;
+        return "1";
       case AnimalStateValues.state2:
-        return 2;
+        return "2";
       case AnimalStateValues.state3:
-        return 3;
+        return "3";
       case AnimalStateValues.state4:
-        return 4;
+        return "4";
       case AnimalStateValues.state5:
-        return 5;
+        return "5";
     }
   }
 }
 
-class RadioListTileExample extends StatefulWidget {
-  const RadioListTileExample({super.key});
+class RadioRowAnimal extends StatefulWidget {
+  final Function(String) onChanged;
+  const RadioRowAnimal({
+    super.key, 
+    required this.onChanged
+  });
 
   @override
-  State<RadioListTileExample> createState() => _RadioListTileExampleState();
+  State<RadioRowAnimal> createState() => _RadioRowAnimalState();
 }
 
-class _RadioListTileExampleState extends State<RadioListTileExample> {
-  AnimalStateValues? _state = AnimalStateValues.state3;
-  AnimalStateValues get state => _state!;
+class _RadioRowAnimalState extends State<RadioRowAnimal> {
+  AnimalStateValues _state = AnimalStateValues.state3;
+  AnimalStateValues get state => _state;
 
   @override
   Widget build(BuildContext context) {
@@ -52,8 +56,9 @@ class _RadioListTileExampleState extends State<RadioListTileExample> {
                     groupValue: _state,
                     onChanged: (AnimalStateValues? value) {
                       setState(() {
-                        _state = value;
+                        _state = value!;
                       });
+                      widget.onChanged(_state.value.toString());
                     },
                   ),
                   Transform.translate(
@@ -69,8 +74,9 @@ class _RadioListTileExampleState extends State<RadioListTileExample> {
                     groupValue: _state,
                     onChanged: (AnimalStateValues? value) {
                       setState(() {
-                        _state = value;
+                        _state = value!;
                       });
+                        widget.onChanged(_state.value);
                     },
                   ),
                   Transform.translate(
@@ -86,8 +92,9 @@ class _RadioListTileExampleState extends State<RadioListTileExample> {
                     groupValue: _state,
                     onChanged: (AnimalStateValues? value) {
                       setState(() {
-                        _state = value;
+                        _state = value!;
                       });
+                      widget.onChanged(_state.value);
                     },
                   ),
                   Transform.translate(
@@ -103,8 +110,9 @@ class _RadioListTileExampleState extends State<RadioListTileExample> {
                     groupValue: _state,
                     onChanged: (AnimalStateValues? value) {
                       setState(() {
-                        _state = value;
+                        _state = value!;
                       });
+                      widget.onChanged(_state.value);
                     },
                   ),
                   Transform.translate(
@@ -120,8 +128,9 @@ class _RadioListTileExampleState extends State<RadioListTileExample> {
                     groupValue: _state,
                     onChanged: (AnimalStateValues? value) {
                       setState(() {
-                        _state = value;
+                        _state = value!;
                       });
+                      widget.onChanged(_state.value);
                     },
                   ),
                   Transform.translate(

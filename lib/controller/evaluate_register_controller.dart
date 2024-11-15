@@ -1,9 +1,8 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:tcc_ceclimar/models/simple_register_request.dart';
 import 'package:tcc_ceclimar/models/technical_register_request.dart';
+import 'package:tcc_ceclimar/models/update_register_request.dart';
+import 'package:tcc_ceclimar/widgets/radio_btn_animal_state.dart';
 
 class EvaluateRegisterFormController {
   final TextEditingController nameController = TextEditingController();
@@ -16,14 +15,11 @@ class EvaluateRegisterFormController {
   final TextEditingController genderController = TextEditingController();
   final TextEditingController orderController = TextEditingController();
   final TextEditingController classController = TextEditingController();
-  File? _image;
-  File? _image2;
-  String? currentAddress;
-  Position? currentPosition;
-  final String newRegisterEndpoint = '';
+  final TextEditingController animalStateController = TextEditingController();
+
+  final String updateRegisterEndpoint = '';
   
   String? nameError;
-  String? hourError;
   String? speciesError;
   String? cityError;
   String? beachSpotError;
@@ -36,17 +32,6 @@ class EvaluateRegisterFormController {
   String? image2Error;
   bool isSwitchOn = false;
 
-  final List<SimpleRegisterRequest> _simpleMockData = [];
-  final List<TechnicalRegisterRequest> _technicalMockData = [];
-
-  List<TechnicalRegisterRequest> get technicalMockData{
-    return [..._technicalMockData];
-  }
-
-  List<SimpleRegisterRequest> get simpleMockData{
-    return [..._simpleMockData];
-  }
-
   void dispose() {
     nameController.dispose();
     hourController.dispose();
@@ -57,7 +42,7 @@ class EvaluateRegisterFormController {
     hourController.clear();
   }
 
-  bool validateTechnicalForm() {
+  bool validateForm() {
     nameController.text = nameController.text.trim();
     speciesController.text = speciesController.text.trim();
     cityController.text = cityController.text.trim();
@@ -68,21 +53,20 @@ class EvaluateRegisterFormController {
     orderController.text = orderController.text.trim();
 
     nameError = validateName(nameController.text);
+    classError = validateClass(classController.text);
     speciesError = validateSpecies(speciesController.text);
-    cityError = validateCity(cityController.text);
     obsError = validateObs(obsController.text);
     familyError = validateFamily(familyController.text);
     genderError = validateGender(genderController.text);
     orderError = validateOrder(orderController.text);
 
-    return nameError == null && hourError == null && validateImages() == null; //todo
-  }
-
-  String? validateImages() {
-    if (_image == null && _image2 == null) {
-      return 'É obrigatorio o envio de, no mínimo, uma imagem';
-    }
-    return null;
+    return nameError == null &&
+        speciesError == null &&
+        classError == null &&
+        obsError == null &&
+        familyError == null &&
+        genderError == null &&
+        orderError == null;
   }
 
   String? validateName(String? value) {
@@ -102,7 +86,10 @@ class EvaluateRegisterFormController {
     return null;
   }
 
-  String? validateSpecies(String species) {
+  String? validateSpecies(String? species) {
+    if (species == null || species.isEmpty) {
+      return 'Campo obrigatório';
+    }
     final RegExp regex = RegExp(r'^[a-zA-Z\s]*$');
     if (species.length < 5) {
       return 'Caracteres mínimos: 5';
@@ -113,82 +100,134 @@ class EvaluateRegisterFormController {
     return null;
   }
 
-  String? validateGender(String gender) {
-    final RegExp regex = RegExp(r'^[a-zA-Z\s]*$');
-    if (gender.isNotEmpty) {
-      if (gender.length < 3) {
-        return 'Caracteres mínimos: 3';
-      }
-      if (!regex.hasMatch(gender)) {
-        return 'Caractere inválido';
-      }
+  String? validateGender(String? gender) {
+    if (gender == null || gender.isEmpty) {
+      return 'Campo obrigatório';
     }
-    return null;
-  }
-
-  String? validateFamily(String family) {
     final RegExp regex = RegExp(r'^[a-zA-Z\s]*$');
-    if (family.isNotEmpty) {
-      if (family.length < 3) {
-        return 'Caracteres mínimos: 3';
-      }
-      if (!regex.hasMatch(family)) {
-        return 'Caractere inválido';
-      }
-    }
-    return null;
-  }
-
-  String? validateCity(String city) {
-    final RegExp regex = RegExp(r'^[a-zA-Z\s]*$');
-    if (city.length < 3) {
+    if (gender.length < 3) {
       return 'Caracteres mínimos: 3';
     }
-    if (!regex.hasMatch(city)) {
+    if (!regex.hasMatch(gender)) {
       return 'Caractere inválido';
     }
     return null;
   }
 
-  String? validateObs(String obs) {
-    if (obs.isNotEmpty) {
-      if (obs.length < 5) {
-        return 'Caracteres mínimos: 5';
-      }
+  String? validateFamily(String? family) {
+    if (family == null || family.isEmpty) {
+      return 'Campo obrigatório';
     }
-    return null;
-  }
-
-  String? validateOrder(String order) {
     final RegExp regex = RegExp(r'^[a-zA-Z\s]*$');
-    if (order.isNotEmpty) {
-      if (order.length < 3) {
-        return 'Caracteres mínimos: 3';
+    if (family.length < 3) {
+      return 'Caracteres mínimos: 3';
+    }
+    if (!regex.hasMatch(family)) {
+      return 'Caractere inválido';
+    }
+    return null;
+  }
+
+  String? validateOrder(String? order) {
+    if (order == null || order.isEmpty) {
+      return 'Campo obrigatório';
+    }
+    final RegExp regex = RegExp(r'^[a-zA-Z\s]*$');
+    if (order.length < 3) {
+      return 'Caracteres mínimos: 3';
+    }
+    if (!regex.hasMatch(order)) {
+      return 'Caractere inválido';
+    }
+    return null;
+  }
+  
+  String? validateClass(String? text) {
+    if (text == null || text.isEmpty) {
+      return 'Campo obrigatório';
+    }
+    final RegExp regex = RegExp(r'^[a-zA-Z\s]*$');
+    if (text.length < 3) {
+      return 'Caracteres mínimos: 3';
+    }
+    if (!regex.hasMatch(text)) {
+      return 'Caractere inválido';
+    }
+    return null;
+  }
+
+  String? validateObs(String text) {
+    if (text.isNotEmpty) {
+      if (text.length < 10) {
+        return 'Caracteres mínimos: 10';
       }
-      if (!regex.hasMatch(order)) {
-        return 'Caractere inválido';
+      if (text.length > 200) {
+        return 'Caracteres máximos: 200';
       }
     }
     return null;
   }
 
-  bool isBtnEnabledTechnical() {
-    if (!isSwitchOn) {
-      if(nameController.text.isEmpty ||
-        speciesController.text.isEmpty ||
-        cityController.text.isEmpty){
-        return false;
+  Future<void> sendEvaluation(BuildContext context) async {
+    if (validateForm()) {
+        try {
+          final response = await sendTechnicalEvaluationToApiMocked();
+          if (response != null) {
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Registro enviado com sucesso!',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontFamily: "Inter"
+                  ),
+                ),
+                backgroundColor: Colors.green,
+              )
+            );
+          } else {
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Falha ao enviar o registro.')),
+            );
+          }
+        } catch (e) {
+          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Falha ao enviar o registro.')),
+          );
+        }
+      } else {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Por favor, preencha todos os campos obrigatórios.',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontFamily: "Inter"
+              ),
+            ),
+            backgroundColor: Colors.red,
+          )
+        );
       }
-      return true;
-    }
-    if(nameController.text.isEmpty || hourController.text.isEmpty){
-      return false;
-    }
-    return true;
   }
 
-  void sendRegisterEvaluation(){
-    //todo
+  Future<UpdateRegisterRequest?> sendTechnicalEvaluationToApiMocked() async {
+    final updatedRegister = UpdateRegisterRequest(
+      name: nameController.text,
+      species: speciesController.text,
+      classe: classController.text,
+      order: orderController.text,
+      family: familyController.text,
+      gender: genderController.text,
+      animalStatus: animalStateController.text,
+      obs: obsController.text,
+    );
+    print(updatedRegister.toJson());
 
+    return updatedRegister;
   }
 }

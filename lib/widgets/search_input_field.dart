@@ -68,107 +68,128 @@ class _SearchInputFieldState extends State<SearchInputField> {
     return removeDiacritics(input).toLowerCase();
   }
 
+  void _closeDropdown() {
+    setState(() {
+      _isDropdownOpen = false;
+    });
+  }
+
+  Future<bool> _onWillPop() async {
+    if (_isDropdownOpen) {
+      _closeDropdown();
+      _focusNode.unfocus();
+      return false; 
+    }
+    return true;
+  }
+
+
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        TextFormField(
-          focusNode: _focusNode,
-          controller: widget.controller,
-          validator: widget.validator,
-          keyboardType: TextInputType.text,
-          cursorColor: Colors.grey,
-          style: const TextStyle(color: Colors.black),
-          decoration: InputDecoration(
-            filled: true,
-            fillColor: const Color(0xF6F6F6F6),
-            labelText: widget.text,
-            labelStyle: Theme.of(context).textTheme.labelLarge,
-            enabledBorder: const OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(10)),
-              borderSide: BorderSide(
-                color: Colors.grey,
-                width: 1.0,
-                style: BorderStyle.solid,
+    return WillPopScope(
+      onWillPop: _onWillPop,
+      child: GestureDetector(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            TextFormField(
+              focusNode: _focusNode,
+              controller: widget.controller,
+              validator: widget.validator,
+              keyboardType: TextInputType.text,
+              cursorColor: Colors.grey,
+              style: const TextStyle(color: Colors.black),
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: const Color(0xF6F6F6F6),
+                labelText: widget.text,
+                labelStyle: Theme.of(context).textTheme.labelLarge,
+                enabledBorder: const OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                  borderSide: BorderSide(
+                    color: Colors.grey,
+                    width: 1.0,
+                    style: BorderStyle.solid,
+                  ),
+                ),
+                focusedBorder: const OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Colors.lightBlue,
+                    width: 1.0,
+                  ),
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                ),
+                floatingLabelStyle: const TextStyle(
+                  color: Colors.grey,
+                  fontSize: 17,
+                ),
+                errorBorder: const OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Colors.red,
+                    width: 1.6,
+                  ),
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                ),
+                focusedErrorBorder: const OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Colors.red,
+                    width: 1.6,
+                  ),
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                ),
+                errorText: widget.validator != null
+                    ? widget.validator!(widget.controller.text)
+                    : null,
+                errorStyle: const TextStyle(
+                  fontSize: 12,
+                  height: 0.5,
+                ),
+                contentPadding:
+                    const EdgeInsets.symmetric(vertical: 16.0, horizontal: 10.0),
               ),
-            ),
-            focusedBorder: const OutlineInputBorder(
-              borderSide: BorderSide(
-                color: Colors.lightBlue,
-                width: 1.0,
-              ),
-              borderRadius: BorderRadius.all(Radius.circular(10)),
-            ),
-            floatingLabelStyle: const TextStyle(
-              color: Colors.grey,
-              fontSize: 17,
-            ),
-            errorBorder: const OutlineInputBorder(
-              borderSide: BorderSide(
-                color: Colors.red,
-                width: 1.6,
-              ),
-              borderRadius: BorderRadius.all(Radius.circular(10)),
-            ),
-            focusedErrorBorder: const OutlineInputBorder(
-              borderSide: BorderSide(
-                color: Colors.red,
-                width: 1.6,
-              ),
-              borderRadius: BorderRadius.all(Radius.circular(10)),
-            ),
-            errorText: widget.validator != null
-                ? widget.validator!(widget.controller.text)
-                : null,
-            errorStyle: const TextStyle(
-              fontSize: 12,
-              height: 0.5,
-            ),
-            contentPadding:
-                const EdgeInsets.symmetric(vertical: 16.0, horizontal: 10.0),
-          ),
-          onChanged: (value) {
-            _filterItems(value.trim());
-            if (widget.onChanged != null) {
-              widget.onChanged!(value);
-            }
-          },
-        ),
-        if (_isDropdownOpen && _filteredItems.isNotEmpty)
-          Container(
-            constraints: BoxConstraints(
-              maxHeight: 300, 
-            ),
-            decoration: BoxDecoration(
-              color: const Color(0xF6F6F6F6),
-              border: Border.all(color: Colors.grey),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: ListView.builder(
-              padding: EdgeInsets.only(top: 0),
-              physics: AlwaysScrollableScrollPhysics(),
-              shrinkWrap: true,
-              itemCount: _filteredItems.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(_filteredItems[index]),
-                  onTap: () {
-                    widget.controller.text = _filteredItems[index];
-                    _filterItems(_filteredItems[index]);
-                    _focusNode.requestFocus();
-                      setState(() {
-                      _isDropdownOpen = false;
-                    });
-                    if (widget.onChanged != null) {
-                      widget.onChanged!(widget.controller.text);
-                    }
-                  },
-                );
+              onChanged: (value) {
+                _filterItems(value.trim());
+                if (widget.onChanged != null) {
+                  widget.onChanged!(value);
+                }
               },
             ),
-          ),
-      ],
+            if (_isDropdownOpen && _filteredItems.isNotEmpty)
+              Container(
+                constraints: BoxConstraints(
+                  maxHeight: 300, 
+                ),
+                decoration: BoxDecoration(
+                  color: const Color(0xF6F6F6F6),
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: ListView.builder(
+                  padding: EdgeInsets.only(top: 0),
+                  physics: AlwaysScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  itemCount: _filteredItems.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      title: Text(_filteredItems[index]),
+                      onTap: () {
+                        widget.controller.text = _filteredItems[index];
+                        _filterItems(_filteredItems[index]);
+                        _focusNode.requestFocus();
+                          setState(() {
+                          _isDropdownOpen = false;
+                        });
+                        if (widget.onChanged != null) {
+                          widget.onChanged!(widget.controller.text);
+                        }
+                      },
+                    );
+                  },
+                ),
+              ),
+          ],
+        ),
+      ),
     );
   }
 }

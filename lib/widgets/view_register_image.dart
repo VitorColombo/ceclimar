@@ -36,14 +36,30 @@ class _ImageScreenState extends State<ViewRegisterImage> {
       child: Center(
         child: Column(
           children: [
-            Divider(
-              color: Colors.grey[400],
-              thickness: 2,
-              indent: 100,
-              endIndent: 100,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  alignment: Alignment.topCenter,
+                  height: 2,
+                  width: 100,
+                  color: Colors.grey[400],
+                ),
+              ],
             ),
-            SizedBox(
-              height: 10,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                IconButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  icon: const Icon(
+                    Icons.close,
+                    color: Colors.grey,
+                  ),
+                ),
+              ],
             ),
             Expanded(
               child: SizedBox(

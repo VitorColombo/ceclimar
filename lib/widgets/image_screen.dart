@@ -27,7 +27,7 @@ class _ImageScreenState extends State<ImageScreen> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(30),
+      padding: const EdgeInsets.only(bottom: 30, left: 30, right: 30, top: 8),
       decoration: const BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.only(
@@ -39,6 +39,34 @@ class _ImageScreenState extends State<ImageScreen> {
       child: Center(
         child: Column(
           children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  alignment: Alignment.topCenter,
+                  height: 2,
+                  width: 100,
+                  color: Colors.grey[400],
+                ),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                IconButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  icon: const Icon(
+                    Icons.close,
+                    color: Colors.grey,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 5,
+            ),
             Expanded(
               child: SizedBox(
                 width: double.infinity,
