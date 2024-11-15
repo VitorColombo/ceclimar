@@ -49,7 +49,7 @@ class NewUserPageState extends State<NewUserPage> {
     return Scaffold(
       body: CustomScrollView( 
         slivers: [
-          const SliverAppBar( 
+          const SliverAppBar(
             expandedHeight: 300,
             backgroundColor: Colors.white,
             shadowColor: Color.fromARGB(0, 173, 145, 145),
