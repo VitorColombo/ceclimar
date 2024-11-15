@@ -22,13 +22,19 @@ class EvaluateRegisterForm extends StatefulWidget {
 class _EvaluateRegisterFormState extends State<EvaluateRegisterForm> {
   final _formController = EvaluateRegisterFormController();
   final _formKey = GlobalKey<FormState>();
-  bool isSwitchOn = false;
   bool isBtnEnabled = false;
   final List<String> species = ["penguim", "gaviao", "arubinha", "lobo marinho", "pardal", "gaviao", "arubinha", "lobo marinho", "pardal""gaviao", "arubinha", "lobo marinho", "pardal"];
 
   @override
   void initState() {
     super.initState();
+    _formController.nameController.text = widget.register.animal.popularName;
+    _formController.speciesController.text = widget.register.animal.species != null ? widget.register.animal.species! : '';
+    _formController.classController.text = widget.register.animal.classe != null ? widget.register.animal.classe! : '';
+    _formController.orderController.text = widget.register.animal.order != null ? widget.register.animal.order! : '';
+    _formController.familyController.text = widget.register.animal.family != null ? widget.register.animal.family! : '';
+    _formController.genderController.text = widget.register.animal.gender != null ? widget.register.animal.gender! : '';
+    _formController.obsController.text = widget.register.observation != null ? widget.register.observation! : '';
     _formController.nameController.addListener(_updateBtnStatus);
     _formController.hourController.addListener(_updateBtnStatus);
     _formController.speciesController.addListener(_updateBtnStatus);
@@ -77,37 +83,9 @@ class _EvaluateRegisterFormState extends State<EvaluateRegisterForm> {
               onChanged: (_) => _updateBtnStatus(),
               items: species, //todo
             ),
-            if (isSwitchOn)
-              Column(
-                children: [
-                  GestureDetector(
-                    onTap: () async {
-                      TimeOfDay? pickedTime = await showTimePicker(
-                      context: context,
-                      initialTime: TimeOfDay.now(),
-                      );
-                      if (pickedTime != null) {
-                      setState(() {
-                        _formController.hourController.text = pickedTime.format(context);
-                        _updateBtnStatus();
-                      });
-                      }
-                    },
-                    child: AbsorbPointer(
-                      child: InputField(
-                      text: "Horário aproximado",
-                      controller: _formController.hourController,
-                      validator: (value) => _formController.hourError,
-                      onChanged: (_) => _updateBtnStatus(),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                ],
-              ),
             const SizedBox(height: 16),
             SearchInputField(
-              text: "Classe (Opcional)",
+              text: "Classe",
               controller: _formController.classController,
               validator: (value) => _formController.classError,
               onChanged: (_) => _updateBtnStatus(),
@@ -115,7 +93,7 @@ class _EvaluateRegisterFormState extends State<EvaluateRegisterForm> {
             ),
             const SizedBox(height: 16),
             SearchInputField(
-              text: "Ordem (Opcional)",
+              text: "Ordem",
               controller: _formController.orderController,
               validator: (value) => _formController.orderError,
               onChanged: (_) => _updateBtnStatus(),
@@ -123,7 +101,7 @@ class _EvaluateRegisterFormState extends State<EvaluateRegisterForm> {
             ),
             const SizedBox(height: 16),
             SearchInputField(
-              text: "Família (Opcional)",
+              text: "Família",
               controller: _formController.familyController,
               validator: (value) => _formController.familyError,
               onChanged: (_) => _updateBtnStatus(),
@@ -131,7 +109,7 @@ class _EvaluateRegisterFormState extends State<EvaluateRegisterForm> {
             ),
             const SizedBox(height: 16),
             SearchInputField(
-              text: "Gênero (Opcional)",
+              text: "Gênero",
               controller: _formController.genderController,
               validator: (value) => _formController.genderError,
               onChanged: (_) => _updateBtnStatus(),

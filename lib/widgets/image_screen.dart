@@ -16,12 +16,12 @@ class ImageScreen extends StatefulWidget {
 }
 
 class _ImageScreenState extends State<ImageScreen> {
-  late File _currentImage;
+  late File? _currentImage;
 
   @override
   void initState() {
     super.initState();
-    _currentImage = widget.imageProvider!;
+    _currentImage = widget.imageProvider;
   }
 
   @override
@@ -46,7 +46,7 @@ class _ImageScreenState extends State<ImageScreen> {
                   panEnabled: true,
                   minScale: 0.5,
                   maxScale: 4.0,
-                  child: Image.file(_currentImage),
+                  child: Image.file(_currentImage!)
                 ),
               ),
             ),
