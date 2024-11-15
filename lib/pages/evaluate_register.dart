@@ -137,7 +137,7 @@ class _EvaluateRegisterState extends State<EvaluateRegister> {
                                           style: const TextStyle(fontSize: 12),
                                         ),
                                         Text(
-                                          '${widget.register.location?.latitude ?? 'N/A'}',
+                                          '${widget.register.location.latitude ?? 'N/A'}',
                                           style: const TextStyle(fontSize: 12),
                                         )
                                       ],
@@ -162,7 +162,7 @@ class _EvaluateRegisterState extends State<EvaluateRegister> {
                                           style: const TextStyle(fontSize: 12),
                                         ),
                                         Text(
-                                          '${widget.register.location?.longitude ?? 'N/A'}',
+                                          '${widget.register.location.longitude ?? 'N/A'}',
                                           style: const TextStyle(fontSize: 12),
                                         )
                                       ],

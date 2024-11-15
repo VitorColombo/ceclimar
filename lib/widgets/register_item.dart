@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:tcc_ceclimar/pages/register_view.dart';
 import '../models/register_response.dart';
 
 class RegisterItem extends StatelessWidget {

@@ -12,6 +12,8 @@ import 'image_selector.dart';
 import 'modal_help_register_image_btnsheet.dart';
 
 class TechnicalRegisterForm extends StatefulWidget {
+  const TechnicalRegisterForm({super.key});
+
   @override
   State<TechnicalRegisterForm> createState() => _TechnicalRegisterFormState();
 }
