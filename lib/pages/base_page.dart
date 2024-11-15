@@ -7,7 +7,7 @@ import 'my_registers.dart';
 import 'new_simple_register.dart';
 import 'my_profile.dart';
 import 'register_pannel.dart';
-import 'evaluate_register.dart';
+import 'pending_registers.dart';
 import 'local_animals.dart';
 import 'new_researcher_user.dart';
 
@@ -45,7 +45,7 @@ class _BasePageState extends State<BasePage> {
     NewSimpleRegister(updateIndex: updateIndex),
     LocalAnimals(updateIndex: updateIndex),
     RegisterPannel(updateIndex: updateIndex),
-    EvaluateRegister(updateIndex: updateIndex),
+    PendingRegisters(updateIndex: updateIndex),
     NewResearcherPage(updateIndex: updateIndex),
     NewTechnicalRegister(updateIndex: updateIndex),
     AboutUs(updateIndex:updateIndex),

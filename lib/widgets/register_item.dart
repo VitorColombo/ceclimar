@@ -4,8 +4,13 @@ import '../models/register_response.dart';
 
 class RegisterItem extends StatelessWidget {
   final RegisterResponse register;
+  final String route;
 
-  const RegisterItem({super.key, required this.register});
+  const RegisterItem({
+    super.key, 
+    required this.register, 
+    required this.route
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +22,7 @@ class RegisterItem extends StatelessWidget {
             onTap: () {
                 Navigator.pushNamed(
                 context,
-                RegisterDetailPage.routeName,
+                route,
                 arguments: register,
                 );
             },

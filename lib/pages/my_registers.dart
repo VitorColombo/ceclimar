@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:tcc_ceclimar/controller/my_registers_controller.dart';
-import 'package:tcc_ceclimar/models/animal_response.dart';
+import 'package:tcc_ceclimar/pages/register_view.dart';
 import 'package:tcc_ceclimar/widgets/register_status_label.dart';
 import '../models/register_response.dart';
 import '../widgets/page_header.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../widgets/register_item.dart';
 
@@ -23,7 +22,7 @@ class MyRegisters extends StatefulWidget {
 }
 
 class _MyRegistersState extends State<MyRegisters> {
-  final _my_registers_controller = MyRegistersController();
+  final MyRegistersController _myRegistersController = MyRegistersController();
   List<RegisterResponse> registers = [];
   bool isLoading = true;
   bool isFiltered = false;
@@ -40,7 +39,7 @@ class _MyRegistersState extends State<MyRegisters> {
     await Future.delayed(const Duration(milliseconds: 500)); 
     if (!mounted) return;
     setState(() {
-      registers = _my_registers_controller.getRegisters();
+      registers = _myRegistersController.getRegisters();
       isLoading = false;
       if(status == selectedFilter){
         selectedFilter = "Todos";
@@ -109,7 +108,10 @@ class _MyRegistersState extends State<MyRegisters> {
                       shrinkWrap: true,
                       itemCount: registers.length,
                       itemBuilder: (context, index) {
-                        return RegisterItem(register: registers[index]);
+                        return RegisterItem(
+                          register: registers[index],
+                          route: RegisterDetailPage.routeName
+                        );
                       },
                     ),
                   ),

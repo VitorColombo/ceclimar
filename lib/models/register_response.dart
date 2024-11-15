@@ -4,18 +4,20 @@ import 'package:tcc_ceclimar/models/animal_response.dart';
 
 class RegisterResponse {
   final String uid;
-  final String? authorName;
+  final String authorName;
   final String city;
   final String date;
+  final String? hour;
   final bool state;
-  final String? beachSpot;
+  final String beachSpot;
   final int? sampleState;
-  final GeoPoint? location;
-  final String? scientistReturn;
+  final GeoPoint location;
+  final String? specialistReturn;
   final String? observation;
   final Image registerImage;
+  final Image? registerImage2;
   final AnimalResponse animal;
-  final String? status;
+  final String status;
 
   RegisterResponse({
     required this.uid,
@@ -23,13 +25,15 @@ class RegisterResponse {
     required this.city,
     required this.state,
     required this.registerImage,
+    this.registerImage2,
     required this.animal,
     required this.status,
-    this.authorName,
-    this.beachSpot,
+    this.hour,
+    required this.authorName,
+    required this.beachSpot,
     this.sampleState,
-    this.location,
-    this.scientistReturn,
+    required this.location,
+    this.specialistReturn,
     this.observation,
   });
 }

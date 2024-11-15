@@ -1,9 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:tcc_ceclimar/controller/auth_user_controller.dart';
 import 'package:tcc_ceclimar/controller/my_profile_controller.dart';
 import 'package:tcc_ceclimar/models/animal_response.dart';
 import 'package:tcc_ceclimar/models/register_response.dart';
+import 'package:tcc_ceclimar/pages/register_view.dart';
 import 'package:tcc_ceclimar/widgets/badge_item.dart';
 import 'package:tcc_ceclimar/widgets/header_banner_widget.dart';
 import 'package:tcc_ceclimar/widgets/register_item.dart';
@@ -153,7 +153,10 @@ class UltimosRegistrosContent extends StatelessWidget {
         shrinkWrap: true,
         itemCount: limitedRegisters.length,
         itemBuilder: (context, index) {
-          return RegisterItem(register: limitedRegisters[index]);
+          return RegisterItem(
+            register: limitedRegisters[index],
+            route: RegisterDetailPage.routeName  
+          );
         },
       ),
     );

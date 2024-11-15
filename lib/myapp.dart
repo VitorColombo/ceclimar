@@ -3,6 +3,7 @@ import 'package:tcc_ceclimar/models/register_response.dart';
 import 'package:tcc_ceclimar/pages/about_us.dart';
 import 'package:tcc_ceclimar/pages/base_page.dart';
 import 'package:tcc_ceclimar/pages/evaluate_register.dart';
+import 'package:tcc_ceclimar/pages/pending_registers.dart';
 import 'package:tcc_ceclimar/pages/forgot_pass.dart';
 import 'package:tcc_ceclimar/pages/home.dart';
 import 'package:tcc_ceclimar/pages/local_animals.dart';
@@ -63,7 +64,10 @@ class MyApp extends StatelessWidget {
         LoginPage.routeName: (context) => const LoginPage(email: "",),
         NewResearcherPage.routeName: (context) => const NewResearcherPage(),
         HomePage.routeName: (context) => HomePage(updateIndex: (int index) {}),
-        EvaluateRegister.routeName: (context) => const EvaluateRegister(),
+        EvaluateRegister.routeName: (context) => EvaluateRegister(
+                register: ModalRoute.of(context)!.settings.arguments as RegisterResponse,
+              ),
+        PendingRegisters.routeName: (context) => const PendingRegisters(),
         LocalAnimals.routeName: (context) => const LocalAnimals(),
         MyProfile.routeName: (context) => MyProfile(),
         MyRegisters.routeName: (context) => const MyRegisters(),
