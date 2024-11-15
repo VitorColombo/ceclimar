@@ -68,7 +68,7 @@ class RegisterDetailPage extends StatelessWidget {
                                       const Icon(Icons.person, size: 20),
                                       const SizedBox(width: 8),
                                       Text(
-                                        '${register!.authorName ?? 'Cientista Anônimo'}',
+                                        register!.authorName,
                                         style: const TextStyle(fontSize: 16),
                                       ),
                                     ],
@@ -79,7 +79,7 @@ class RegisterDetailPage extends StatelessWidget {
                                       const Icon(Icons.location_pin, size: 20),
                                       const SizedBox(width: 8),
                                       Text(
-                                        '${register!.city}',
+                                        register!.city,
                                         style: const TextStyle(fontSize: 16),
                                       ),
                                     ],
@@ -90,7 +90,7 @@ class RegisterDetailPage extends StatelessWidget {
                                       const Icon(Icons.calendar_today, size: 20,),
                                       const SizedBox(width: 8),
                                       Text(
-                                        '${register!.date}',
+                                        register!.date,
                                         style: const TextStyle(fontSize: 16),
                                       ),
                                     ],
@@ -119,7 +119,7 @@ class RegisterDetailPage extends StatelessWidget {
                                           style: const TextStyle(fontSize: 12),
                                         ),
                                         Text(
-                                          '${register!.location?.latitude ?? 'N/A'}',
+                                          '${register!.location.latitude}',
                                           style: const TextStyle(fontSize: 12),
                                         )
                                       ],
@@ -144,7 +144,7 @@ class RegisterDetailPage extends StatelessWidget {
                                           style: const TextStyle(fontSize: 12),
                                         ),
                                         Text(
-                                          '${register!.location?.longitude ?? 'N/A'}',
+                                          '${register!.location.longitude}',
                                           style: const TextStyle(fontSize: 12),
                                         )
                                       ],

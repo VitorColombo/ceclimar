@@ -14,6 +14,7 @@ class TechnicalRegisterRequest {
   final String longitude;
   final String? image;
   final String? image2;
+  final DateTime date;
 
   TechnicalRegisterRequest({
     required this.name,
@@ -29,6 +30,7 @@ class TechnicalRegisterRequest {
     required this.gender,
     required this.latitude,
     required this.longitude,
+    required this.date,
     this.image,
     this.image2,
   });
@@ -50,6 +52,7 @@ class TechnicalRegisterRequest {
       'longitude': longitude,
       'image': image,
       'image2': image2,
+      'date': date,
     };
   }
 
@@ -67,6 +70,7 @@ class TechnicalRegisterRequest {
       gender = json['gender'],
       latitude = json['latitude'],
       longitude = json['longitude'],
+      date = json['date'],
       image = json['image'],
       image2 = json['image2'];
 }

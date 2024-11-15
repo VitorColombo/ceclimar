@@ -164,7 +164,7 @@ class AuthenticationController {
   }
 
   Future<void> signInWithGoogle(context) async {
-    final FirebaseAuth _auth = FirebaseAuth.instance;
+    final FirebaseAuth auth = FirebaseAuth.instance;
 
     try {
       final GoogleSignInAccount? googleSignInAccount = await GoogleSignIn(
@@ -186,7 +186,7 @@ class AuthenticationController {
         idToken: googleAuth.idToken,
       );
 
-      UserCredential userCredential = await _auth.signInWithCredential(credential);
+      UserCredential userCredential = await auth.signInWithCredential(credential);
       User? user = userCredential.user;
       if (user != null) {
         Navigator.pushReplacementNamed(context, '/basePage');

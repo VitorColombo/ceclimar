@@ -207,12 +207,10 @@ class NewRegisterFormController {
 
   void setImage(File? image) {
     _image = image;
-    print("imagem 1 setada");
   }
 
   void setImage2(File? image) {
     _image2 = image;
-    print("imagem 2 setada");
   }
 
   void changeSwitch() {
@@ -257,7 +255,6 @@ class NewRegisterFormController {
       if (currentPosition != null) {
         double latitude = currentPosition!.latitude;
         double longitude = currentPosition!.longitude;
-        print("latitude: $latitude, longitude: $longitude");
 
         try {
           final response = await sendSimpleRegisterToApiMocked(
@@ -268,6 +265,7 @@ class NewRegisterFormController {
             longitude,
           );
           if (response != null) {
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text('Registro enviado com sucesso!',
@@ -281,11 +279,13 @@ class NewRegisterFormController {
               )
             );
           } else {
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text('Falha ao enviar o registro.')),
             );
           }
         } catch (e) {
+          ScaffoldMessenger.of(context).hideCurrentSnackBar();
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Falha ao obter a localização: $e')),
           );
@@ -321,7 +321,6 @@ class NewRegisterFormController {
       if (currentPosition != null) {
         double latitude = currentPosition!.latitude;
         double longitude = currentPosition!.longitude;
-        print("latitude: $latitude, longitude: $longitude");
 
         try {
           final response = await sendTechnicalRegisterToApiMocked(
@@ -340,6 +339,7 @@ class NewRegisterFormController {
             longitude,
           );
           if (response != null) {
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text('Registro enviado com sucesso!',
@@ -353,11 +353,13 @@ class NewRegisterFormController {
               )
             );
           } else {
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text('Falha ao enviar o registro.')),
             );
           }
         } catch (e) {
+          ScaffoldMessenger.of(context).hideCurrentSnackBar();
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Falha ao obter a localização: $e')),
           );
@@ -365,6 +367,7 @@ class NewRegisterFormController {
       }
     } else {
       if (imageError != null) {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(imageError!),
@@ -393,6 +396,7 @@ Future<SimpleRegisterRequest?> sendSimpleRegisterToApiMocked(
       image2: base64Encode(image2Bytes),
       latitude: latitude.toString(),
       longitude: longitude.toString(),
+      date: DateTime.now(),
     );
     _simpleMockData.add(newRegister);
     print(newRegister.toJson());
@@ -425,6 +429,7 @@ Future<SimpleRegisterRequest?> sendSimpleRegisterToApiMocked(
       longitude: longitude.toString(),
       image: base64Encode(imageBytes),
       image2: base64Encode(image2Bytes),
+      date: DateTime.now(),
     );
     _technicalMockData.add(newRegister);
     print(newRegister.toJson());

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tcc_ceclimar/models/register_response.dart';
 import 'package:tcc_ceclimar/widgets/circular_image_widget.dart';
 import 'package:tcc_ceclimar/widgets/evaluate_register_form.dart';
+import 'package:tcc_ceclimar/widgets/view_register_image.dart';
 import '../widgets/page_header.dart';
 
 class EvaluateRegister extends StatefulWidget {
@@ -32,7 +33,7 @@ class _EvaluateRegisterState extends State<EvaluateRegister> {
             PageHeader(
               text: "Avaliar Registro",
               icon: const Icon(Icons.arrow_back),
-              onTap: () => widget.updateIndex(0),
+              onTap: Navigator.of(context).pop,
             ),
             Expanded(
               child: SingleChildScrollView(
@@ -47,16 +48,40 @@ class _EvaluateRegisterState extends State<EvaluateRegister> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              CircularImageWidget(
-                                imageProvider: widget.register.registerImage.image,
-                                width: 148,
-                                heigth: 170,
-                              ),
-                              if(widget.register.registerImage2 != null)
-                                CircularImageWidget(
-                                  imageProvider: widget.register.registerImage2!.image,
+                              GestureDetector(
+                                onTap: () {
+                                  showModalBottomSheet(
+                                    context: context,
+                                    builder: (context) {
+                                      return ViewRegisterImage(
+                                        imageProvider: widget.register.registerImage,
+                                      );
+                                    },
+                                  );
+                                },
+                                child: CircularImageWidget(
+                                  imageProvider: widget.register.registerImage.image,
                                   width: 148,
                                   heigth: 170,
+                                ),
+                              ),
+                              if(widget.register.registerImage2 != null)
+                                GestureDetector(
+                                  onTap: () {
+                                    showModalBottomSheet(
+                                      context: context,
+                                      builder: (context) {
+                                        return ViewRegisterImage(
+                                          imageProvider: widget.register.registerImage2!,
+                                        );
+                                      },
+                                    );
+                                  },
+                                  child: CircularImageWidget(
+                                    imageProvider: widget.register.registerImage2!.image,
+                                    width: 148,
+                                    heigth: 170,
+                                  ),
                                 ),
                             ],
                           ),
@@ -76,7 +101,7 @@ class _EvaluateRegisterState extends State<EvaluateRegister> {
                                       const Icon(Icons.person, size: 20),
                                       const SizedBox(width: 8),
                                       Text(
-                                        widget.register.authorName ?? 'Cientista Anônimo',
+                                        widget.register.authorName,
                                         style: const TextStyle(fontSize: 16),
                                       ),
                                     ],
@@ -137,7 +162,7 @@ class _EvaluateRegisterState extends State<EvaluateRegister> {
                                           style: const TextStyle(fontSize: 12),
                                         ),
                                         Text(
-                                          '${widget.register.location?.latitude ?? 'N/A'}',
+                                          '${widget.register.location.latitude}',
                                           style: const TextStyle(fontSize: 12),
                                         )
                                       ],
@@ -162,7 +187,7 @@ class _EvaluateRegisterState extends State<EvaluateRegister> {
                                           style: const TextStyle(fontSize: 12),
                                         ),
                                         Text(
-                                          '${widget.register.location?.longitude ?? 'N/A'}',
+                                          '${widget.register.location.longitude}',
                                           style: const TextStyle(fontSize: 12),
                                         )
                                       ],

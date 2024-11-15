@@ -7,6 +7,7 @@ class AnimalResponse {
   final String? family;
   final String? gender;
   final String? order;
+  final String? classe;
   final Image image;
   final Image badge;
 
@@ -19,5 +20,6 @@ class AnimalResponse {
     this.family,
     this.gender,
     this.order,
+    this.classe,
   });
 }

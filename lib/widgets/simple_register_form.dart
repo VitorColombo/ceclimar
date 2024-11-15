@@ -11,6 +11,8 @@ import 'image_selector.dart';
 import 'modal_help_register_image_btnsheet.dart';
 
 class SimpleRegisterForm extends StatefulWidget {
+  const SimpleRegisterForm({super.key});
+
   @override
   State<SimpleRegisterForm> createState() => _SimpleRegisterFormState();
 }

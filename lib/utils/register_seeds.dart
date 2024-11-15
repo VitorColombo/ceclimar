@@ -65,13 +65,22 @@ class RegisterSeeds {
             'assets/images/pinguim.png',
             fit: BoxFit.cover
           ),
+          registerImage2: Image.asset(
+            'assets/images/logo.png',
+            fit: BoxFit.cover
+          ),
           sampleState: 3,
+          observation: 'Observação do registro',
           animal: AnimalResponse(
             uid: '1',
             popularName: 'Pinguim',
             image: Image.asset('assets/images/pinguim.png'),
             badge: Image.asset('assets/images/logo.png'),
-            species: 'Spheniscus magellanicus'
+            species: 'Spheniscus magellanicus',
+            order: 'Sphenisciformes',
+            family: 'Spheniscidae',
+            classe: 'Aves',
+            gender: 'Spheniscus'
           )
         ),
         RegisterResponse(
