@@ -107,8 +107,8 @@ class AuthenticationController {
   }
 
   bool validateForgotPass() {
+    emailController.text = emailController.text.trim();
     emailError = validateEmail(emailController.text);
-    passError = validatePassword(passController.text);
     return emailError == null && passError == null;
   }
 
@@ -130,37 +130,93 @@ class AuthenticationController {
     String name = nameController.text;
     String email = emailController.text;
     String password = passController.text;
-
-    User? user = await _auth.signUpWithEmailAndPassword(email, password);
-
-    if(user != null) {
-      await user.updateDisplayName(name);
-      user.reload;
-      user = FirebaseAuth.instance.currentUser;
-      
-      Navigator.pushNamed(context, LoginPage.routeName);
-    } else {
-      print('Erro ao cadastrar usuário');
+    try {
+      User? user = await _auth.createUserWithEmailAndPassword(email, password);
+      if (user != null) {
+        await user.updateDisplayName(name);
+        await user.reload();
+        user = FirebaseAuth.instance.currentUser;
+        Navigator.pushReplacementNamed(context, '/login');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Usuário cadastrado com sucesso!'), backgroundColor: Colors.green),
+        );
+      }
+    } on FirebaseAuthException catch (e) {
+      String message;
+      switch (e.code) {
+        case 'email-already-in-use':
+          message = 'E-mail já cadastrado.';
+          break;
+        case 'invalid-email':
+          message = 'E-mail inválido.';
+          break;
+        case 'weak-password':
+          message = 'A senha é muito fraca.';
+          break;
+        default:
+          message = 'Ocorreu um erro. Por favor, tente novamente.';
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(message), backgroundColor: Colors.red),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString()), backgroundColor: Colors.red),
+      );
     }
   }
 
   void signInUser(BuildContext context) async {
     String email = emailController.text;
     String password = passController.text;
-
-    User? user = await _auth.signInWithEmailAndPassword(email, password);
-
-    if(user != null) {
-      //should load the basepage
-      Navigator.pushReplacementNamed(context, '/basePage');
-    } else {
-      print('Erro ao logar');
+    try {
+      User? user = await _auth.signInWithEmailAndPassword(email, password);
+      if (user != null) {
+        Navigator.pushReplacementNamed(context, '/basePage');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Bem vindo, ${user.displayName}'), backgroundColor: Colors.green),
+        );
+      }
+    } on FirebaseAuthException catch (e) {
+      String message;
+      switch (e.code) {
+        case 'invalid-email':
+          message = 'E-mail inválido';
+          break;
+        case 'invalid-credential':
+          message = 'Dados inválidos';
+          break;
+        case 'user-disabled':
+          message = 'Usuário desativado';
+          break;
+        case 'user-not-found':
+          message = 'E-mail não cadastrado';
+          break;
+        case 'wrong-password':
+          message = 'Senha incorreta.';
+          break;
+        default:
+          message = 'Ocorreu um erro. Por favor, tente novamente.';
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(message), backgroundColor: Colors.red),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString()), backgroundColor: Colors.red),
+      );
     }
   }
 
-  void sendPasswordResetEmail() async {
+  Future<void> sendPasswordResetEmail(BuildContext context) async {
     String email = emailController.text;
-    await _auth.sendPasswordResetEmail(email);
+    try{
+      await _auth.sendPasswordResetEmail(email, context);
+    } on FirebaseAuthException catch (e) {
+      throw e;
+    } catch (e) {
+      throw Exception('Erro ao enviar email de recuperação de senha. Por favor, tente novamente.');
+    }
   }
 
   Future<void> signInWithGoogle(context) async {
@@ -174,7 +230,9 @@ class AuthenticationController {
         ]
       ).signIn();
       if (googleSignInAccount == null) {
-        print("User cancelled the sign-in.");
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erro ao fazer login com Google')),
+        );
         return;
       }
 
@@ -190,13 +248,13 @@ class AuthenticationController {
       User? user = userCredential.user;
       if (user != null) {
         Navigator.pushReplacementNamed(context, '/basePage');
+        String name = user.displayName!;
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Bem vindo, $name'), backgroundColor: Colors.green,));
       }
     } catch (e) {
-      if (e is FirebaseAuthException) {
-        print('Google Sign-In Error: ${e.code} - ${e.message}');
-      } else {
-        print('Error during sign-in: ${e.toString()}');
-      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString()), backgroundColor: Colors.red,),
+      );
     }
   }
 
@@ -204,13 +262,16 @@ class AuthenticationController {
       return _auth.currentUser;
   }
 
-  void signOut() async {
+  Future<void> signOut(BuildContext context) async {
     try {
-      await googleSignIn.signOut();
+      Navigator.pushNamedAndRemoveUntil(context, '/login', (Route<dynamic> route) => false);
       await _auth.signOut();
-      print("User signed out from Google account.");
+      await googleSignIn.signOut();
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Logout realizado com sucesso!'), backgroundColor: Colors.green,));
     } catch (e) {
-      print("Error signing out from Google: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Erro: $e"), backgroundColor: Colors.red,),
+      );
     }
   }
 
@@ -282,27 +343,92 @@ class AuthenticationController {
     }
   }
 
-  Future<void> updateEmail(String email) async {
+  Future<void> updateEmail(String email, String password, context) async {
     User? user = getCurrentUser();
     if (user != null) {
-      await user.verifyBeforeUpdateEmail(email);
-      user.reload;
+      try {
+        await reauthenticateUser(user.email!, password);
+        await user.verifyBeforeUpdateEmail(email);
+        await user.reload();
+      } on FirebaseAuthException catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erro na operação: $e'), backgroundColor: Colors.red,));
+      }
     }
   }
 
-  Future<void> deleteAccount() async {
+Future<bool> deleteAccount(String password, context) async {
     User? user = getCurrentUser();
     if (user != null) {
-      await user.delete();
-      await googleSignIn.signOut();
-      await _auth.signOut();
+      try {
+        if (isUserLogedWithGoogle()) {
+          final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+            if (googleUser == null) {
+              return false;
+            }
+          final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+          final AuthCredential credential = GoogleAuthProvider.credential(
+            accessToken: googleAuth.accessToken,
+            idToken: googleAuth.idToken,
+          );
+          await user.reauthenticateWithCredential(credential);
+          await googleSignIn.signOut();
+          await user.delete();
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Conta deletada com sucesso'), backgroundColor: Colors.green,));
+          return true;
+        } else{
+          await reauthenticateUser(user.email!, password);
+          await user.delete();
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Conta deletada com sucesso'), backgroundColor: Colors.green,));
+          return true;
+        }
+      } on FirebaseAuthException catch (e) {
+        String message;
+        switch (e.code) {
+          case 'requires-recent-login':
+            message = 'O usuário precisa reautenticar antes dessa operação.';
+            break;
+          case 'user-not-found':
+            message = 'Usuário não encontrado.';
+            break;
+          case 'invalid-credential':
+            message = 'As credenciais fornecidas estão incorretas, malformadas ou expiraram.';
+            break;
+          default:
+            message = 'Erro ao excluir conta: ${e.message}';
+        }
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(message), backgroundColor: Colors.red),
+        );
+        return false;
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erro ao excluir conta: $e'), backgroundColor: Colors.red),
+        );
+        return false;
+      }
+    }
+    return false;
+  }
+
+  Future<void> reauthenticateUser(String email, String password) async {
+    User? user = getCurrentUser();
+    if (user != null) {
+      AuthCredential credential = EmailAuthProvider.credential(email: email, password: password);
+      await user.reauthenticateWithCredential(credential);
     }
   }
 
-  Future<void> reloadUser() async {
+  bool isUserLogedWithGoogle() {
     User? user = getCurrentUser();
     if (user != null) {
-      await user.reload();
+      for (UserInfo userInfo in user.providerData) {
+        if (userInfo.providerId == 'google.com') {
+          return true;
+        } else if (userInfo.providerId == 'password') {
+          return false;
+        }
+      }
     }
+    return false;
   }
 }

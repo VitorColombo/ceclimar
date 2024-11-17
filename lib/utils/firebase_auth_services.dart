@@ -3,39 +3,52 @@ import 'package:firebase_auth/firebase_auth.dart';
 class FirebaseAuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  Future<void> sendPasswordResetEmail(String email) async {
-    await _auth.sendPasswordResetEmail(email: email);
+  Future<void> sendPasswordResetEmail(String email, context) async {
+    try {
+      await _auth.sendPasswordResetEmail(email: email);
+    } on FirebaseAuthException catch (e) {
+      throw e;
+    } catch (e) {
+      throw Exception('Erro ao enviar email de recuperação de senha. Por favor, tente novamente.');
+    }
   }
 
-  Future<User?> signUpWithEmailAndPassword(String email, String password) async {
+  Future<User?> createUserWithEmailAndPassword(String email, String password) async {
     try {
       UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
         email: email,
-        password: password
+        password: password,
       );
       return userCredential.user;
+    } on FirebaseAuthException catch (e) {
+      throw e;
     } catch (e) {
-        print(e)
-      ;
+      throw Exception('Erro ao criar usuário. Por favor, tente novamente.');
     }
-    return null;
   }
 
   Future<User?> signInWithEmailAndPassword(String email, String password) async {
     try {
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
         email: email,
-        password: password
+        password: password,
       );
       return userCredential.user;
+    } on FirebaseAuthException catch (e) {
+      throw e;
     } catch (e) {
-        print(e);
+      print(e);
+      throw Exception('Erro ao fazer login. Por favor, tente novamente.');
     }
-    return null;
   }
 
   Future<void> signOut() async {
-    await _auth.signOut();
+    try {
+      await _auth.signOut();
+    } catch (e) {
+      print(e);
+      throw Exception('Erro ao fazer logout. Por favor, tente novamente.');
+    }
   }
 
   User? get currentUser {

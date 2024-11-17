@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:tcc_ceclimar/controller/auth_user_controller.dart';
@@ -29,20 +30,23 @@ class _MyProfileState extends State<MyProfile> {
   final AuthenticationController _controller = AuthenticationController();
   final MyProfileController _myProfileController = MyProfileController();
   final ValueNotifier<bool> isUltimosRegistrosNotifier = ValueNotifier<bool>(false);
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   bool isLoading = true;
   List<RegisterResponse> registers = [];
   List<AnimalResponse> animals = [];
 
-  void _logout(BuildContext context) {
-    _controller.signOut();
-    Navigator.pushReplacementNamed(context, '/login');
+  Future<void> _logout(BuildContext context) async {
+    try {
+      _controller.signOut(context);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erro ao sair: $e')));
+    }
   }
 
   @override
   void initState() {
     super.initState();
     fetchMockedRegisters();
-    
   }
   
   Future<void> fetchMockedRegisters() async { //todo remover mocks
@@ -59,6 +63,7 @@ class _MyProfileState extends State<MyProfile> {
     UserResponse? userData = _controller.getUserInfo();
 
     return Scaffold(
+      key: _scaffoldKey,
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
@@ -187,7 +192,8 @@ class _MyProfileState extends State<MyProfile> {
             const SizedBox(height: 15),
             TextButton(
               onPressed: () {
-
+                Navigator.of(context).pop();
+                showWarningMessage();
               },
               style: TextButton.styleFrom(
                 shape: RoundedRectangleBorder(
@@ -208,6 +214,51 @@ class _MyProfileState extends State<MyProfile> {
                 "Excluir conta",
                 style: TextStyle(color: Colors.white), 
               ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void showWarningMessage() async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Atenção"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text("Deseja realmente excluir sua conta?"),
+              const SizedBox(height: 20),
+              if (!_controller.isUserLogedWithGoogle())
+                TextField(
+                  controller: _controller.passController,
+                  obscureText: true,
+                  decoration: const InputDecoration(
+                    labelText: 'Senha',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text("Cancelar"),
+            ),
+            TextButton(
+              onPressed: () async {
+                String password = _controller.passController.text.trim();
+                  bool success = await _controller.deleteAccount(password, _scaffoldKey.currentContext!);
+                  if (success) {
+                    _logout(_scaffoldKey.currentContext!);
+                  }
+              },
+              child: const Text("Excluir"),
             ),
           ],
         );
