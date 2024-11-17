@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tcc_ceclimar/models/simple_register_request.dart';
-import 'package:tcc_ceclimar/models/technical_register_request.dart';
 import 'package:tcc_ceclimar/models/update_register_request.dart';
-import 'package:tcc_ceclimar/widgets/radio_btn_animal_state.dart';
 
 class EvaluateRegisterFormController {
   final TextEditingController nameController = TextEditingController();

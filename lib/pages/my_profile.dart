@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:tcc_ceclimar/controller/auth_user_controller.dart';
 import 'package:tcc_ceclimar/controller/my_profile_controller.dart';
 import 'package:tcc_ceclimar/models/animal_response.dart';
@@ -6,6 +7,7 @@ import 'package:tcc_ceclimar/models/register_response.dart';
 import 'package:tcc_ceclimar/pages/register_view.dart';
 import 'package:tcc_ceclimar/widgets/badge_item.dart';
 import 'package:tcc_ceclimar/widgets/header_banner_widget.dart';
+import 'package:tcc_ceclimar/widgets/modal_bottomsheet.dart';
 import 'package:tcc_ceclimar/widgets/register_item.dart';
 import '../models/user_data.dart';
 import '../widgets/page_header.dart';
@@ -61,8 +63,8 @@ class _MyProfileState extends State<MyProfile> {
         slivers: [
           SliverAppBar(
             pinned: true,
-            collapsedHeight: 280,
-            expandedHeight: 280,
+            collapsedHeight: 250,
+            expandedHeight: 250,
             backgroundColor: Colors.white,
             shadowColor: Color.fromARGB(0, 173, 145, 145),
             flexibleSpace: FlexibleSpaceBar(
@@ -93,9 +95,20 @@ class _MyProfileState extends State<MyProfile> {
                 Column(
                   children: [
                     SizedBox(height: 9),
-                    Text(
-                      '${userData?.name}',
-                      style: Theme.of(context).textTheme.titleLarge,
+                    InkWell(
+                      splashColor: Colors.transparent,
+                      onTap: () => showMyProfileBottomSheet(context),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            '${userData?.name}',
+                            style: Theme.of(context).textTheme.titleLarge,
+                          ),
+                          SizedBox(width: 8),
+                          Icon(PhosphorIcons.pencilSimple(PhosphorIconsStyle.regular), size: 20),
+                        ],
+                      ),
                     ),
                     SizedBox(height: 9),
                     Text(
@@ -134,6 +147,71 @@ class _MyProfileState extends State<MyProfile> {
           )
         ]
       )
+    );
+  }
+
+  void showMyProfileBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        return ModalBottomSheet(
+          text: "Escolha uma opção",
+          buttons: [
+            TextButton(
+              onPressed: () {
+
+              },
+              style: TextButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                backgroundColor: const Color.fromARGB(255, 31, 73, 95),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 40,
+                  vertical: 16,
+                ),
+                textStyle: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: "Inter"
+                ),
+                overlayColor: Colors.white,
+              ),
+              child: const Text(
+                "Editar perfil",
+                style: TextStyle(color: Colors.white), 
+              ),
+            ),
+            const SizedBox(height: 15),
+            TextButton(
+              onPressed: () {
+
+              },
+              style: TextButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                backgroundColor: Colors.red,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 40,
+                  vertical: 16,
+                ),
+                textStyle: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: "Inter"
+                ),
+              ),
+              child: const Text(
+                "Excluir conta",
+                style: TextStyle(color: Colors.white), 
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }

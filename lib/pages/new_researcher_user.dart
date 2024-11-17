@@ -44,7 +44,7 @@ class NewResearcherPageState extends State<NewResearcherPage> {
       body: CustomScrollView( 
         slivers: [
           const SliverAppBar( 
-            expandedHeight: 300,
+            expandedHeight: 250,
             backgroundColor: Colors.white,
             shadowColor: Colors.transparent,
             flexibleSpace: FlexibleSpaceBar(

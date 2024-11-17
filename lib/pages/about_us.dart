@@ -23,7 +23,7 @@ class AboutUs extends StatelessWidget {
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
-            expandedHeight: 280,
+            expandedHeight: 250,
             backgroundColor: Colors.white,
             shadowColor: Colors.transparent,
             flexibleSpace: FlexibleSpaceBar(

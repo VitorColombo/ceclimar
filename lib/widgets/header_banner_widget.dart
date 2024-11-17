@@ -16,7 +16,7 @@ class HeaderBannerWidget extends StatelessWidget {
     return Stack(
       children: <Widget>[
         Positioned.fill(
-          top: -350,
+          top: -380,
           left: -50,
           right: -50,
           bottom: 20,
@@ -26,7 +26,7 @@ class HeaderBannerWidget extends StatelessWidget {
           ),
         ),
         Container(
-          height: 300,
+          height: 250,
           child: Align(
             alignment: Alignment.topLeft,
             child: pageHeader

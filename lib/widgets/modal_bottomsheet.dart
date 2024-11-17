@@ -13,7 +13,7 @@ class _ModalBottomSheetState extends State<ModalBottomSheet> {
   @override
   Widget build(BuildContext context) { 
     return Container(
-      padding: const EdgeInsets.all(40),
+      padding: const EdgeInsets.only(top: 0, left: 40, right: 40, bottom: 0),
       decoration: const BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.only(
@@ -21,7 +21,7 @@ class _ModalBottomSheetState extends State<ModalBottomSheet> {
           topRight: Radius.circular(22),
         ),
       ),
-      height: 350,
+      height: 300,
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

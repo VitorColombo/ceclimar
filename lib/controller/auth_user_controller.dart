@@ -273,4 +273,36 @@ class AuthenticationController {
     }
     return null;
   }
+
+  Future<void> updateDisplayName(String name) async {
+    User? user = getCurrentUser();
+    if (user != null) {
+      await user.updateDisplayName(name);
+      user.reload;
+    }
+  }
+
+  Future<void> updateEmail(String email) async {
+    User? user = getCurrentUser();
+    if (user != null) {
+      await user.verifyBeforeUpdateEmail(email);
+      user.reload;
+    }
+  }
+
+  Future<void> deleteAccount() async {
+    User? user = getCurrentUser();
+    if (user != null) {
+      await user.delete();
+      await googleSignIn.signOut();
+      await _auth.signOut();
+    }
+  }
+
+  Future<void> reloadUser() async {
+    User? user = getCurrentUser();
+    if (user != null) {
+      await user.reload();
+    }
+  }
 }
