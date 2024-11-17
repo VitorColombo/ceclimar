@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:tcc_ceclimar/pages/about_us.dart';
 import 'package:tcc_ceclimar/pages/new_technical_register.dart';
 import '../widgets/new_register_floating_btn.dart';
@@ -87,14 +88,12 @@ class _BasePageState extends State<BasePage> {
                   updateIndex(0);
                 },
                 icon: selectedIndex == 0
-                    ? const Icon(
-                        Icons.home_rounded,
-                        color: Colors.black,
+                    ? Icon(
+                        PhosphorIcons.house(PhosphorIconsStyle.fill),
                         size: 25,
                       )
-                    : const Icon(
-                        Icons.home_outlined,
-                        color: Colors.black,
+                    : Icon(
+                        PhosphorIcons.house(PhosphorIconsStyle.regular),
                         size: 25,
                       ),
               ),
@@ -115,14 +114,12 @@ class _BasePageState extends State<BasePage> {
                   updateIndex(1);
                 },
                 icon: selectedIndex == 1
-                    ? const Icon(
-                        Icons.view_list_outlined,
-                        color: Colors.black,
+                    ? Icon(
+                        PhosphorIcons.list(PhosphorIconsStyle.fill),
                         size: 25,
                       )
-                    : const Icon(
-                        Icons.list,
-                        color: Colors.black,
+                    : Icon(
+                        PhosphorIcons.list(PhosphorIconsStyle.regular),
                         size: 25,
                       ),
               ),
@@ -144,14 +141,12 @@ class _BasePageState extends State<BasePage> {
                   updateIndex(2);
                 },
                 icon: selectedIndex == 2
-                    ? const Icon(
-                        Icons.person,
-                        color: Colors.black,
+                    ? Icon(
+                        PhosphorIcons.user(PhosphorIconsStyle.fill),
                         size: 25,
                       )
-                    : const Icon(
-                        Icons.person_outline,
-                        color: Colors.black,
+                    : Icon(
+                        PhosphorIcons.user(PhosphorIconsStyle.regular),
                         size: 25,
                       ),
               ),
@@ -172,14 +167,11 @@ class _BasePageState extends State<BasePage> {
                   updateIndex(9);
                 },
                 icon: selectedIndex == 9
-                    ? const Icon(
-                        Icons.info,
-                        color: Colors.black,
+                    ? Icon(
+                        PhosphorIcons.info(PhosphorIconsStyle.fill),
                         size: 25,
                       )
-                    : const Icon(
-                        Icons.info_outlined,
-                        color: Colors.black,
+                    : Icon(PhosphorIcons.info(PhosphorIconsStyle.regular),
                         size: 25,
                       ),
               ),

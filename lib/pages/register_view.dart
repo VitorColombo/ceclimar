@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:tcc_ceclimar/models/register_response.dart';
 import 'package:tcc_ceclimar/widgets/register_status_label.dart';
 
@@ -65,7 +66,7 @@ class RegisterDetailPage extends StatelessWidget {
                                   const SizedBox(height: 8),
                                   Row(
                                     children: [
-                                      const Icon(Icons.person, size: 20),
+                                      Icon(PhosphorIcons.user(PhosphorIconsStyle.regular), size: 20),
                                       const SizedBox(width: 8),
                                       Text(
                                         register!.authorName,
@@ -76,7 +77,7 @@ class RegisterDetailPage extends StatelessWidget {
                                   const SizedBox(height: 8),
                                   Row(
                                     children: [
-                                      const Icon(Icons.location_pin, size: 20),
+                                      Icon(PhosphorIcons.mapPin(PhosphorIconsStyle.regular), size: 20),
                                       const SizedBox(width: 8),
                                       Text(
                                         register!.city,
@@ -87,7 +88,7 @@ class RegisterDetailPage extends StatelessWidget {
                                   const SizedBox(height: 8),
                                   Row(
                                     children: [
-                                      const Icon(Icons.calendar_today, size: 20,),
+                                      Icon(PhosphorIcons.calendarBlank(PhosphorIconsStyle.regular), size: 20,),
                                       const SizedBox(width: 8),
                                       Text(
                                         register!.date,
