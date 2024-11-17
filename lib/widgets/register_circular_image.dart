@@ -7,6 +7,7 @@ class RegisterCircularImageWidget extends StatefulWidget {
   final double width;
   final double heigth;
   final Function() onTap;
+  final Function() onRemoveTap;
 
   const RegisterCircularImageWidget({
     super.key, 
@@ -14,6 +15,7 @@ class RegisterCircularImageWidget extends StatefulWidget {
     required this.width,
     required this.heigth,
     required this.onTap,
+    required this.onRemoveTap,
   });
 
   @override
@@ -32,6 +34,7 @@ class _RegisterCircularImageWidgetState extends State<RegisterCircularImageWidge
               return ImageScreen(
                 imageProvider: widget.imageProvider,
                 onEditTap: widget.onTap,
+                onRemoveTap: widget.onRemoveTap,
               );
             },
           );

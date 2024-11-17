@@ -92,6 +92,7 @@ class _MyProfileState extends State<MyProfile> {
               [
                 Column(
                   children: [
+                    SizedBox(height: 9),
                     Text(
                       '${userData?.name}',
                       style: Theme.of(context).textTheme.titleLarge,

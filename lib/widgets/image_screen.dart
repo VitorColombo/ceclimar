@@ -4,11 +4,13 @@ import 'package:flutter/material.dart';
 class ImageScreen extends StatefulWidget {
   final File? imageProvider;
   final Function() onEditTap;
+  final Function() onRemoveTap;
 
   const ImageScreen({
     super.key,
     required this.imageProvider,
     required this.onEditTap,
+    required this.onRemoveTap,
   });
 
   @override
@@ -116,12 +118,13 @@ class _ImageScreenState extends State<ImageScreen> {
                     child: TextButton(
                       onPressed: () {
                         Navigator.pop(context);
+                        widget.onRemoveTap();
                       },
                       style: TextButton.styleFrom(
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        backgroundColor: const Color.fromARGB(255, 31, 73, 95),
+                        backgroundColor: const Color.fromARGB(255, 232, 20, 20),
                         padding: const EdgeInsets.symmetric(
                           horizontal: 10,
                           vertical: 16,
@@ -134,7 +137,7 @@ class _ImageScreenState extends State<ImageScreen> {
                         overlayColor: Colors.white,
                       ),
                       child: const Text(
-                      "Manter imagem",
+                      "Excluir imagem",
                       style: TextStyle(color: Colors.white),
                       ),
                     )

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../models/register_response.dart';
 
 class RegisterItem extends StatelessWidget {
@@ -74,7 +75,7 @@ class RegisterItem extends StatelessWidget {
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Icon(Icons.location_pin, color: Colors.black, size: 20),
+                        Icon(PhosphorIcons.mapPin(), color: Colors.black, size: 20),
                         SizedBox(width: 6),
                         Text(register.city),
                       ],
@@ -82,7 +83,7 @@ class RegisterItem extends StatelessWidget {
                     const SizedBox(height: 4),
                     Row(
                       children: [
-                        Icon(Icons.date_range_outlined, color: Colors.black, size: 20),
+                        Icon(PhosphorIcons.calendarBlank(), color: Colors.black, size: 20),
                         SizedBox(width: 6),
                         Text(register.date),
                       ],

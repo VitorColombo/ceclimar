@@ -53,6 +53,13 @@ class ImageSelectorState extends State<ImageSelector> {
     }
   }
 
+  Future<void> _removeImage () async {
+    setState(() {
+      _selectedImage = null;
+    });
+    widget.onImageSelected(null);
+  }
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -61,9 +68,10 @@ class ImageSelectorState extends State<ImageSelector> {
         children: [
           RegisterCircularImageWidget(
             imageProvider: _selectedImage, 
-            width: widget.width ?? 132, 
-            heigth: widget.height ?? 132, 
+            width: widget.width ?? 132,
+            heigth: widget.height ?? 132,
             onTap: _showModalImagePicker,
+            onRemoveTap: _removeImage,
           ),
         ],
       ),
@@ -76,7 +84,7 @@ class ImageSelectorState extends State<ImageSelector> {
       builder: (context) {
         return ImagePickerModal(
           onCameraTap: _pickImageFromCamera, 
-          onGalleryTap: _pickImageFromGallery
+          onGalleryTap: _pickImageFromGallery,
         );
       }
     );

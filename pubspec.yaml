@@ -27,6 +27,9 @@ dependencies:
   photo_view: ^0.15.0
   geolocator: ^9.0.2
   geocoding: ^2.0.4
+  phosphor_flutter: ^2.1.0
+  url_launcher: ^6.3.1
+  accordion: ^2.6.0
   
 dev_dependencies:
   flutter_test:

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:tcc_ceclimar/models/register_response.dart';
 import 'package:tcc_ceclimar/widgets/circular_image_widget.dart';
 import 'package:tcc_ceclimar/widgets/evaluate_register_form.dart';
@@ -93,12 +94,12 @@ class _EvaluateRegisterState extends State<EvaluateRegister> {
                                 children: [
                                   Text(
                                     'Registro Nº ${widget.register.uid}',
-                                    style: const TextStyle(fontSize: 16),
+                                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                                   ),
                                   const SizedBox(height: 8),
                                   Row(
                                     children: [
-                                      const Icon(Icons.person, size: 20),
+                                      Icon(PhosphorIcons.user(PhosphorIconsStyle.regular), size: 20),
                                       const SizedBox(width: 8),
                                       Text(
                                         widget.register.authorName,
@@ -109,7 +110,7 @@ class _EvaluateRegisterState extends State<EvaluateRegister> {
                                   const SizedBox(height: 8),
                                   Row(
                                     children: [
-                                      const Icon(Icons.location_pin, size: 20),
+                                      Icon(PhosphorIcons.mapPin(PhosphorIconsStyle.regular), size: 20),
                                       const SizedBox(width: 8),
                                       Text(
                                         widget.register.city,
@@ -120,7 +121,7 @@ class _EvaluateRegisterState extends State<EvaluateRegister> {
                                   const SizedBox(height: 8),
                                   Row(
                                     children: [
-                                      const Icon(Icons.calendar_today, size: 20,),
+                                      Icon(PhosphorIcons.calendarBlank(PhosphorIconsStyle.regular), size: 20),
                                       const SizedBox(width: 8),
                                       Text(
                                         widget.register.date,
@@ -135,6 +136,7 @@ class _EvaluateRegisterState extends State<EvaluateRegister> {
                                     else
                                       Text("Encalhe não presenciado")
                                   ]),
+                                  const SizedBox(height: 8),
                                   Row(children: [
                                     Text("Próximo a guarita ${widget.register.beachSpot}")
                                   ]),
@@ -147,7 +149,7 @@ class _EvaluateRegisterState extends State<EvaluateRegister> {
                                   Container(
                                     width: 90,
                                       decoration: BoxDecoration(
-                                      color: Colors.grey[200],
+                                      color: const Color.fromARGB(255, 71, 169, 218),
                                       border: Border.all(
                                         color: Colors.transparent,
                                         width: 1,
@@ -159,20 +161,20 @@ class _EvaluateRegisterState extends State<EvaluateRegister> {
                                       children: [
                                         Text(
                                           'Latitude',
-                                          style: const TextStyle(fontSize: 12),
+                                          style: const TextStyle(fontSize: 14, color: Colors.white),
                                         ),
                                         Text(
                                           '${widget.register.location.latitude}',
-                                          style: const TextStyle(fontSize: 12),
+                                          style: const TextStyle(fontSize: 14, color: Colors.white),
                                         )
                                       ],
                                     ),
                                   ),
-                                  const SizedBox(height: 4),
+                                  const SizedBox(height: 8),
                                   Container(
                                     width: 90,
                                       decoration: BoxDecoration(
-                                      color: Colors.grey[200],
+                                      color: const Color.fromARGB(255, 71, 169, 218),
                                       border: Border.all(
                                         color: Colors.transparent,
                                         width: 1,
@@ -184,11 +186,10 @@ class _EvaluateRegisterState extends State<EvaluateRegister> {
                                       children: [
                                         Text(
                                           'Longitude',
-                                          style: const TextStyle(fontSize: 12),
-                                        ),
+                                          style: const TextStyle(fontSize: 14, color: Colors.white),                                        ),
                                         Text(
                                           '${widget.register.location.longitude}',
-                                          style: const TextStyle(fontSize: 12),
+                                          style: const TextStyle(fontSize: 14, color: Colors.white),
                                         )
                                       ],
                                     ),
