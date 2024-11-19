@@ -152,15 +152,6 @@ class NewUserPageState extends State<NewUserPage> {
                             onSend: () => _controller.signUpUser(context)
                           ),
                         ),
-                        const SizedBox(height: 16),
-                        SizedBox(
-                          width: double.infinity,
-                          height: 56,
-                          child: SendGoogleBtn(
-                            text: "Cadastrar com Google",
-                            onSend: () => _controller.signInWithGoogle(context),
-                          )
-                        ),
                       ],
                     ),
                   ),

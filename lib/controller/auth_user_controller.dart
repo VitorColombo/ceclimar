@@ -1,10 +1,8 @@
-import 'dart:typed_data';
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:tcc_ceclimar/pages/login.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import '../utils/firebase_auth_services.dart';
 import 'package:tcc_ceclimar/models/user_data.dart';
@@ -14,13 +12,18 @@ class AuthenticationController {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passController = TextEditingController();
   final TextEditingController passConfController = TextEditingController();
+  final TextEditingController checkPassController = TextEditingController();
+  final TextEditingController profileImageController = TextEditingController();
   final FirebaseAuthService _auth = FirebaseAuthService();
   final GoogleSignIn googleSignIn = GoogleSignIn();
-
+  File? _image;
+  
   String? nameError;
   String? emailError;
   String? passError;
   String? passConfError;
+  String? checkPassError;
+  String? imageError;
 
   String? validateName(String? value) {
     if (value == null || value.isEmpty) {
@@ -72,6 +75,16 @@ class AuthenticationController {
     }
     if (value != passController.text) {
       return 'As senhas precisam ser iguais';
+    }
+    return null;
+  }
+
+  String? validateCheckPassword(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Senha obrigatória para editar';
+    }
+    if (value.length < 6) {
+      return 'A senha deve conter no mínimo 6 caracteres';
     }
     return null;
   }
@@ -275,51 +288,39 @@ class AuthenticationController {
     }
   }
 
-  ImageProvider getUserImage() {
+  Future<ImageProvider> getUserImage() async {
     User? user = getCurrentUser();
     String defaultProfileImage = 'assets/images/imageProfile.png';
 
     if (user != null) {
       for (UserInfo userInfo in user.providerData) {
-        if (userInfo.providerId == 'google.com' || userInfo.providerId == 'password') {
+        if (userInfo.providerId == 'google.com') {
           String? photoURL = user.photoURL;
           if (photoURL != null && photoURL.startsWith('http')) {
             return NetworkImage(photoURL);
           }
+        } else if (userInfo.providerId == 'password') {
+            String? photoURL = await getProfileImageUrl(user.uid);
+            if (photoURL == null) {
+              return AssetImage(defaultProfileImage);
+            }
+          return NetworkImage(photoURL);
         }
       }
     }
     return AssetImage(defaultProfileImage);
   }
 
-  Future<void> uploadImage(String userId, Uint8List imageBytes) async {
+  Future<String?> getProfileImageUrl(String userId) async {
     try {
-      final storageRef = FirebaseStorage.instance.ref();
-      final imageRef = storageRef.child('users/$userId/profile.jpg');
-
-      await imageRef.putData(imageBytes);
-      final downloadUrl = await imageRef.getDownloadURL();
-
-      await FirebaseFirestore.instance.collection('users').doc(userId).update({
-        'profilePictureUrl': downloadUrl,
-      });
-
-      print('Image uploaded successfully!');
+      DocumentSnapshot doc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+      if (doc.exists) {
+        return doc['profileImageUrl'] as String?;
+      }
     } catch (e) {
-      print('Error uploading image: $e');
+      print('Error getting profile image URL: $e');
     }
-  }
-
-  Future<void> updateImageProfile() async {
-   final picker = ImagePicker();
-   final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-   if (pickedFile != null) {
-     final imageBytes = await pickedFile.readAsBytes();
-     final userId = getCurrentUser()?.uid;
-     if (userId != null) {
-       await uploadImage(userId, imageBytes); 
-     }
-   }
+    return null;
   }
 
   UserResponse? getUserInfo() {
@@ -343,20 +344,7 @@ class AuthenticationController {
     }
   }
 
-  Future<void> updateEmail(String email, String password, context) async {
-    User? user = getCurrentUser();
-    if (user != null) {
-      try {
-        await reauthenticateUser(user.email!, password);
-        await user.verifyBeforeUpdateEmail(email);
-        await user.reload();
-      } on FirebaseAuthException catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erro na operação: $e'), backgroundColor: Colors.red,));
-      }
-    }
-  }
-
-Future<bool> deleteAccount(String password, context) async {
+  Future<bool> deleteAccount(String password, context) async {
     User? user = getCurrentUser();
     if (user != null) {
       try {
@@ -376,7 +364,7 @@ Future<bool> deleteAccount(String password, context) async {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Conta deletada com sucesso'), backgroundColor: Colors.green,));
           return true;
         } else{
-          await reauthenticateUser(user.email!, password);
+          await reauthenticateUser(user.email!, password, context);
           await user.delete();
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Conta deletada com sucesso'), backgroundColor: Colors.green,));
           return true;
@@ -402,7 +390,7 @@ Future<bool> deleteAccount(String password, context) async {
         return false;
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erro ao excluir conta: $e'), backgroundColor: Colors.red),
+          SnackBar(content: Text('Erro ao excluir conta'), backgroundColor: Colors.red),
         );
         return false;
       }
@@ -410,11 +398,22 @@ Future<bool> deleteAccount(String password, context) async {
     return false;
   }
 
-  Future<void> reauthenticateUser(String email, String password) async {
+  Future<void> reauthenticateUser(String email, String password, BuildContext context) async {
     User? user = getCurrentUser();
     if (user != null) {
-      AuthCredential credential = EmailAuthProvider.credential(email: email, password: password);
-      await user.reauthenticateWithCredential(credential);
+      try{
+        AuthCredential credential = EmailAuthProvider.credential(email: email, password: password);
+        await user.reauthenticateWithCredential(credential);
+      } on FirebaseAuthException catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Senha inválida'),
+          backgroundColor: Colors.red));
+        rethrow;
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Erro inesperado'), backgroundColor: Colors.red));
+        rethrow;
+      }
     }
   }
 
@@ -430,5 +429,151 @@ Future<bool> deleteAccount(String password, context) async {
       }
     }
     return false;
+  }
+
+  Future<bool> updateUserProfile(context, String password) async {
+    User? user = getCurrentUser();
+    if (user == null) return false;
+    try {
+      await reauthenticateUser(user.email!, password, context);
+      if (passController.text.isNotEmpty) {
+        await user.updatePassword(passController.text);
+      }
+      if (emailController.text.isNotEmpty && emailController.text != user.email) {
+        await user.verifyBeforeUpdateEmail(emailController.text);
+      }
+      if (nameController.text.isNotEmpty && nameController.text != user.displayName) {
+        await user.updateDisplayName(nameController.text);
+      }
+      final String? imageUrl = await _uploadImage();
+      if (_image != null) {
+          await _saveImageURLToFirestore(imageUrl, user.uid);
+      }
+      await user.reload();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('Perfil atualizado com sucesso!'),
+            backgroundColor: Colors.green),
+      );
+      return true;
+    } on FirebaseAuthException catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Erro na operação'),
+          backgroundColor: Colors.red));
+      return false;
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Erro inesperado'), backgroundColor: Colors.red));
+      return false;
+    }
+  }
+
+  Future<String?> _uploadImage() async {
+    if (_image == null) return null;
+    User? user = getCurrentUser();
+    if (user == null) return null;
+    String userId = user.uid;
+    final Reference storageRef = FirebaseStorage.instance.ref().child('profile_images/$userId');
+    try {
+      final UploadTask uploadTask = storageRef.putFile(File(_image!.path));
+      final TaskSnapshot downloadUrl = await uploadTask;
+      final String url = await downloadUrl.ref.getDownloadURL();
+      return url;
+    } catch (e) {
+        rethrow;
+    }
+  }
+
+  Future<void> _saveImageURLToFirestore(String? url, String userId) async {
+    if (url != null) {
+      await FirebaseFirestore.instance.collection('users').doc(userId).set({
+        'profileImageUrl': url,
+      }, SetOptions(merge: true));
+    }
+  }
+
+  void setImage(File? image) {
+    _image = image;
+  }
+
+  bool validateEditUserForm() {
+    nameController.text = nameController.text.trim();
+    passController.text = passController.text.trim();
+    passConfController.text = passConfController.text.trim();
+    emailController.text = emailController.text.trim();
+    checkPassController.text = checkPassController.text.trim();
+    if (_image == null && nameController.text.isEmpty && passController.text.isEmpty && emailController.text.isEmpty) { 
+      return false;
+    }
+    nameError = validateNameEdit(nameController.text);
+    passError = validatePasswordEdit(passController.text);
+    passConfError = validateConfirmPasswordEdit(passConfController.text);
+    emailError = validateEmailEdit(emailController.text);
+    checkPassError = validateCheckPassword(checkPassController.text);
+
+    return nameError == null && passError == null && emailError == null && passConfError == null && checkPassError == null;
+  }
+
+  String? validateEmailEdit(String? value) {
+    if (value == null) {
+      return null;
+    }
+    if (value.isEmpty){
+      return null;
+    }
+    final RegExp regex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+    if (!regex.hasMatch(value)) {
+      return 'E-mail inválido';
+    }
+    return null;
+  }
+
+  String? validatePasswordEdit(String? value) {
+    if (value == null) {
+      return null;
+    }
+    if (value.isEmpty){
+      return null;
+    }
+    if (value.length < 6) {
+      return 'A senha deve conter no mínimo 6 caracteres';
+    }
+    return null;
+  }
+
+  String? validateNameEdit(String value) {
+    if (value.isEmpty){
+      return null;
+    }
+    final RegExp regex = RegExp(r'^[a-zA-Z\s]*$');
+    if (!regex.hasMatch(value)) {
+      return 'O campo não deve conter caracteres especiais';
+    }
+    if (value.length < 3) {
+      return 'O campo deve conter no mínimo 3 caracteres';
+    }
+    if (value.length > 40) {
+      return 'O campo deve conter no máximo 50 caracteres';
+    }
+    if (value.split(' ').length < 2) {
+      return 'O campo deve conter nome e sobrenome';
+    }
+    if (value.split(" ").last == '') {
+      return 'O campo deve conter nome e sobrenome';
+    }
+    return null;
+  }
+
+  String? validateConfirmPasswordEdit(String? value) {
+    if (value == null) {
+      return null;
+    }
+    if (value.isEmpty){
+      return null;
+    }
+    if (value != passController.text) {
+      return 'As senhas precisam ser iguais';
+    }
+    return null;
   }
 }

@@ -5,6 +5,7 @@ import 'package:tcc_ceclimar/controller/auth_user_controller.dart';
 import 'package:tcc_ceclimar/controller/my_profile_controller.dart';
 import 'package:tcc_ceclimar/models/animal_response.dart';
 import 'package:tcc_ceclimar/models/register_response.dart';
+import 'package:tcc_ceclimar/pages/edit_profile.dart';
 import 'package:tcc_ceclimar/pages/register_view.dart';
 import 'package:tcc_ceclimar/widgets/badge_item.dart';
 import 'package:tcc_ceclimar/widgets/header_banner_widget.dart';
@@ -34,10 +35,11 @@ class _MyProfileState extends State<MyProfile> {
   bool isLoading = true;
   List<RegisterResponse> registers = [];
   List<AnimalResponse> animals = [];
+  ImageProvider? image;
 
   Future<void> _logout(BuildContext context) async {
     try {
-      _controller.signOut(context);
+      _controller.signOut(_scaffoldKey.currentContext!);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erro ao sair: $e')));
     }
@@ -47,6 +49,25 @@ class _MyProfileState extends State<MyProfile> {
   void initState() {
     super.initState();
     fetchMockedRegisters();
+    _loadUserImage();
+  }
+
+  Future<void> _loadUserImage() async {
+    User? user = _controller.getCurrentUser();
+    if (user != null) {
+      String? profileImageUrl = await _controller.getProfileImageUrl(user.uid);
+      if (profileImageUrl != null) {
+        setState(() {
+          image = NetworkImage(profileImageUrl);
+        });
+      }
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _loadUserImage();
   }
   
   Future<void> fetchMockedRegisters() async { //todo remover mocks
@@ -61,7 +82,7 @@ class _MyProfileState extends State<MyProfile> {
   @override
   Widget build(BuildContext context) {
     UserResponse? userData = _controller.getUserInfo();
-
+    
     return Scaffold(
       key: _scaffoldKey,
       body: CustomScrollView(
@@ -75,7 +96,9 @@ class _MyProfileState extends State<MyProfile> {
             flexibleSpace: FlexibleSpaceBar(
               background: Stack(
                 children: [
-                  HeaderBannerWidget(image: _controller.getUserImage()),
+                  HeaderBannerWidget(
+                    image: image ?? AssetImage('assets/images/profile.png'),
+                  ),
                   PageHeader(
                     text: "Meu perfil",
                     icon: const Icon(Icons.arrow_back, color: Colors.white,),
@@ -166,7 +189,10 @@ class _MyProfileState extends State<MyProfile> {
           buttons: [
             TextButton(
               onPressed: () {
-
+                Navigator.pop(context);
+                    Navigator.pushNamed(context, EditProfile.routeName).then((_) {
+                      _loadUserImage();
+                    });
               },
               style: TextButton.styleFrom(
                 shape: RoundedRectangleBorder(
