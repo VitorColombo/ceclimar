@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -8,7 +9,7 @@ import 'package:tcc_ceclimar/models/register_response.dart';
 import 'package:tcc_ceclimar/pages/edit_profile.dart';
 import 'package:tcc_ceclimar/pages/register_view.dart';
 import 'package:tcc_ceclimar/widgets/badge_item.dart';
-import 'package:tcc_ceclimar/widgets/header_banner_widget.dart';
+import 'package:tcc_ceclimar/widgets/login_header.dart';
 import 'package:tcc_ceclimar/widgets/modal_bottomsheet.dart';
 import 'package:tcc_ceclimar/widgets/register_item.dart';
 import '../models/user_data.dart';
@@ -35,7 +36,6 @@ class _MyProfileState extends State<MyProfile> {
   bool isLoading = true;
   List<RegisterResponse> registers = [];
   List<AnimalResponse> animals = [];
-  ImageProvider? image;
 
   Future<void> _logout(BuildContext context) async {
     try {
@@ -49,23 +49,24 @@ class _MyProfileState extends State<MyProfile> {
   void initState() {
     super.initState();
     _checkUserStatus();
-    fetchMockedRegisters();
   }
 
-  Future<ImageProvider?> _loadUserImage() async {
-    User? user = _controller.getCurrentUser();
-    if (user != null) {
-      try {
-        String? profileImageUrl = await _controller.getProfileImageUrl(user.uid);
-        if (profileImageUrl != null) {
-          return NetworkImage(profileImageUrl);
-        }
-      } catch (e) {
-        print("Error loading profile image: $e");
-      }
-    }
+Future<ImageProvider?> _loadUserImage() async {
+  User? user = _controller.getCurrentUser();
+  if (user == null) return AssetImage('assets/images/imageProfile.png');
+
+  String? profileImageUrl = await _controller.getProfileImageUrl(user.uid);
+  if (profileImageUrl == null || profileImageUrl.isEmpty) {
     return AssetImage('assets/images/imageProfile.png');
   }
+
+  try {
+    return CachedNetworkImageProvider(profileImageUrl);
+  } catch (e) {
+    print("Error loading cached image: $e");
+    return AssetImage('assets/images/imageProfile.png');
+  }
+}
 
   Future<void> _checkUserStatus() async {
     User? user = _controller.getCurrentUser();
@@ -73,6 +74,7 @@ class _MyProfileState extends State<MyProfile> {
       Navigator.pushNamedAndRemoveUntil(context, '/login', (Route<dynamic> route) => false);
     } else {
       _loadUserImage();
+      fetchMockedRegisters();
     }
   }
 
@@ -83,7 +85,7 @@ class _MyProfileState extends State<MyProfile> {
   }
   
   Future<void> fetchMockedRegisters() async { //todo remover mocks
-    await Future.delayed(const Duration(milliseconds: 500)); 
+    await Future.delayed(const Duration(milliseconds: 200)); 
     if (!mounted) return;
     setState(() {
       registers = _myProfileController.getRegisters();
@@ -108,20 +110,7 @@ class _MyProfileState extends State<MyProfile> {
             flexibleSpace: FlexibleSpaceBar(
               background: Stack(
                 children: [
-                  FutureBuilder<ImageProvider?>(
-                    future: _loadUserImage(),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(child: CircularProgressIndicator());
-                      } else if (snapshot.hasError) {
-                        return Center(child: Text('Error: ${snapshot.error}'));
-                      } else if (snapshot.hasData) {
-                        return HeaderBannerWidget(image: snapshot.data!);
-                      } else {
-                        return const HeaderBannerWidget(image: AssetImage('assets/images/imageProfile.png'));
-                      }
-                    },
-                  ),
+                  LoginHeaderWidget(imageFuture: _loadUserImage()),
                   PageHeader(
                     text: "Meu perfil",
                     icon: const Icon(Icons.arrow_back, color: Colors.white,),
