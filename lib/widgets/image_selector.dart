@@ -8,11 +8,13 @@ class ImageSelector extends StatefulWidget {
   final double? width;
   final double? height;
   final Function onImageSelected;
+  final String? imageUrl;
 
   const ImageSelector({
     super.key,
     this.height,
     this.width,
+    this.imageUrl,
     required this.onImageSelected,
   });
  

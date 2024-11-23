@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:tcc_ceclimar/widgets/header_banner_widget.dart';
 import 'package:tcc_ceclimar/widgets/input_field.dart';
@@ -34,12 +35,32 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     return _formKey.currentState?.validate() ?? false;
   }
 
-  void _sendPasswordResetEmail() {
-  //todo verificar se o email esta presente no BD
-
-    setState(() {
-      _showSuccessMessage = true;
-    });
+  Future<void> _sendPasswordResetEmail() async {
+    try {
+      await _controller.sendPasswordResetEmail(context);
+      setState(() {
+        _showSuccessMessage = true;
+      });
+    } on FirebaseAuthException catch (e) {
+      String message;
+      switch (e.code) {
+        case 'invalid-email':
+          message = 'O endereço de e-mail está mal formatado.';
+          break;
+        case 'user-not-found':
+          message = 'Não há usuário correspondente a este e-mail.';
+          break;
+        default:
+          message = 'Ocorreu um erro. Por favor, tente novamente.';
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(message)),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Erro ao enviar email de recuperação de senha. Por favor, tente novamente.')),
+      );
+    }
   }
 
   @override
@@ -110,7 +131,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             InputField(
               text: 'Email',
               controller: _controller.emailController,
-              validator: (value) => _controller.emailError
+              validator: (value) => _controller.emailError,
             ),
             const SizedBox(height: 32.0),
             SizedBox(
@@ -122,9 +143,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   if (_validateForm()) {
                     _sendPasswordResetEmail();
                   }
-                  return true; 
+                  return true;
                 },
-                onSend: _controller.sendPasswordResetEmail,
+                onSend: () => _sendPasswordResetEmail(),
               ),
             ),
           ],

@@ -1,11 +1,16 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:tcc_ceclimar/controller/auth_user_controller.dart';
 import 'package:tcc_ceclimar/controller/my_profile_controller.dart';
 import 'package:tcc_ceclimar/models/animal_response.dart';
 import 'package:tcc_ceclimar/models/register_response.dart';
+import 'package:tcc_ceclimar/pages/edit_profile.dart';
 import 'package:tcc_ceclimar/pages/register_view.dart';
 import 'package:tcc_ceclimar/widgets/badge_item.dart';
-import 'package:tcc_ceclimar/widgets/header_banner_widget.dart';
+import 'package:tcc_ceclimar/widgets/login_header.dart';
+import 'package:tcc_ceclimar/widgets/modal_bottomsheet.dart';
 import 'package:tcc_ceclimar/widgets/register_item.dart';
 import '../models/user_data.dart';
 import '../widgets/page_header.dart';
@@ -27,24 +32,59 @@ class _MyProfileState extends State<MyProfile> {
   final AuthenticationController _controller = AuthenticationController();
   final MyProfileController _myProfileController = MyProfileController();
   final ValueNotifier<bool> isUltimosRegistrosNotifier = ValueNotifier<bool>(false);
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   bool isLoading = true;
   List<RegisterResponse> registers = [];
   List<AnimalResponse> animals = [];
 
-  void _logout(BuildContext context) {
-    _controller.signOut();
-    Navigator.pushReplacementNamed(context, '/login');
+  Future<void> _logout(BuildContext context) async {
+    try {
+      _controller.signOut(_scaffoldKey.currentContext!);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erro ao sair: $e')));
+    }
   }
 
   @override
   void initState() {
     super.initState();
-    fetchMockedRegisters();
-    
+    _checkUserStatus();
+  }
+
+  Future<ImageProvider?> _loadUserImage() async {
+    User? user = _controller.getCurrentUser();
+    if (user == null) return AssetImage('assets/images/imageProfile.png');
+
+    String? profileImageUrl = await _controller.getProfileImageUrl(user.uid);
+    if (profileImageUrl == null || profileImageUrl.isEmpty) {
+      return AssetImage('assets/images/imageProfile.png');
+    }
+
+    try {
+      return CachedNetworkImageProvider(profileImageUrl);
+    } catch (e) {
+      return AssetImage('assets/images/imageProfile.png');
+    }
+  }
+
+  Future<void> _checkUserStatus() async {
+    User? user = _controller.getCurrentUser();
+    if (user == null) {
+      Navigator.pushNamedAndRemoveUntil(context, '/login', (Route<dynamic> route) => false);
+    } else {
+      _loadUserImage();
+      fetchMockedRegisters();
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _checkUserStatus();
   }
   
   Future<void> fetchMockedRegisters() async { //todo remover mocks
-    await Future.delayed(const Duration(milliseconds: 500)); 
+    await Future.delayed(const Duration(milliseconds: 200)); 
     if (!mounted) return;
     setState(() {
       registers = _myProfileController.getRegisters();
@@ -55,20 +95,21 @@ class _MyProfileState extends State<MyProfile> {
   @override
   Widget build(BuildContext context) {
     UserResponse? userData = _controller.getUserInfo();
-
+    
     return Scaffold(
+      key: _scaffoldKey,
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
             pinned: true,
-            collapsedHeight: 280,
-            expandedHeight: 280,
+            collapsedHeight: 250,
+            expandedHeight: 250,
             backgroundColor: Colors.white,
             shadowColor: Color.fromARGB(0, 173, 145, 145),
             flexibleSpace: FlexibleSpaceBar(
               background: Stack(
                 children: [
-                  HeaderBannerWidget(image: _controller.getUserImage()),
+                  LoginHeaderWidget(imageFuture: _loadUserImage()),
                   PageHeader(
                     text: "Meu perfil",
                     icon: const Icon(Icons.arrow_back, color: Colors.white,),
@@ -93,9 +134,20 @@ class _MyProfileState extends State<MyProfile> {
                 Column(
                   children: [
                     SizedBox(height: 9),
-                    Text(
-                      '${userData?.name}',
-                      style: Theme.of(context).textTheme.titleLarge,
+                    InkWell(
+                      splashColor: Colors.transparent,
+                      onTap: () => showMyProfileBottomSheet(context),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            '${userData?.name}',
+                            style: Theme.of(context).textTheme.titleLarge,
+                          ),
+                          SizedBox(width: 8),
+                          Icon(PhosphorIcons.pencilSimple(PhosphorIconsStyle.regular), size: 20),
+                        ],
+                      ),
                     ),
                     SizedBox(height: 9),
                     Text(
@@ -134,6 +186,120 @@ class _MyProfileState extends State<MyProfile> {
           )
         ]
       )
+    );
+  }
+
+  void showMyProfileBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        return ModalBottomSheet(
+          text: "Escolha uma opção",
+          buttons: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                    Navigator.pushNamed(context, EditProfile.routeName).then((_) {
+                      _loadUserImage();
+                    });
+              },
+              style: TextButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                backgroundColor: const Color.fromARGB(255, 31, 73, 95),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 40,
+                  vertical: 16,
+                ),
+                textStyle: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: "Inter"
+                ),
+                overlayColor: Colors.white,
+              ),
+              child: const Text(
+                "Editar perfil",
+                style: TextStyle(color: Colors.white), 
+              ),
+            ),
+            const SizedBox(height: 15),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                showWarningMessage();
+              },
+              style: TextButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                backgroundColor: Colors.red,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 40,
+                  vertical: 16,
+                ),
+                textStyle: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: "Inter"
+                ),
+              ),
+              child: const Text(
+                "Excluir conta",
+                style: TextStyle(color: Colors.white), 
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void showWarningMessage() async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Atenção"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text("Deseja realmente excluir sua conta?"),
+              const SizedBox(height: 20),
+              if (!_controller.isUserLogedWithGoogle())
+                TextField(
+                  controller: _controller.passController,
+                  obscureText: true,
+                  decoration: const InputDecoration(
+                    labelText: 'Senha',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text("Cancelar"),
+            ),
+            TextButton(
+              onPressed: () async {
+                String password = _controller.passController.text.trim();
+                  bool success = await _controller.deleteAccount(password, _scaffoldKey.currentContext!);
+                  if (success) {
+                    _logout(_scaffoldKey.currentContext!);
+                  }
+              },
+              child: const Text("Excluir"),
+            ),
+          ],
+        );
+      },
     );
   }
 }

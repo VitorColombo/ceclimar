@@ -103,7 +103,7 @@ class NewRegisterFormController {
     if (value == null || value.isEmpty) {
       return 'Campo obrigatório';
     }
-    final RegExp regex = RegExp(r'^[a-zA-Z\s]*$');
+    final RegExp regex = RegExp(r'^[\p{L}\s]+$', unicode: true);
     if (!regex.hasMatch(value)) {
       return 'Caractere inválido';
     }
@@ -126,7 +126,7 @@ class NewRegisterFormController {
   }
 
   String? validateSpecies(String species) {
-    final RegExp regex = RegExp(r'^[a-zA-Z\s]*$');
+    final RegExp regex = RegExp(r'^[\p{L}\s]+$', unicode: true);
     if (species.length < 5) {
       return 'Caracteres mínimos: 5';
     }
@@ -137,7 +137,7 @@ class NewRegisterFormController {
   }
 
   String? validateGender(String gender) {
-    final RegExp regex = RegExp(r'^[a-zA-Z\s]*$');
+    final RegExp regex = RegExp(r'^[\p{L}\s]+$', unicode: true);
     if (gender.isNotEmpty) {
       if (gender.length < 3) {
         return 'Caracteres mínimos: 3';
@@ -150,7 +150,7 @@ class NewRegisterFormController {
   }
 
   String? validateFamily(String family) {
-    final RegExp regex = RegExp(r'^[a-zA-Z\s]*$');
+    final RegExp regex = RegExp(r'^[\p{L}\s]+$', unicode: true);
     if (family.isNotEmpty) {
       if (family.length < 3) {
         return 'Caracteres mínimos: 3';
@@ -163,7 +163,7 @@ class NewRegisterFormController {
   }
 
   String? validateCity(String city) {
-    final RegExp regex = RegExp(r'^[a-zA-Z\s]*$');
+    final RegExp regex = RegExp(r'^[\p{L}\s]+$', unicode: true);
     if (city.length < 3) {
       return 'Caracteres mínimos: 3';
     }
@@ -193,7 +193,7 @@ class NewRegisterFormController {
   }
 
   String? validateOrder(String order) {
-    final RegExp regex = RegExp(r'^[a-zA-Z\s]*$');
+    final RegExp regex = RegExp(r'^[\p{L}\s]+$', unicode: true);
     if (order.isNotEmpty) {
       if (order.length < 3) {
         return 'Caracteres mínimos: 3';

@@ -7,7 +7,6 @@ import 'package:tcc_ceclimar/widgets/password_input.dart';
 import 'package:tcc_ceclimar/widgets/send_btn.dart';
 
 import '../widgets/no_animation_push.dart';
-import '../widgets/send_google_btn.dart';
 
 class NewUserPage extends StatefulWidget {
   static const String routeName = '/cadastrar';
@@ -151,15 +150,6 @@ class NewUserPageState extends State<NewUserPage> {
                             onValidate: _validateForm, 
                             onSend: () => _controller.signUpUser(context)
                           ),
-                        ),
-                        const SizedBox(height: 16),
-                        SizedBox(
-                          width: double.infinity,
-                          height: 56,
-                          child: SendGoogleBtn(
-                            text: "Cadastrar com Google",
-                            onSend: () => _controller.signInWithGoogle(context),
-                          )
                         ),
                       ],
                     ),

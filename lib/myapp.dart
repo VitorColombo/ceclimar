@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tcc_ceclimar/models/register_response.dart';
 import 'package:tcc_ceclimar/pages/about_us.dart';
 import 'package:tcc_ceclimar/pages/base_page.dart';
+import 'package:tcc_ceclimar/pages/edit_profile.dart';
 import 'package:tcc_ceclimar/pages/evaluate_register.dart';
 import 'package:tcc_ceclimar/pages/pending_registers.dart';
 import 'package:tcc_ceclimar/pages/forgot_pass.dart';
@@ -79,6 +80,7 @@ class MyApp extends StatelessWidget {
         RegisterDetailPage.routeName:(context) => RegisterDetailPage(
                 register: ModalRoute.of(context)!.settings.arguments as RegisterResponse,
               ),
+        EditProfile.routeName:(context) => const EditProfile(),
       },
     );
   }
