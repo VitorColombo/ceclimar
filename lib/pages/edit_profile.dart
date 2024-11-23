@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:tcc_ceclimar/controller/auth_user_controller.dart';
@@ -41,30 +40,6 @@ class EditProfileState extends State<EditProfile> {
       _controller.validateEditUserForm();
     });
     return _formKey.currentState?.validate() ?? false;
-  }
-
-  Future<void> _loadProfileImage() async {
-    User? user = _controller.getCurrentUser();
-    if (user == null) return;
-    String userId = user.uid;
-
-    try {
-      DocumentSnapshot snapshot = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .get();
-
-      if (snapshot.exists) {
-        String? imageUrl = snapshot.get('profilePictureUrl');
-        if (imageUrl != null) {
-          setState(() {
-            _controller.profileImageController.text = imageUrl;
-          });
-        }
-      }
-    } catch (e) {
-      print("Error loading profile image: $e");
-    }
   }
 
   @override

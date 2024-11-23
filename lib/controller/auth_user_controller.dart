@@ -169,10 +169,12 @@ class AuthenticationController {
         default:
           message = 'Ocorreu um erro. Por favor, tente novamente.';
       }
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(message), backgroundColor: Colors.red),
       );
     } catch (e) {
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(e.toString()), backgroundColor: Colors.red),
       );
@@ -211,10 +213,12 @@ class AuthenticationController {
         default:
           message = 'Ocorreu um erro. Por favor, tente novamente.';
       }
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(message), backgroundColor: Colors.red),
       );
     } catch (e) {
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(e.toString()), backgroundColor: Colors.red),
       );
@@ -243,6 +247,7 @@ class AuthenticationController {
         ]
       ).signIn();
       if (googleSignInAccount == null) {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Erro ao fazer login com Google')),
         );
@@ -318,7 +323,7 @@ class AuthenticationController {
         return doc['profileImageUrl'] as String?;
       }
     } catch (e) {
-      print('Error getting profile image URL: $e');
+      rethrow;
     }
     return null;
   }
@@ -402,6 +407,7 @@ class AuthenticationController {
           backgroundColor: Colors.red));
         rethrow;
       } catch (e) {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text('Erro inesperado'), backgroundColor: Colors.red));
         rethrow;
@@ -465,6 +471,7 @@ class AuthenticationController {
           backgroundColor: Colors.red));
       return false;
     } catch (e) {
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text('Erro inesperado'), backgroundColor: Colors.red));
       return false;

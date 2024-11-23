@@ -7,7 +7,7 @@ class FirebaseAuthService {
     try {
       await _auth.sendPasswordResetEmail(email: email);
     } on FirebaseAuthException catch (e) {
-      throw e;
+      rethrow;
     } catch (e) {
       throw Exception('Erro ao enviar email de recuperação de senha. Por favor, tente novamente.');
     }
@@ -21,7 +21,7 @@ class FirebaseAuthService {
       );
       return userCredential.user;
     } on FirebaseAuthException catch (e) {
-      throw e;
+      rethrow;
     } catch (e) {
       throw Exception('Erro ao criar usuário. Por favor, tente novamente.');
     }
@@ -35,9 +35,8 @@ class FirebaseAuthService {
       );
       return userCredential.user;
     } on FirebaseAuthException catch (e) {
-      throw e;
+      rethrow;
     } catch (e) {
-      print(e);
       throw Exception('Erro ao fazer login. Por favor, tente novamente.');
     }
   }
@@ -46,7 +45,6 @@ class FirebaseAuthService {
     try {
       await _auth.signOut();
     } catch (e) {
-      print(e);
       throw Exception('Erro ao fazer logout. Por favor, tente novamente.');
     }
   }

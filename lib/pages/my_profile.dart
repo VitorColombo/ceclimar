@@ -51,22 +51,21 @@ class _MyProfileState extends State<MyProfile> {
     _checkUserStatus();
   }
 
-Future<ImageProvider?> _loadUserImage() async {
-  User? user = _controller.getCurrentUser();
-  if (user == null) return AssetImage('assets/images/imageProfile.png');
+  Future<ImageProvider?> _loadUserImage() async {
+    User? user = _controller.getCurrentUser();
+    if (user == null) return AssetImage('assets/images/imageProfile.png');
 
-  String? profileImageUrl = await _controller.getProfileImageUrl(user.uid);
-  if (profileImageUrl == null || profileImageUrl.isEmpty) {
-    return AssetImage('assets/images/imageProfile.png');
-  }
+    String? profileImageUrl = await _controller.getProfileImageUrl(user.uid);
+    if (profileImageUrl == null || profileImageUrl.isEmpty) {
+      return AssetImage('assets/images/imageProfile.png');
+    }
 
-  try {
-    return CachedNetworkImageProvider(profileImageUrl);
-  } catch (e) {
-    print("Error loading cached image: $e");
-    return AssetImage('assets/images/imageProfile.png');
+    try {
+      return CachedNetworkImageProvider(profileImageUrl);
+    } catch (e) {
+      return AssetImage('assets/images/imageProfile.png');
+    }
   }
-}
 
   Future<void> _checkUserStatus() async {
     User? user = _controller.getCurrentUser();
