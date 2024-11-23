@@ -29,7 +29,7 @@ class AuthenticationController {
     if (value == null || value.isEmpty) {
       return 'O campo não pode ser vazio';
     }
-    final RegExp regex = RegExp(r'^[a-zA-Z\s]*$');
+    final RegExp regex = RegExp(r'^[\p{L}\s]+$', unicode: true);
     if (!regex.hasMatch(value)) {
       return 'O campo não deve conter caracteres especiais';
     }
@@ -548,7 +548,7 @@ class AuthenticationController {
     if (value.isEmpty){
       return null;
     }
-    final RegExp regex = RegExp(r'^[a-zA-Z\s]*$');
+    final RegExp regex = RegExp(r'^[\p{L}\s]+$', unicode: true);
     if (!regex.hasMatch(value)) {
       return 'O campo não deve conter caracteres especiais';
     }

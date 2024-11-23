@@ -70,7 +70,7 @@ class EvaluateRegisterFormController {
     if (value == null || value.isEmpty) {
       return 'Campo obrigatório';
     }
-    final RegExp regex = RegExp(r'^[a-zA-Z\s]*$');
+    final RegExp regex = RegExp(r'^[\p{L}\s]+$', unicode: true);
     if (!regex.hasMatch(value)) {
       return 'Caractere inválido';
     }
@@ -87,7 +87,7 @@ class EvaluateRegisterFormController {
     if (species == null || species.isEmpty) {
       return 'Campo obrigatório';
     }
-    final RegExp regex = RegExp(r'^[a-zA-Z\s]*$');
+    final RegExp regex = RegExp(r'^[\p{L}\s]+$', unicode: true);
     if (species.length < 5) {
       return 'Caracteres mínimos: 5';
     }
@@ -101,7 +101,7 @@ class EvaluateRegisterFormController {
     if (gender == null || gender.isEmpty) {
       return 'Campo obrigatório';
     }
-    final RegExp regex = RegExp(r'^[a-zA-Z\s]*$');
+    final RegExp regex = RegExp(r'^[\p{L}\s]+$', unicode: true);
     if (gender.length < 3) {
       return 'Caracteres mínimos: 3';
     }
@@ -115,7 +115,7 @@ class EvaluateRegisterFormController {
     if (family == null || family.isEmpty) {
       return 'Campo obrigatório';
     }
-    final RegExp regex = RegExp(r'^[a-zA-Z\s]*$');
+    final RegExp regex = RegExp(r'^[\p{L}\s]+$', unicode: true);
     if (family.length < 3) {
       return 'Caracteres mínimos: 3';
     }
@@ -129,7 +129,7 @@ class EvaluateRegisterFormController {
     if (order == null || order.isEmpty) {
       return 'Campo obrigatório';
     }
-    final RegExp regex = RegExp(r'^[a-zA-Z\s]*$');
+    final RegExp regex = RegExp(r'^[\p{L}\s]+$', unicode: true);
     if (order.length < 3) {
       return 'Caracteres mínimos: 3';
     }
@@ -143,7 +143,7 @@ class EvaluateRegisterFormController {
     if (text == null || text.isEmpty) {
       return 'Campo obrigatório';
     }
-    final RegExp regex = RegExp(r'^[a-zA-Z\s]*$');
+    final RegExp regex = RegExp(r'^[\p{L}\s]+$', unicode: true);
     if (text.length < 3) {
       return 'Caracteres mínimos: 3';
     }
