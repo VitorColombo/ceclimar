@@ -152,9 +152,10 @@ class EditProfileState extends State<EditProfile> {
                               onValidate: _validateForm,
                               onSend: () async =>  {
                                 if (_validateForm()) {
-                                  await _controller.updateUserProfile(_formKey.currentContext!, _controller.checkPassController.text),
+                                  if((await _controller.updateUserProfile(_formKey.currentContext!, _controller.checkPassController.text) == false)){
+                                    Navigator.pop(_formKey.currentContext!)
+                                  },
                                 },
-                                Navigator.pop(_formKey.currentContext!)
                               }
                             ),
                           ),

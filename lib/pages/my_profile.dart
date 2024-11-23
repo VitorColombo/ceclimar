@@ -48,26 +48,38 @@ class _MyProfileState extends State<MyProfile> {
   @override
   void initState() {
     super.initState();
+    _checkUserStatus();
     fetchMockedRegisters();
-    _loadUserImage();
   }
 
-  Future<void> _loadUserImage() async {
+  Future<ImageProvider?> _loadUserImage() async {
     User? user = _controller.getCurrentUser();
     if (user != null) {
-      String? profileImageUrl = await _controller.getProfileImageUrl(user.uid);
-      if (profileImageUrl != null) {
-        setState(() {
-          image = NetworkImage(profileImageUrl);
-        });
+      try {
+        String? profileImageUrl = await _controller.getProfileImageUrl(user.uid);
+        if (profileImageUrl != null) {
+          return NetworkImage(profileImageUrl);
+        }
+      } catch (e) {
+        print("Error loading profile image: $e");
       }
+    }
+    return AssetImage('assets/images/imageProfile.png');
+  }
+
+  Future<void> _checkUserStatus() async {
+    User? user = _controller.getCurrentUser();
+    if (user == null) {
+      Navigator.pushNamedAndRemoveUntil(context, '/login', (Route<dynamic> route) => false);
+    } else {
+      _loadUserImage();
     }
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _loadUserImage();
+    _checkUserStatus();
   }
   
   Future<void> fetchMockedRegisters() async { //todo remover mocks
@@ -96,8 +108,19 @@ class _MyProfileState extends State<MyProfile> {
             flexibleSpace: FlexibleSpaceBar(
               background: Stack(
                 children: [
-                  HeaderBannerWidget(
-                    image: image ?? AssetImage('assets/images/profile.png'),
+                  FutureBuilder<ImageProvider?>(
+                    future: _loadUserImage(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      } else if (snapshot.hasError) {
+                        return Center(child: Text('Error: ${snapshot.error}'));
+                      } else if (snapshot.hasData) {
+                        return HeaderBannerWidget(image: snapshot.data!);
+                      } else {
+                        return const HeaderBannerWidget(image: AssetImage('assets/images/imageProfile.png'));
+                      }
+                    },
                   ),
                   PageHeader(
                     text: "Meu perfil",

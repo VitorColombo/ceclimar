@@ -7,7 +7,6 @@ import 'package:tcc_ceclimar/widgets/password_input.dart';
 import 'package:tcc_ceclimar/widgets/send_btn.dart';
 
 import '../widgets/no_animation_push.dart';
-import '../widgets/send_google_btn.dart';
 
 class NewUserPage extends StatefulWidget {
   static const String routeName = '/cadastrar';

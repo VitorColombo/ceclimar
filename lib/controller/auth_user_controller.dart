@@ -225,8 +225,8 @@ class AuthenticationController {
     String email = emailController.text;
     try{
       await _auth.sendPasswordResetEmail(email, context);
-    } on FirebaseAuthException catch (e) {
-      throw e;
+    } on FirebaseAuthException {
+      rethrow;
     } catch (e) {
       throw Exception('Erro ao enviar email de recuperação de senha. Por favor, tente novamente.');
     }
@@ -336,14 +336,6 @@ class AuthenticationController {
     return null;
   }
 
-  Future<void> updateDisplayName(String name) async {
-    User? user = getCurrentUser();
-    if (user != null) {
-      await user.updateDisplayName(name);
-      user.reload;
-    }
-  }
-
   Future<bool> deleteAccount(String password, context) async {
     User? user = getCurrentUser();
     if (user != null) {
@@ -433,7 +425,7 @@ class AuthenticationController {
 
   Future<bool> updateUserProfile(context, String password) async {
     User? user = getCurrentUser();
-    if (user == null) return false;
+    bool emailChanged = emailController.text != user!.email;
     try {
       await reauthenticateUser(user.email!, password, context);
       if (passController.text.isNotEmpty) {
@@ -450,12 +442,23 @@ class AuthenticationController {
           await _saveImageURLToFirestore(imageUrl, user.uid);
       }
       await user.reload();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text('Perfil atualizado com sucesso!'),
+      if (emailChanged && emailController.text.isNotEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Perfil atualizado com sucesso! Verifique seu e-mail para confirmar as alterações.'),
             backgroundColor: Colors.green),
-      );
-      return true;
+        );
+        await _auth.signOut();
+        Navigator.pushNamedAndRemoveUntil(context, '/login', (Route<dynamic> route) => false);
+        return true;
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text('Perfil atualizado com sucesso!'),
+              backgroundColor: Colors.green),
+        );
+        return false;
+      }
     } on FirebaseAuthException catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text('Erro na operação'),
