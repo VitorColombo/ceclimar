@@ -1,44 +1,48 @@
 class UpdateRegisterRequest {
-  final String name;
+  final String popularName;
   final String species;
-  final String obs;
   final String classe;
   final String order;
   final String family;
   final String gender;
-  final String animalStatus;
+  final int sampleState;
+  final String? specialistReturn;
+  final String status;
 
   UpdateRegisterRequest({
-    required this.name,
+    required this.popularName,
     required this.species,
-    required this.obs,
     required this.classe,
     required this.order,
     required this.family,
     required this.gender,
-    required this.animalStatus,
+    required this.sampleState,
+    required this.specialistReturn,
+    required this.status,
   });
 
   Map<String, dynamic> toJson() {
     return {
-      'name': name,
+      'popularName': popularName,
       'species': species,
       'classe': classe,
       'order': order,
       'family': family,
       'gender': gender,
-      'animalStatus': animalStatus,
-      'obs': obs,
+      'status': status,
+      'sampleState': sampleState,
+      'specialistReturn': specialistReturn,
     };
   }
 
   UpdateRegisterRequest.fromJson(Map<String, dynamic> json)
-    : name = json['name'],
+    : popularName = json['popularName'],
       species = json['species'],
       classe = json['classe'],
       order = json['order'],
       family = json['family'],
       gender = json['gender'],
-      animalStatus = json['animalStatus'],
-      obs = json['obs'];
+      status = json['status'],
+      sampleState = json['sampleState'],
+      specialistReturn = json['specialistReturn'];
 }

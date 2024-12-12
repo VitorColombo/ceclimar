@@ -20,7 +20,7 @@ class ImagePickerModal extends StatelessWidget {
         Card(
           shadowColor: Colors.black.withOpacity(0.7),
           elevation: 6.0,
-          color: const Color.fromARGB(255, 71, 169, 218),
+          color: const Color.fromARGB(255, 31, 73, 95),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10.0),
           ),

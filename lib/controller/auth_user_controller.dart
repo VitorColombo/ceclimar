@@ -145,15 +145,26 @@ class AuthenticationController {
     String password = passController.text;
     try {
       User? user = await _auth.createUserWithEmailAndPassword(email, password);
-      if (user != null) {
-        await user.updateDisplayName(name);
-        await user.reload();
-        user = FirebaseAuth.instance.currentUser;
-        Navigator.pushReplacementNamed(context, '/login');
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Usuário cadastrado com sucesso!'), backgroundColor: Colors.green),
-        );
-      }
+    if (user != null) {
+      await user.updateDisplayName(name);
+      await user.reload();
+      user = FirebaseAuth.instance.currentUser;
+
+      await FirebaseFirestore.instance.collection('users').doc(user?.uid).set({
+        'name': name,
+        'email': email,
+        'createdAt': FieldValue.serverTimestamp(),
+        'profileImageUrl': '',
+      });
+
+      Navigator.pushReplacementNamed(context, '/login');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Usuário cadastrado com sucesso!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    }
     } on FirebaseAuthException catch (e) {
       String message;
       switch (e.code) {
@@ -265,6 +276,19 @@ class AuthenticationController {
       UserCredential userCredential = await auth.signInWithCredential(credential);
       User? user = userCredential.user;
       if (user != null) {
+        DocumentSnapshot doc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get();
+        if (!doc.exists) {
+          await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+            'name': user.displayName,
+            'email': user.email,
+            'createdAt': FieldValue.serverTimestamp(),
+            'profileImageUrl': user.photoURL,
+          });
+        }
+
         Navigator.pushReplacementNamed(context, '/basePage');
         String name = user.displayName!;
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Bem vindo, $name'), backgroundColor: Colors.green,));
@@ -282,9 +306,9 @@ class AuthenticationController {
 
   Future<void> signOut(BuildContext context) async {
     try {
-      Navigator.pushNamedAndRemoveUntil(context, '/login', (Route<dynamic> route) => false);
       await _auth.signOut();
       await googleSignIn.signOut();
+      Navigator.pushNamedAndRemoveUntil(context, '/login', (Route<dynamic> route) => false);
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Logout realizado com sucesso!'), backgroundColor: Colors.green,));
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -357,12 +381,14 @@ class AuthenticationController {
           );
           await user.reauthenticateWithCredential(credential);
           await googleSignIn.signOut();
+          await FirebaseFirestore.instance.collection('users').doc(user.uid).delete();
           await user.delete();
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Conta deletada com sucesso'), backgroundColor: Colors.green,));
           return true;
         } else{
           await reauthenticateUser(user.email!, password, context);
-          await user.delete();
+          await FirebaseFirestore.instance.collection('users').doc(user.uid).delete();
+          await user.delete();          
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Conta deletada com sucesso'), backgroundColor: Colors.green,));
           return true;
         }
@@ -447,6 +473,11 @@ class AuthenticationController {
       if (_image != null) {
           await _saveImageURLToFirestore(imageUrl, user.uid);
       }
+      await _updateUserInFirestore(user.uid, {
+        'name': nameController.text.isNotEmpty ? nameController.text : user.displayName,
+        'email': emailController.text.isNotEmpty ? emailController.text : user.email,
+      });
+
       await user.reload();
       if (emailChanged && emailController.text.isNotEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -477,6 +508,17 @@ class AuthenticationController {
       return false;
     }
   }
+
+  Future<void> _updateUserInFirestore(String userId, Map<String, dynamic> userData) async {
+  try {
+    await FirebaseFirestore.instance.collection('users').doc(userId).set(
+      userData,
+      SetOptions(merge: true),
+    );
+  } catch (e) {
+    throw Exception('Erro ao atualizar o Firestore: $e');
+  }
+}
 
   Future<String?> _uploadImage() async {
     if (_image == null) return null;
@@ -575,14 +617,14 @@ class AuthenticationController {
   }
 
   String? validateConfirmPasswordEdit(String? value) {
+    if (value != passController.text) {
+      return 'As senhas precisam ser iguais';
+    }
     if (value == null) {
       return null;
     }
     if (value.isEmpty){
       return null;
-    }
-    if (value != passController.text) {
-      return 'As senhas precisam ser iguais';
     }
     return null;
   }

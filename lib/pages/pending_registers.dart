@@ -27,20 +27,30 @@ class _PendingRegistersState extends State<PendingRegisters> {
   @override
   void initState() {
     super.initState();
-    fetchMockedRegisters();
+    fetchRegisters();
   }
 
-  Future<void> fetchMockedRegisters() async { //todo remover mocks
-    await Future.delayed(const Duration(milliseconds: 500)); 
-    if (!mounted) return;
+  Future<void> fetchRegisters() async {
     setState(() {
-      registers = _pendingRegistersController.getRegisters();
-      isLoading = false;
-      registers = registers.where((element) => element.status == "Enviado").toList(); //todo enviar o filtro pela controller para o backend
+      isLoading = true;
     });
+    try {
+      List<RegisterResponse> fetchedRegisters = await _pendingRegistersController.getAllPendingRegisters();
+      setState(() {
+        registers = fetchedRegisters;
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Erro ao carregar registros: $e')),
+      );
+    }
   }
 
-  @override
+@override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
@@ -48,32 +58,42 @@ class _PendingRegistersState extends State<PendingRegisters> {
           children: [
             PageHeader(
               text: "Registros pendentes",
-              icon: const Icon(Icons.arrow_back), 
-              onTap: () => widget.updateIndex(0)
+              icon: const Icon(Icons.arrow_back),
+              onTap: () => widget.updateIndex(0),
             ),
-            isLoading
-                ? Container(
-                  padding: const EdgeInsets.only(top: 250),
-                  alignment: Alignment.center,
-                  child: const Center(
-                      child: CircularProgressIndicator()
-                    ),
-                )
-                : SizedBox(
-                    height: MediaQuery.of(context).size.height - kToolbarHeight,
-                    child: ListView.builder(
-                      padding: EdgeInsets.only(top: 0, bottom: 180),
-                      physics: AlwaysScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: registers.length,
-                      itemBuilder: (context, index) {
-                        return RegisterItem(
-                          register: registers[index],
-                          route: EvaluateRegister.routeName
-                          );
-                      },
-                    ),
+            if (isLoading)
+              Container(
+                padding: const EdgeInsets.only(top: 250),
+                alignment: Alignment.center,
+                child: const Center(child: CircularProgressIndicator()),
+              )
+            else if (registers.isEmpty)
+              Center( // Center the message
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0), // Add some padding
+                  child: Text(
+                    "Nenhum registro pendente para avaliação no momento.",
+                    style: TextStyle(fontSize: 18), // Customize the style
+                    textAlign: TextAlign.center, // Center the text
                   ),
+                ),
+              )
+            else
+              SizedBox(
+                height: MediaQuery.of(context).size.height - kToolbarHeight,
+                child: ListView.builder(
+                  padding: EdgeInsets.only(top: 0, bottom: 180),
+                  physics: AlwaysScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  itemCount: registers.length,
+                  itemBuilder: (context, index) {
+                    return RegisterItem(
+                      register: registers[index],
+                      route: EvaluateRegister.routeName,
+                    );
+                  },
+                ),
+              ),
           ],
         ),
       ),

@@ -9,13 +9,8 @@ import 'package:tcc_ceclimar/widgets/send_btn.dart';
 
 class EditProfile extends StatefulWidget {
   static const String routeName = '/editProfile';
-  final Function(int) updateIndex;
 
-  const EditProfile({super.key, this.updateIndex = _defaultUpdateIndex});
-
-  static void _defaultUpdateIndex(int index) {
-
-  }
+  const EditProfile({super.key});
   
   @override
   EditProfileState createState() => EditProfileState();
@@ -53,7 +48,7 @@ class EditProfileState extends State<EditProfile> {
             PageHeader(
               text: "Editar perfil",
               icon: const Icon(Icons.arrow_back),
-              onTap: () => widget.updateIndex(0),
+              onTap: () => Navigator.pop(context),
             ),
             Padding(
               padding: const EdgeInsets.only(left: 16.0, right: 16.0),

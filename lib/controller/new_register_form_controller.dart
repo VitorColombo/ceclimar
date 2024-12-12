@@ -1,11 +1,16 @@
-import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:tcc_ceclimar/models/simple_register_request.dart';
 import 'package:tcc_ceclimar/models/technical_register_request.dart';
+import 'package:tcc_ceclimar/pages/base_page.dart';
+import 'package:tcc_ceclimar/pages/home.dart';
+import 'package:tcc_ceclimar/pages/my_registers.dart';
+import 'package:uuid/uuid.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class NewRegisterFormController {
   final TextEditingController nameController = TextEditingController();
@@ -18,6 +23,7 @@ class NewRegisterFormController {
   final TextEditingController genderController = TextEditingController();
   final TextEditingController orderController = TextEditingController();
   final TextEditingController classController = TextEditingController();
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   File? _image;
   File? _image2;
   String? currentAddress;
@@ -88,8 +94,9 @@ class NewRegisterFormController {
     familyError = validateFamily(familyController.text);
     genderError = validateGender(genderController.text);
     orderError = validateOrder(orderController.text);
+    imageError = validateImages();
 
-    return nameError == null && hourError == null && validateImages() == null; //todo
+    return nameError == null && hourError == null && validateImages() == null; 
   }
 
   String? validateImages() {
@@ -278,6 +285,7 @@ class NewRegisterFormController {
                 backgroundColor: Colors.green,
               )
             );
+            Navigator.pushNamedAndRemoveUntil(context, BasePage.routeName, (Route<dynamic> route) => false, arguments: 0);
           } else {
             ScaffoldMessenger.of(context).hideCurrentSnackBar();
             ScaffoldMessenger.of(context).showSnackBar(
@@ -287,7 +295,7 @@ class NewRegisterFormController {
         } catch (e) {
           ScaffoldMessenger.of(context).hideCurrentSnackBar();
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Falha ao obter a localização: $e')),
+            SnackBar(content: Text('Falha ao enviar registro: $e')),
           );
         }
       }
@@ -352,16 +360,19 @@ class NewRegisterFormController {
                 backgroundColor: Colors.green,
               )
             );
+            Navigator.pushNamedAndRemoveUntil(context, BasePage.routeName, (Route<dynamic> route) => false, arguments: 0);
           } else {
             ScaffoldMessenger.of(context).hideCurrentSnackBar();
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Falha ao enviar o registro.')),
+              SnackBar(content: Text('Falha ao enviar o registro.'),
+              backgroundColor: Colors.red,),
             );
           }
         } catch (e) {
           ScaffoldMessenger.of(context).hideCurrentSnackBar();
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Falha ao obter a localização: $e')),
+            SnackBar(content: Text('Falha ao enviar o registro: $e'), 
+              backgroundColor: Colors.red,),
           );
         }
       }
@@ -378,43 +389,52 @@ class NewRegisterFormController {
     }
   }
 
-Future<SimpleRegisterRequest?> sendSimpleRegisterToApiMocked(
-    String name,
-    String hour,
-    bool witnessed,
-    double latitude,
-    double longitude,
-  ) async {
-    final Uint8List imageBytes = _image != null ? await _image!.readAsBytes() : Uint8List(0);
-    final Uint8List image2Bytes = _image2 != null ? await _image2!.readAsBytes() : Uint8List(0);
+  Future<SimpleRegisterRequest?> sendSimpleRegisterToApiMocked(
+    String name, String hour, bool witnessed,
+    double latitude, double longitude,) async {
+    User user = FirebaseAuth.instance.currentUser!;
+
+    final String imageUrl = await uploadImageToFirebaseStorage(_image!);
+    final String? imageUrl2 = _image2 != null ? await uploadImageToFirebaseStorage(_image2!) : null;
+    final int registerId = await getNextRegisterId();
 
     final newRegister = SimpleRegisterRequest(
-      name: name,
+      userId: user.uid,
+      registerNumber: registerId.toString(),
+      authorName: user.displayName!,
+      popularName: name,
       hour: hour,
       witnessed: witnessed,
-      image: base64Encode(imageBytes),
-      image2: base64Encode(image2Bytes),
+      registerImageUrl: imageUrl,
+      registerImageUrl2: imageUrl2,
       latitude: latitude.toString(),
       longitude: longitude.toString(),
       date: DateTime.now(),
+      status: 'Enviado',
     );
-    _simpleMockData.add(newRegister);
-    print(newRegister.toJson());
-
+    await addRegisterToFirestore(
+      user.uid,
+      newRegister.toJson(),
+    );
     return newRegister;
   }
 
   Future<TechnicalRegisterRequest?> sendTechnicalRegisterToApiMocked(
       String name, String hour, bool witnessed, String species, String city,
       String beachSpot, String obs, String family, String gender, String order,
-      String classe, double latitude, double longitude
-      ) async {
+      String classe, double latitude, double longitude) async {
 
-    final Uint8List imageBytes = _image != null ? await _image!.readAsBytes() : Uint8List(0);
-    final Uint8List image2Bytes = _image2 != null ? await _image2!.readAsBytes() : Uint8List(0);
+    User user = FirebaseAuth.instance.currentUser!;
+
+    final String imageUrl = await uploadImageToFirebaseStorage(_image!);
+    final String? imageUrl2 = _image2 != null ? await uploadImageToFirebaseStorage(_image2!) : null;
+    final int registerId = await getNextRegisterId();
 
     final newRegister = TechnicalRegisterRequest(
-      name: name,
+      userId: user.uid,
+      registerNumber: registerId.toString(),
+      authorName: user.displayName!,
+      popularName: name,
       hour: hour,
       witnessed: witnessed,
       species: species,
@@ -427,13 +447,63 @@ Future<SimpleRegisterRequest?> sendSimpleRegisterToApiMocked(
       classe: classe,
       latitude: latitude.toString(),
       longitude: longitude.toString(),
-      image: base64Encode(imageBytes),
-      image2: base64Encode(image2Bytes),
+      registerImageUrl: imageUrl,
+      registerImageUrl2: imageUrl2,
       date: DateTime.now(),
+      status: 'Enviado',
     );
-    _technicalMockData.add(newRegister);
-    print(newRegister.toJson());
-
+    await addRegisterToFirestore(
+      user.uid,
+      newRegister.toJson(),
+    );
     return newRegister;
+  }
+
+  Future<void> addRegisterToFirestore(String userId, Map<String, dynamic> registerData) async {
+    try {
+      await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('registers')
+          .add(registerData);
+    } catch (e) {
+      debugPrint('Erro ao adicionar registro no Firestore: $e');
+      throw Exception('Falha ao salvar o registro no Firestore');
+    }
+  }
+
+  Future<String> uploadImageToFirebaseStorage(File imageFile) async {
+    try {
+      final storageRef = FirebaseStorage.instance.ref();
+      final fileName = DateTime.now().millisecondsSinceEpoch.toString();
+      final uploadTask = storageRef.child('registers/$fileName.jpg').putFile(imageFile);
+      final snapshot = await uploadTask.whenComplete(() => {});
+      final imageUrl = await snapshot.ref.getDownloadURL();
+      return imageUrl;
+    } catch (e) {
+      debugPrint('Erro ao enviar imagem para o Firebase Storage: $e');
+      throw Exception('Falha ao enviar a imagem para o Firebase Storage');
+    }
+  }
+
+  Future<int> getNextRegisterId() async {
+    final registerCounter = FirebaseFirestore.instance
+      .collection('counters')
+      .doc('registerCounter');
+
+    try {
+      final snapshot = await registerCounter.get();
+      if (!snapshot.exists) {
+        await registerCounter.set({'count': 1});
+        return 1;
+      }
+
+      final newCount = snapshot.data()!['count'] + 1;
+      await registerCounter.update({'count': FieldValue.increment(1)});
+      return newCount;
+    } catch (e) {
+      print('Erro ao incrementar contador: $e');
+      throw Exception('Erro ao obter próximo ID');
+    }
   }
 }

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
 class ViewRegisterImage extends StatefulWidget {
-  final Image imageProvider;
+  final String imageUrl; 
 
   const ViewRegisterImage({
     super.key,
-    required this.imageProvider,
+    required this.imageUrl,
   });
 
   @override
@@ -13,12 +13,12 @@ class ViewRegisterImage extends StatefulWidget {
 }
 
 class _ImageScreenState extends State<ViewRegisterImage> {
-  late Image _currentImage;
+  late String _currentImageUrl;
 
   @override
   void initState() {
     super.initState();
-    _currentImage = widget.imageProvider;
+    _currentImageUrl = widget.imageUrl;
   }
 
   @override
@@ -68,7 +68,23 @@ class _ImageScreenState extends State<ViewRegisterImage> {
                   panEnabled: true,
                   minScale: 0.5,
                   maxScale: 4.0,
-                  child: _currentImage,
+                  child: Image.network(
+                    _currentImageUrl,
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    },
+                    errorBuilder: (context, error, stackTrace) {
+                      return const Center(
+                        child: Text(
+                          'Erro ao carregar a imagem',
+                          style: TextStyle(color: Colors.red),
+                        ),
+                      );
+                    },
+                  ),
                 ),
               ),
             ),

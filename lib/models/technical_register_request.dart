@@ -1,5 +1,8 @@
 class TechnicalRegisterRequest {
-  final String name;
+  final String userId;
+  final String registerNumber;
+  final String authorName;
+  final String popularName;
   final String species;
   final String city;
   final String beachSpot;
@@ -12,12 +15,16 @@ class TechnicalRegisterRequest {
   final String? gender;
   final String latitude;
   final String longitude;
-  final String? image;
-  final String? image2;
+  final String? registerImageUrl;
+  final String? registerImageUrl2;
   final DateTime date;
+  final String? status;
 
   TechnicalRegisterRequest({
-    required this.name,
+    required this.userId,
+    required this.registerNumber,
+    required this.authorName,
+    required this.popularName,
     this.hour,
     required this.witnessed,
     required this.species,
@@ -31,13 +38,17 @@ class TechnicalRegisterRequest {
     required this.latitude,
     required this.longitude,
     required this.date,
-    this.image,
-    this.image2,
+    this.registerImageUrl,
+    this.registerImageUrl2,
+    this.status,
   });
 
   Map<String, dynamic> toJson() {
     return {
-      'name': name,
+      'userId': userId,
+      'registerNumber': registerNumber,
+      'authorName': authorName,
+      'popularName': popularName,
       'hour': hour,
       'witnessed': witnessed,
       'species': species,
@@ -50,14 +61,19 @@ class TechnicalRegisterRequest {
       'gender': gender,
       'latitude': latitude,
       'longitude': longitude,
-      'image': image,
-      'image2': image2,
+      'registerImageUrl': registerImageUrl,
+      'registerImageUrl2': registerImageUrl2,
       'date': date,
+      'status': status,
     };
   }
 
   TechnicalRegisterRequest.fromJson(Map<String, dynamic> json)
-    : name = json['name'],
+    : 
+      userId = json['userId'],
+      registerNumber = json['registerNumber'],
+      authorName = json['authorName'],
+      popularName = json['popularName'],
       hour = json['hour'],
       witnessed = json['witnessed'],
       species = json['species'],
@@ -71,6 +87,7 @@ class TechnicalRegisterRequest {
       latitude = json['latitude'],
       longitude = json['longitude'],
       date = json['date'],
-      image = json['image'],
-      image2 = json['image2'];
+      registerImageUrl = json['registerImageUrl'],
+      registerImageUrl2 = json['registerImageUrl2'],
+      status = json['status'];
 }

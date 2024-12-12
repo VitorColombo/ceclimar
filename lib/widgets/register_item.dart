@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:intl/intl.dart';
 import '../models/register_response.dart';
 
 class RegisterItem extends StatelessWidget {
@@ -42,16 +43,21 @@ class RegisterItem extends StatelessWidget {
                 height: 60,
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(16),
-                  child: Image(
-                    image: register.registerImage.image,
-                    fit: BoxFit.cover,
-                  ),
+                  child: register.registerImageUrl.isNotEmpty
+                      ? Image.network(
+                          register.registerImageUrl,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return const Icon(Icons.broken_image, size: 40, color: Colors.grey);
+                          },
+                        )
+                      : const Icon(Icons.image_not_supported, size: 40, color: Colors.grey),
                 ),
               ),
                 title: Row(
                   children: [
                     Text(
-                      register.animal.popularName,
+                      register.popularName,
                       style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                     SizedBox(width: 8),
@@ -77,7 +83,7 @@ class RegisterItem extends StatelessWidget {
                       children: [
                         Icon(PhosphorIcons.mapPin(), color: Colors.black, size: 20),
                         SizedBox(width: 6),
-                        Text(register.city),
+                        Text(register.city.isEmpty ? "Cidade não informada" : register.city),
                       ],
                     ), 
                     const SizedBox(height: 4),
@@ -85,7 +91,7 @@ class RegisterItem extends StatelessWidget {
                       children: [
                         Icon(PhosphorIcons.calendarBlank(), color: Colors.black, size: 20),
                         SizedBox(width: 6),
-                        Text(register.date),
+                        Text(DateFormat('dd/MM/yyyy').format(register.date)),
                       ],
                     ), 
                   ],

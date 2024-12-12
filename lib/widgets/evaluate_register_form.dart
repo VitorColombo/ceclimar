@@ -26,12 +26,12 @@ class _EvaluateRegisterFormState extends State<EvaluateRegisterForm> {
   @override
   void initState() {
     super.initState();
-    _formController.nameController.text = widget.register.animal.popularName;
-    _formController.speciesController.text = widget.register.animal.species != null ? widget.register.animal.species! : '';
-    _formController.classController.text = widget.register.animal.classe != null ? widget.register.animal.classe! : '';
-    _formController.orderController.text = widget.register.animal.order != null ? widget.register.animal.order! : '';
-    _formController.familyController.text = widget.register.animal.family != null ? widget.register.animal.family! : '';
-    _formController.genderController.text = widget.register.animal.gender != null ? widget.register.animal.gender! : '';
+    _formController.nameController.text = widget.register.popularName;
+    _formController.speciesController.text = widget.register.species != null ? widget.register.species! : '';
+    _formController.classController.text = widget.register.classe != null ? widget.register.classe! : '';
+    _formController.orderController.text = widget.register.order != null ? widget.register.order! : '';
+    _formController.familyController.text = widget.register.family != null ? widget.register.family! : '';
+    _formController.genderController.text = widget.register.gender != null ? widget.register.gender! : '';
     _formController.obsController.text = widget.register.observation != null ? widget.register.observation! : '';
   }
 
@@ -107,7 +107,7 @@ class _EvaluateRegisterFormState extends State<EvaluateRegisterForm> {
             SizedBox(
               height: 180,
               child: InputField(
-                text: "Observações (Opcional)",
+                text: "Informações Adicionais (Opcional)",
                 controller: _formController.obsController,
                 validator: (value) => _formController.obsError,
                 maxLines: 10,
@@ -118,7 +118,7 @@ class _EvaluateRegisterFormState extends State<EvaluateRegisterForm> {
               width: double.infinity,
               height: 56,
               child: SendBtn(
-                  onSend: () => _formController.sendEvaluation(context),
+                  onSend: () => _formController.sendEvaluation(context, widget.register),
                   onValidate: _validateForm,
                   text: "Enviar Análise",
               ),

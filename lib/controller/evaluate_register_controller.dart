@@ -1,5 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:tcc_ceclimar/models/register_response.dart';
 import 'package:tcc_ceclimar/models/update_register_request.dart';
+import 'package:tcc_ceclimar/pages/base_page.dart';
 
 class EvaluateRegisterFormController {
   final TextEditingController nameController = TextEditingController();
@@ -165,34 +168,38 @@ class EvaluateRegisterFormController {
     return null;
   }
 
-  Future<void> sendEvaluation(BuildContext context) async {
+  Future<void> sendEvaluation(BuildContext context, RegisterResponse register) async {
     if (validateForm()) {
         try {
-          final response = await sendTechnicalEvaluationToApiMocked();
-          if (response != null) {
-            ScaffoldMessenger.of(context).hideCurrentSnackBar();
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Registro enviado com sucesso!',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontFamily: "Inter"
-                  ),
-                ),
-                backgroundColor: Colors.green,
-              )
-            );
-          } else {
-            ScaffoldMessenger.of(context).hideCurrentSnackBar();
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Falha ao enviar o registro.')),
-            );
-          }
-        } catch (e) {
+          RegisterResponse? response = await sendTechnicalEvaluation(register);
           ScaffoldMessenger.of(context).hideCurrentSnackBar();
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Falha ao enviar o registro.')),
+            SnackBar(
+              content: Text('Registro enviado com sucesso!',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontFamily: "Inter"
+                ),
+              ),
+              backgroundColor: Colors.green,
+            )
+          );
+            Navigator.pushReplacementNamed(context, BasePage.routeName);
+        } catch (e) {
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+            ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'Falha ao enviar avaliação: ${e.toString()}',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontFamily: "Inter",
+                ),
+              ),
+              backgroundColor: Colors.red,
+            ),
           );
         }
       } else {
@@ -212,19 +219,49 @@ class EvaluateRegisterFormController {
       }
   }
 
-  Future<UpdateRegisterRequest?> sendTechnicalEvaluationToApiMocked() async {
+  Future<RegisterResponse?> sendTechnicalEvaluation(RegisterResponse register) async {
     final updatedRegister = UpdateRegisterRequest(
-      name: nameController.text,
+      popularName: nameController.text,
       species: speciesController.text,
       classe: classController.text,
       order: orderController.text,
       family: familyController.text,
       gender: genderController.text,
-      animalStatus: animalStateController.text,
-      obs: obsController.text,
+      status: "Validado",
+      sampleState: int.tryParse(animalStateController.text) ?? 0,
+      specialistReturn: obsController.text,
     );
-    print(updatedRegister.toJson());
 
-    return updatedRegister;
+    try {
+      final response = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(register.userId)
+          .collection('registers')
+          .where('registerNumber', isEqualTo: register.registerNumber)
+          .get();
+
+    if (response.docs.isNotEmpty) {
+      final docId = response.docs.first.id;
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(register.userId)
+          .collection('registers')
+          .doc(docId)
+          .update(updatedRegister.toJson());
+
+      final updatedDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(register.userId)
+          .collection('registers')
+          .doc(docId)
+          .get();
+
+      return RegisterResponse.fromJson(updatedDoc.data()!); 
+      } else {
+        throw Exception('Registro não encontrado');
+      }
+    } catch (e) {
+      rethrow;
+    }
   }
 }

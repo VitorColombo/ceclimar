@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -36,6 +35,7 @@ class _MyProfileState extends State<MyProfile> {
   bool isLoading = true;
   List<RegisterResponse> registers = [];
   List<AnimalResponse> animals = [];
+  ImageProvider image = AssetImage('assets/images/imageProfile.png');
 
   Future<void> _logout(BuildContext context) async {
     try {
@@ -51,19 +51,15 @@ class _MyProfileState extends State<MyProfile> {
     _checkUserStatus();
   }
 
-  Future<ImageProvider?> _loadUserImage() async {
+  Future<void> _loadUserImage() async {
     User? user = _controller.getCurrentUser();
-    if (user == null) return AssetImage('assets/images/imageProfile.png');
-
-    String? profileImageUrl = await _controller.getProfileImageUrl(user.uid);
-    if (profileImageUrl == null || profileImageUrl.isEmpty) {
-      return AssetImage('assets/images/imageProfile.png');
-    }
-
-    try {
-      return CachedNetworkImageProvider(profileImageUrl);
-    } catch (e) {
-      return AssetImage('assets/images/imageProfile.png');
+    if (user != null) {
+      String? profileImageUrl = await _controller.getProfileImageUrl(user.uid);
+      if (profileImageUrl != null && profileImageUrl.isNotEmpty && mounted) {
+        setState(() {
+          image = NetworkImage(profileImageUrl);
+        });
+      }
     }
   }
 
@@ -83,13 +79,16 @@ class _MyProfileState extends State<MyProfile> {
     _checkUserStatus();
   }
   
-  Future<void> fetchMockedRegisters() async { //todo remover mocks
-    await Future.delayed(const Duration(milliseconds: 200)); 
+  Future<void> fetchMockedRegisters() async {
+    await Future.delayed(const Duration(milliseconds: 200));
     if (!mounted) return;
-    setState(() {
-      registers = _myProfileController.getRegisters();
-      isLoading = false;
-    });
+    List<RegisterResponse> fetchedRegisters = await _myProfileController.getRegisters();
+    if (mounted){ 
+      setState(() {
+        registers = fetchedRegisters;
+        isLoading = false;
+      });
+    }    
   }
 
   @override
@@ -101,6 +100,7 @@ class _MyProfileState extends State<MyProfile> {
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
+            automaticallyImplyLeading: false,
             pinned: true,
             collapsedHeight: 250,
             expandedHeight: 250,
@@ -109,7 +109,7 @@ class _MyProfileState extends State<MyProfile> {
             flexibleSpace: FlexibleSpaceBar(
               background: Stack(
                 children: [
-                  LoginHeaderWidget(imageFuture: _loadUserImage()),
+                  LoginHeaderWidget(imageFuture: Future.value(image)),
                   PageHeader(
                     text: "Meu perfil",
                     icon: const Icon(Icons.arrow_back, color: Colors.white,),
@@ -140,9 +140,12 @@ class _MyProfileState extends State<MyProfile> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(
-                            '${userData?.name}',
-                            style: Theme.of(context).textTheme.titleLarge,
+                          Visibility(
+                            visible: userData?.name != null,
+                            child: Text(
+                              '${userData?.name}',
+                              style: Theme.of(context).textTheme.titleLarge,
+                            ),
                           ),
                           SizedBox(width: 8),
                           Icon(PhosphorIcons.pencilSimple(PhosphorIconsStyle.regular), size: 20),
@@ -151,7 +154,7 @@ class _MyProfileState extends State<MyProfile> {
                     ),
                     SizedBox(height: 9),
                     Text(
-                      "Registros realizados: ${registers.length}", //todo integração
+                      "Registros realizados: ${registers.length}", 
                       style: Theme.of(context).textTheme.bodyLarge,
                     ),
                     SizedBox(height: 20),
@@ -198,32 +201,35 @@ class _MyProfileState extends State<MyProfile> {
         return ModalBottomSheet(
           text: "Escolha uma opção",
           buttons: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-                    Navigator.pushNamed(context, EditProfile.routeName).then((_) {
-                      _loadUserImage();
-                    });
-              },
-              style: TextButton.styleFrom(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
+            Visibility(
+              visible: !_controller.isUserLogedWithGoogle(),
+              child: TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                      Navigator.pushNamed(context, EditProfile.routeName).then((_) {
+                        _loadUserImage();
+                      });
+                },
+                style: TextButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  backgroundColor: const Color.fromARGB(255, 31, 73, 95),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 40,
+                    vertical: 16,
+                  ),
+                  textStyle: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: "Inter"
+                  ),
+                  overlayColor: Colors.white,
                 ),
-                backgroundColor: const Color.fromARGB(255, 31, 73, 95),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 40,
-                  vertical: 16,
+                child: const Text(
+                  "Editar perfil",
+                  style: TextStyle(color: Colors.white), 
                 ),
-                textStyle: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: "Inter"
-                ),
-                overlayColor: Colors.white,
-              ),
-              child: const Text(
-                "Editar perfil",
-                style: TextStyle(color: Colors.white), 
               ),
             ),
             const SizedBox(height: 15),
@@ -310,6 +316,17 @@ class UltimosRegistrosContent extends StatelessWidget {
   const UltimosRegistrosContent({super.key, required this.registers});
   @override
   Widget build(BuildContext context) {
+    if (registers.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 20),
+          child: Text(
+            "Nenhum registro encontrado",
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
+        ),
+      );
+    }
     final limitedRegisters = registers.take(10).toList();
 
     return SizedBox(
@@ -337,6 +354,17 @@ class AnimaisEncontradosContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (registers.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 20),
+          child: Text(
+            "Nenhum registro encontrado",
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
+        ),
+      );
+    }
     return SizedBox(
       height: 400,
       child: GridView.builder(

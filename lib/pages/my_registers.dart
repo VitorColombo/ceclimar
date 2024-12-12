@@ -4,7 +4,6 @@ import 'package:tcc_ceclimar/pages/register_view.dart';
 import 'package:tcc_ceclimar/widgets/register_status_label.dart';
 import '../models/register_response.dart';
 import '../widgets/page_header.dart';
-
 import '../widgets/register_item.dart';
 
 class MyRegisters extends StatefulWidget {
@@ -32,25 +31,35 @@ class _MyRegistersState extends State<MyRegisters> {
   @override
   void initState() {
     super.initState();
-    fetchMockedRegisters(selectedFilter);
+    fetchRegisters(selectedFilter);
   }
 
-  Future<void> fetchMockedRegisters(String status) async { //todo remover mocks
-    await Future.delayed(const Duration(milliseconds: 500)); 
-    if (!mounted) return;
+  Future<void> fetchRegisters(String status) async {
     setState(() {
-      registers = _myRegistersController.getRegisters();
-      isLoading = false;
-      if(status == selectedFilter){
-        selectedFilter = "Todos";
-        return;
-      }
-      if(status == "Todos"){ 
-        return;
-      }
-      registers = registers.where((element) => element.status == status).toList();
-      selectedFilter = status;
+      isLoading = true;
     });
+    try {
+      List<RegisterResponse> fetchedRegisters = await _myRegistersController.getRegisters();
+      if(mounted){
+        setState(() {
+          registers = fetchedRegisters;
+          isLoading = false;
+          if (status != "Todos") {
+            registers = registers.where((element) => element.status == status).toList();
+          }
+          selectedFilter = status;
+        });
+      }
+    } catch (e) {
+      if(mounted){
+        setState(() {
+          isLoading = false;
+        });
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Erro ao carregar registros: $e')),
+      );
+    }
   }
 
   @override
@@ -67,8 +76,12 @@ class _MyRegistersState extends State<MyRegisters> {
                   Text("Filtro", style: TextStyle(color: Colors.grey[500])),
                   SizedBox(width: 10),
                   InkWell(
-                    onTap: () => {
-                      fetchMockedRegisters("Validado")
+                    onTap: () {
+                      if (selectedFilter == "Validado") {
+                        fetchRegisters("Todos");
+                      } else {
+                        fetchRegisters("Validado");
+                      }
                     },
                     child: StatusLabel(
                       status: "Validado",
@@ -79,8 +92,12 @@ class _MyRegistersState extends State<MyRegisters> {
                   ),
                   SizedBox(width: 10),
                   InkWell(
-                    onTap: () => {
-                      fetchMockedRegisters("Enviado")
+                    onTap: () {
+                      if (selectedFilter == "Enviado") {
+                        fetchRegisters("Todos");
+                      } else {
+                        fetchRegisters("Enviado");
+                      }
                     },
                     child: StatusLabel(
                       status: "Enviado",
@@ -91,30 +108,40 @@ class _MyRegistersState extends State<MyRegisters> {
                   ),
                 ],
               ),
-            ),
+            ),            
             isLoading
-                ? Container(
+              ? Container(
                   padding: const EdgeInsets.only(top: 250),
                   alignment: Alignment.center,
                   child: const Center(
-                      child: CircularProgressIndicator()
-                    ),
-                )
-                : SizedBox(
-                    height: MediaQuery.of(context).size.height - kToolbarHeight,
-                    child: ListView.builder(
-                      padding: EdgeInsets.only(top: 0, bottom: 180),
-                      physics: AlwaysScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: registers.length,
-                      itemBuilder: (context, index) {
-                        return RegisterItem(
-                          register: registers[index],
-                          route: RegisterDetailPage.routeName
-                        );
-                      },
-                    ),
+                    child: CircularProgressIndicator(),
                   ),
+                )
+              : registers.isEmpty
+                  ? Padding(
+                      padding: const EdgeInsets.only(top: 250),
+                      child: Center(
+                        child: Text(
+                          'Nenhum registro encontrado',
+                          style: TextStyle(fontSize: 16, color: Colors.grey),
+                        ),
+                      ),
+                    )
+                  : SizedBox(
+                      height: MediaQuery.of(context).size.height - kToolbarHeight,
+                      child: ListView.builder(
+                        padding: EdgeInsets.only(top: 0, bottom: 180),
+                        physics: AlwaysScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemCount: registers.length,
+                        itemBuilder: (context, index) {
+                          return RegisterItem(
+                            register: registers[index],
+                            route: RegisterDetailPage.routeName,
+                          );
+                        },
+                      ),
+                    ),
           ],
         ),
       ),

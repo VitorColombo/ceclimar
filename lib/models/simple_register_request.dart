@@ -1,44 +1,61 @@
 class SimpleRegisterRequest {
-  final String name;
+  final String userId;
+  final String registerNumber;
+  final String authorName;
+  final String popularName;
   final String? hour;
   final bool witnessed;
   final String latitude;
   final String longitude;
-  final String? image;
-  final String? image2;
+  final String registerImageUrl;
+  final String? registerImageUrl2;
   final DateTime date;
+  final String status;
 
   SimpleRegisterRequest({
-    required this.name,
+    required this.userId,
+    required this.registerNumber,
+    required this.authorName,
+    required this.popularName,
     required this.witnessed,
     required this.latitude,
     required this.longitude,
     required this.date,
+    required this.status,
     this.hour,
-    this.image,
-    this.image2,
+    required this.registerImageUrl,
+    this.registerImageUrl2,
   });
 
   Map<String, dynamic> toJson() {
     return {
-      'name': name,
+      'userId': userId,
+      'registerNumber': registerNumber,
+      'authorName': authorName,
+      'popularName': popularName,
       'hour': hour,
       'witnessed': witnessed,
       'latitude': latitude,
       'longitude': longitude,
       'date': date,
-      'image': image,
-      'image2': image2,
+      'status': status,
+      'registerImageUrl': registerImageUrl,
+      'registerImageUrl2': registerImageUrl2,
     };
   }
 
   SimpleRegisterRequest.fromJson(Map<String, dynamic> json)
-    : name = json['name'],
+    : 
+      userId = json['userId'],
+      registerNumber = json['registerNumber'],
+      authorName = json['authorName'],
+      popularName = json['popularName'],
       hour = json['hour'],
       witnessed = json['witnessed'],
-      image = json['image'],
+      registerImageUrl = json['registerImageUrl'],
       latitude = json['latitude'],
       longitude = json['longitude'],
       date = json['date'],
-      image2 = json['image2'];
+      status = json['status'],
+      registerImageUrl2 = json['registerImageUrl2'];
 }

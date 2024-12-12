@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:tcc_ceclimar/models/register_response.dart';
 import 'package:tcc_ceclimar/widgets/register_status_label.dart';
+import 'package:intl/intl.dart';
 
 class RegisterDetailPage extends StatelessWidget {
   final RegisterResponse? register;
@@ -11,6 +12,11 @@ class RegisterDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final List<String> images = [
+      register?.registerImageUrl ?? '',
+      register?.registerImageUrl2 ?? '',
+    ].where((image) => image.isNotEmpty).toList();
+
     return Scaffold(
       extendBodyBehindAppBar: true,
       body: CustomScrollView(
@@ -20,19 +26,42 @@ class RegisterDetailPage extends StatelessWidget {
             collapsedHeight: 60,
             expandedHeight: 260,
             backgroundColor: Colors.white,
-            shadowColor: Color.fromARGB(0, 173, 145, 145),
+            shadowColor: const Color.fromARGB(0, 173, 145, 145),
             leading: IconButton(
-                icon: const Icon(Icons.arrow_back_outlined, shadows: [Shadow(color: Colors.black, blurRadius: 20)],),
-                iconSize: 24.0,
-                color: Colors.white,
+              icon: const Icon(
+                Icons.arrow_back_outlined,
+                shadows: [Shadow(color: Colors.black, blurRadius: 20)],
+              ),
+              iconSize: 24.0,
+              color: Colors.white,
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             flexibleSpace: FlexibleSpaceBar(
-              background: register!.registerImage,
+              background: PageView.builder(
+                itemCount: images.length,
+                itemBuilder: (context, index) {
+                  return Image.network(
+                    images[index],
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return const Center(
+                        child: Icon(Icons.image_not_supported, size: 50, color: Colors.grey),
+                      );
+                    },
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    },
+                  );
+                },
+              ),
             ),
           ),
+
           SliverList(
             delegate: SliverChildListDelegate(
             [
@@ -47,7 +76,7 @@ class RegisterDetailPage extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            register!.animal.popularName,
+                            register!.popularName,
                             style: const TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
@@ -60,7 +89,7 @@ class RegisterDetailPage extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'Registro Nº ${register!.uid}',
+                                    'Registro Nº ${register!.registerNumber}',
                                     style: const TextStyle(fontSize: 16),
                                   ),
                                   const SizedBox(height: 8),
@@ -79,10 +108,7 @@ class RegisterDetailPage extends StatelessWidget {
                                     children: [
                                       Icon(PhosphorIcons.mapPin(PhosphorIconsStyle.regular), size: 20),
                                       const SizedBox(width: 8),
-                                      Text(
-                                        register!.city,
-                                        style: const TextStyle(fontSize: 16),
-                                      ),
+                                      Text(register!.city.isEmpty ? "Cidade não informada" : register!.city),
                                     ],
                                   ),
                                   const SizedBox(height: 8),
@@ -90,8 +116,7 @@ class RegisterDetailPage extends StatelessWidget {
                                     children: [
                                       Icon(PhosphorIcons.calendarBlank(PhosphorIconsStyle.regular), size: 20,),
                                       const SizedBox(width: 8),
-                                      Text(
-                                        register!.date,
+                                      Text(DateFormat('dd/MM/yyyy').format(register!.date),
                                         style: const TextStyle(fontSize: 16),
                                       ),
                                     ],
@@ -103,7 +128,7 @@ class RegisterDetailPage extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Container(
-                                    width: 90,
+                                    width: 95,
                                       decoration: BoxDecoration(
                                       color: Colors.grey[200],
                                       border: Border.all(
@@ -120,7 +145,7 @@ class RegisterDetailPage extends StatelessWidget {
                                           style: const TextStyle(fontSize: 12),
                                         ),
                                         Text(
-                                          '${register!.location.latitude}',
+                                          register!.latitude,
                                           style: const TextStyle(fontSize: 12),
                                         )
                                       ],
@@ -128,7 +153,7 @@ class RegisterDetailPage extends StatelessWidget {
                                   ),
                                   const SizedBox(height: 4),
                                   Container(
-                                    width: 90,
+                                    width: 95,
                                       decoration: BoxDecoration(
                                       color: Colors.grey[200],
                                       border: Border.all(
@@ -145,7 +170,7 @@ class RegisterDetailPage extends StatelessWidget {
                                           style: const TextStyle(fontSize: 12),
                                         ),
                                         Text(
-                                          '${register!.location.longitude}',
+                                          register!.longitude,
                                           style: const TextStyle(fontSize: 12),
                                         )
                                       ],
@@ -159,18 +184,24 @@ class RegisterDetailPage extends StatelessWidget {
                           StatusLabel(status: '${register?.status}', borderColor: Colors.transparent),
                           const SizedBox(height: 8),
                           Text(
-                            'Nome Popular: ${register!.animal.popularName}',
+                            'Nome Popular: ${register!.popularName}',
                             style: const TextStyle(fontSize: 16),
                           ),
                           const SizedBox(height: 8),
-                          Text(
-                            'Espécie: ${register!.animal.species}',
-                            style: const TextStyle(fontSize: 16),
+                          Visibility(
+                            visible: register!.species != null && register!.species!.isNotEmpty,
+                            child: Text(
+                              'Espécie: ${register!.species}',
+                              style: const TextStyle(fontSize: 16),
+                            ),
                           ),
                           const SizedBox(height: 8),
-                          Text(
-                            'Encontrado próximo a guarita ${register!.beachSpot}',
-                            style: const TextStyle(fontSize: 16),
+                          Visibility(
+                            visible: register!.beachSpot.isNotEmpty,
+                            child: Text(
+                              'Encontrado próximo a guarita ${register!.beachSpot}',
+                              style: const TextStyle(fontSize: 16),
+                            ),
                           ),
                           const SizedBox(height: 8),
                           Container(
@@ -179,9 +210,15 @@ class RegisterDetailPage extends StatelessWidget {
                               color: getSampleStateColor(register!.sampleState),
                               borderRadius: BorderRadius.circular(10),
                             ),
-                            child: Text(
-                              'Grau de decomposição ${register!.sampleState}',
-                              style: TextStyle(fontSize: 16, color: register!.sampleState == 2 ? Colors.grey[600] : Colors.white),
+                            child: 
+                            Text(
+                              register!.sampleState != null
+                                ? 'Grau de decomposição ${register!.sampleState}'
+                                : 'Registro em análise',
+                              style: TextStyle(
+                              fontSize: 16,
+                              color: register!.sampleState == 2 ? Colors.grey[600] : Colors.white,
+                              ),
                             ),
                           ),
                           const SizedBox(height: 16),
@@ -191,26 +228,32 @@ class RegisterDetailPage extends StatelessWidget {
                               color: Colors.grey[50],
                               borderRadius: BorderRadius.circular(15),
                             ),
-                            child: Column(
-                              children: [
-                                Text(
-                                  'Parecer do profissional',
-                                  style: const TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
+                            child: Visibility(
+                              visible: register!.species != null && register!.order != null && register!.family != null && register!.gender != null,
+                              child: Column(
+                                children: [
+                                  Text(
+                                    'Parecer do profissional',
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  'Animal de espécie ${register!.animal.species} ordem ${register!.animal.order} família ${register!.animal.family} gênero ${register!.animal.gender}.',
-                                  style: const TextStyle(fontSize: 16),
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  'Foram encontrados outros X registros desta espécie na região',
-                                  style: const TextStyle(fontSize: 16),
-                                ),
-                              ],
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    'Animal de espécie ${register!.species} ordem ${register!.order} família ${register!.family} gênero ${register!.gender}.',
+                                    style: const TextStyle(fontSize: 16),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Visibility(
+                                    visible: register?.specialistReturn != null && register!.specialistReturn!.isNotEmpty,
+                                    child: Text(
+                                      "${register!.specialistReturn}",
+                                      style: const TextStyle(fontSize: 16),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ],
