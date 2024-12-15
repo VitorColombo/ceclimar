@@ -20,7 +20,7 @@ class RegisterResponse {
   final String popularName;
   final String? species;
   final String? family;
-  final String? gender;
+  final String? genu;
   final String? order;
   final String? classe;
 
@@ -44,7 +44,7 @@ class RegisterResponse {
     required this.popularName,
     this.species,
     this.family,
-    this.gender,
+    this.genu,
     this.order,
     this.classe,
   });
@@ -70,7 +70,7 @@ class RegisterResponse {
       popularName: json['popularName'] ?? '',
       species: json['species'],
       family: json['family'],
-      gender: json['gender'],
+      genu: json['genu'],
       order: json['order'],
       classe: json['classe'],
     );
@@ -97,7 +97,7 @@ class RegisterResponse {
       'popularName': popularName,
       'species': species,
       'family': family,
-      'gender': gender,
+      'genu': genu,
       'order': order,
       'classe': classe,
     };

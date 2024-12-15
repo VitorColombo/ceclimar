@@ -12,7 +12,7 @@ class TechnicalRegisterRequest {
   final String? classe;
   final String? order;
   final String? family;
-  final String? gender;
+  final String? genu;
   final String latitude;
   final String longitude;
   final String? registerImageUrl;
@@ -34,7 +34,7 @@ class TechnicalRegisterRequest {
     required this.classe,
     required this.order,
     required this.family,
-    required this.gender,
+    required this.genu,
     required this.latitude,
     required this.longitude,
     required this.date,
@@ -58,7 +58,7 @@ class TechnicalRegisterRequest {
       'classe': classe,
       'order': order,
       'family': family,
-      'gender': gender,
+      'genu': genu,
       'latitude': latitude,
       'longitude': longitude,
       'registerImageUrl': registerImageUrl,
@@ -83,7 +83,7 @@ class TechnicalRegisterRequest {
       classe = json['classe'],
       order = json['order'],
       family = json['family'],
-      gender = json['gender'],
+      genu = json['genu'],
       latitude = json['latitude'],
       longitude = json['longitude'],
       date = json['date'],

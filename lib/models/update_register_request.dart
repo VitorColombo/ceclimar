@@ -4,7 +4,7 @@ class UpdateRegisterRequest {
   final String classe;
   final String order;
   final String family;
-  final String gender;
+  final String genu;
   final int sampleState;
   final String? specialistReturn;
   final String status;
@@ -15,7 +15,7 @@ class UpdateRegisterRequest {
     required this.classe,
     required this.order,
     required this.family,
-    required this.gender,
+    required this.genu,
     required this.sampleState,
     required this.specialistReturn,
     required this.status,
@@ -28,7 +28,7 @@ class UpdateRegisterRequest {
       'classe': classe,
       'order': order,
       'family': family,
-      'gender': gender,
+      'genu': genu,
       'status': status,
       'sampleState': sampleState,
       'specialistReturn': specialistReturn,
@@ -41,7 +41,7 @@ class UpdateRegisterRequest {
       classe = json['classe'],
       order = json['order'],
       family = json['family'],
-      gender = json['gender'],
+      genu = json['genu'],
       status = json['status'],
       sampleState = json['sampleState'],
       specialistReturn = json['specialistReturn'];

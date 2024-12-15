@@ -39,7 +39,7 @@ class _ModalHelpBottomSheetState extends State<ModalHelpBottomSheet> {
             ...widget.buttons.map((button) => SizedBox(
               width: double.infinity,
               child: button,
-            )).toList(),
+            )),
           ],
         ),
       ),

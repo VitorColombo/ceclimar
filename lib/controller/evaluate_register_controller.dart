@@ -12,7 +12,7 @@ class EvaluateRegisterFormController {
   final TextEditingController beachSpotController = TextEditingController();
   final TextEditingController obsController = TextEditingController();
   final TextEditingController familyController = TextEditingController();
-  final TextEditingController genderController = TextEditingController();
+  final TextEditingController genuController = TextEditingController();
   final TextEditingController orderController = TextEditingController();
   final TextEditingController classController = TextEditingController();
   final TextEditingController animalStateController = TextEditingController();
@@ -25,7 +25,7 @@ class EvaluateRegisterFormController {
   String? beachSpotError;
   String? obsError;
   String? familyError;
-  String? genderError;
+  String? genuError;
   String? orderError;
   String? classError;
   String? imageError;
@@ -49,7 +49,7 @@ class EvaluateRegisterFormController {
     beachSpotController.text = beachSpotController.text.trim();
     obsController.text = obsController.text.trim();
     familyController.text = familyController.text.trim();
-    genderController.text = genderController.text.trim();
+    genuController.text = genuController.text.trim();
     orderController.text = orderController.text.trim();
 
     nameError = validateName(nameController.text);
@@ -57,7 +57,7 @@ class EvaluateRegisterFormController {
     speciesError = validateSpecies(speciesController.text);
     obsError = validateObs(obsController.text);
     familyError = validateFamily(familyController.text);
-    genderError = validateGender(genderController.text);
+    genuError = validateGender(genuController.text);
     orderError = validateOrder(orderController.text);
 
     return nameError == null &&
@@ -65,7 +65,7 @@ class EvaluateRegisterFormController {
         classError == null &&
         obsError == null &&
         familyError == null &&
-        genderError == null &&
+        genuError == null &&
         orderError == null;
   }
 
@@ -226,7 +226,7 @@ class EvaluateRegisterFormController {
       classe: classController.text,
       order: orderController.text,
       family: familyController.text,
-      gender: genderController.text,
+      genu: genuController.text,
       status: "Validado",
       sampleState: int.tryParse(animalStateController.text) ?? 0,
       specialistReturn: obsController.text,

@@ -8,15 +8,19 @@ class SearchInputField extends StatefulWidget {
   final Function? onChanged;
   final int? maxLines;
   final List<String> items;
+  final FocusNode focusNode;
+  final Function? onFocusUpdate; 
 
   const SearchInputField({
     super.key,
     required this.text,
     required this.controller,
     required this.items,
+    required this.focusNode,
     this.validator,
     this.onChanged,
     this.maxLines = 1,
+    this.onFocusUpdate,
   });
 
   @override
@@ -26,14 +30,17 @@ class SearchInputField extends StatefulWidget {
 class _SearchInputFieldState extends State<SearchInputField> {
   List<String> _filteredItems = [];
   bool _isDropdownOpen = false;
-  final FocusNode _focusNode = FocusNode();
 
   @override
   void initState() {
     super.initState();
     _filteredItems = widget.items;
-    _focusNode.addListener(() {
-      if (_focusNode.hasFocus) {
+    widget.focusNode.addListener(() {
+      if (widget.focusNode.hasFocus) {
+        if (widget.onFocusUpdate != null) {
+          widget.onFocusUpdate!();
+        }
+        _filterItems(widget.controller.text);
         setState(() {
           _isDropdownOpen = true;
         });
@@ -47,7 +54,6 @@ class _SearchInputFieldState extends State<SearchInputField> {
 
   @override
   void dispose() {
-    _focusNode.dispose();
     super.dispose();
   }
 
@@ -59,7 +65,7 @@ class _SearchInputFieldState extends State<SearchInputField> {
             _formatString(item).toLowerCase().contains(_formatString(query)) && item.isNotEmpty)
         .toList();
       if(_filteredItems.isEmpty){
-        _filteredItems.add("Nenhum item encontrado");
+        _filteredItems.add("Outro");
       }
     });
   }
@@ -77,7 +83,7 @@ class _SearchInputFieldState extends State<SearchInputField> {
   Future<bool> _onWillPop() async {
     if (_isDropdownOpen) {
       _closeDropdown();
-      _focusNode.unfocus();
+      widget.focusNode.unfocus();
       return false; 
     }
     return true;
@@ -93,7 +99,7 @@ class _SearchInputFieldState extends State<SearchInputField> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             TextFormField(
-              focusNode: _focusNode,
+              focusNode: widget.focusNode,
               controller: widget.controller,
               validator: widget.validator,
               keyboardType: TextInputType.text,
@@ -148,10 +154,9 @@ class _SearchInputFieldState extends State<SearchInputField> {
                     const EdgeInsets.symmetric(vertical: 16.0, horizontal: 10.0),
               ),
               onChanged: (value) {
+
                 _filterItems(value.trim());
-                if (widget.onChanged != null) {
-                  widget.onChanged!(value);
-                }
+                widget.onChanged!(value);
               },
             ),
             if (_isDropdownOpen && _filteredItems.isNotEmpty)
@@ -173,14 +178,15 @@ class _SearchInputFieldState extends State<SearchInputField> {
                     return ListTile(
                       title: Text(_filteredItems[index]),
                       onTap: () {
+                        widget.focusNode.requestFocus();
                         widget.controller.text = _filteredItems[index];
-                        _filterItems(_filteredItems[index]);
-                        _focusNode.requestFocus();
+                        widget.focusNode.unfocus();
                           setState(() {
                           _isDropdownOpen = false;
                         });
                         if (widget.onChanged != null) {
                           widget.onChanged!(widget.controller.text);
+                          widget.onFocusUpdate!();
                         }
                       },
                     );

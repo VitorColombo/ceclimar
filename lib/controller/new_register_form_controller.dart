@@ -7,9 +7,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:tcc_ceclimar/models/simple_register_request.dart';
 import 'package:tcc_ceclimar/models/technical_register_request.dart';
 import 'package:tcc_ceclimar/pages/base_page.dart';
-import 'package:tcc_ceclimar/pages/home.dart';
-import 'package:tcc_ceclimar/pages/my_registers.dart';
-import 'package:uuid/uuid.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class NewRegisterFormController {
@@ -20,7 +17,7 @@ class NewRegisterFormController {
   final TextEditingController beachSpotController = TextEditingController();
   final TextEditingController obsController = TextEditingController();
   final TextEditingController familyController = TextEditingController();
-  final TextEditingController genderController = TextEditingController();
+  final TextEditingController genuController = TextEditingController();
   final TextEditingController orderController = TextEditingController();
   final TextEditingController classController = TextEditingController();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -38,7 +35,7 @@ class NewRegisterFormController {
   String? beachSpotError;
   String? obsError;
   String? familyError;
-  String? genderError;
+  String? genuError;
   String? orderError;
   String? classError;
   String? imageError;
@@ -82,7 +79,7 @@ class NewRegisterFormController {
     beachSpotController.text = beachSpotController.text.trim();
     obsController.text = obsController.text.trim();
     familyController.text = familyController.text.trim();
-    genderController.text = genderController.text.trim();
+    genuController.text = genuController.text.trim();
     orderController.text = orderController.text.trim();
 
     nameError = validateName(nameController.text);
@@ -92,7 +89,7 @@ class NewRegisterFormController {
     beachSpotError = validateBeachSpot(beachSpotController.text);
     obsError = validateObs(obsController.text);
     familyError = validateFamily(familyController.text);
-    genderError = validateGender(genderController.text);
+    genuError = validateGenu(genuController.text);
     orderError = validateOrder(orderController.text);
     imageError = validateImages();
 
@@ -143,13 +140,13 @@ class NewRegisterFormController {
     return null;
   }
 
-  String? validateGender(String gender) {
+  String? validateGenu(String genu) {
     final RegExp regex = RegExp(r'^[\p{L}\s]+$', unicode: true);
-    if (gender.isNotEmpty) {
-      if (gender.length < 3) {
+    if (genu.isNotEmpty) {
+      if (genu.length < 3) {
         return 'Caracteres mínimos: 3';
       }
-      if (!regex.hasMatch(gender)) {
+      if (!regex.hasMatch(genu)) {
         return 'Caractere inválido';
       }
     }
@@ -321,7 +318,7 @@ class NewRegisterFormController {
       String beachSpot = beachSpotController.text;
       String obs = obsController.text;
       String family = familyController.text;
-      String gender = genderController.text;
+      String genu = genuController.text;
       String order = orderController.text;
       String classe = classController.text;
       await getPosition();
@@ -340,7 +337,7 @@ class NewRegisterFormController {
             beachSpot,
             obs,
             family,
-            gender,
+            genu,
             order,
             classe,
             latitude,
@@ -421,7 +418,7 @@ class NewRegisterFormController {
 
   Future<TechnicalRegisterRequest?> sendTechnicalRegisterToApiMocked(
       String name, String hour, bool witnessed, String species, String city,
-      String beachSpot, String obs, String family, String gender, String order,
+      String beachSpot, String obs, String family, String genu, String order,
       String classe, double latitude, double longitude) async {
 
     User user = FirebaseAuth.instance.currentUser!;
@@ -442,7 +439,7 @@ class NewRegisterFormController {
       beachSpot: beachSpot,
       obs: obs,
       family: family,
-      gender: gender,
+      genu: genu,
       order: order,
       classe: classe,
       latitude: latitude.toString(),

@@ -427,7 +427,7 @@ class AuthenticationController {
       try{
         AuthCredential credential = EmailAuthProvider.credential(email: email, password: password);
         await user.reauthenticateWithCredential(credential);
-      } on FirebaseAuthException catch (e) {
+      } on FirebaseAuthException {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text('Senha inválida'),
           backgroundColor: Colors.red));
@@ -496,7 +496,7 @@ class AuthenticationController {
         );
         return false;
       }
-    } on FirebaseAuthException catch (e) {
+    } on FirebaseAuthException {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text('Erro na operação'),
           backgroundColor: Colors.red));

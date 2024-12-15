@@ -229,7 +229,7 @@ class RegisterDetailPage extends StatelessWidget {
                               borderRadius: BorderRadius.circular(15),
                             ),
                             child: Visibility(
-                              visible: register!.species != null && register!.order != null && register!.family != null && register!.gender != null,
+                              visible: register!.species != null && register!.order != null && register!.family != null && register!.genu != null,
                               child: Column(
                                 children: [
                                   Text(
@@ -241,7 +241,7 @@ class RegisterDetailPage extends StatelessWidget {
                                   ),
                                   const SizedBox(height: 8),
                                   Text(
-                                    'Animal de espécie ${register!.species} ordem ${register!.order} família ${register!.family} gênero ${register!.gender}.',
+                                    'Animal de espécie ${register!.species} ordem ${register!.order} família ${register!.family} gênero ${register!.genu}.',
                                     style: const TextStyle(fontSize: 16),
                                   ),
                                   const SizedBox(height: 8),

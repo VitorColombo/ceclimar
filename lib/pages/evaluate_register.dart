@@ -110,7 +110,7 @@ class _EvaluateRegisterState extends State<EvaluateRegister> {
                                       Icon(PhosphorIcons.mapPin(PhosphorIconsStyle.regular), size: 20),
                                       const SizedBox(width: 8),
                                       Text(
-                                        widget.register!.city.isEmpty ? "Cidade não informada" : widget.register!.city,
+                                        widget.register.city.isEmpty ? "Cidade não informada" : widget.register.city,
                                         style: const TextStyle(fontSize: 16),
                                       ),
                                     ],

@@ -22,6 +22,11 @@ class _EvaluateRegisterFormState extends State<EvaluateRegisterForm> {
   final _formController = EvaluateRegisterFormController();
   final _formKey = GlobalKey<FormState>();
   final List<String> species = ["penguim", "gaviao", "arubinha", "lobo marinho", "pardal", "gaviao", "arubinha", "lobo marinho", "pardal""gaviao", "arubinha", "lobo marinho", "pardal"];
+  final FocusNode _speciesFocusNode = FocusNode();
+  final FocusNode _classFocusNode = FocusNode();
+  final FocusNode _orderFocusNode = FocusNode();
+  final FocusNode _familyFocusNode = FocusNode();
+  final FocusNode _genusFocusNode = FocusNode();
 
   @override
   void initState() {
@@ -31,12 +36,33 @@ class _EvaluateRegisterFormState extends State<EvaluateRegisterForm> {
     _formController.classController.text = widget.register.classe != null ? widget.register.classe! : '';
     _formController.orderController.text = widget.register.order != null ? widget.register.order! : '';
     _formController.familyController.text = widget.register.family != null ? widget.register.family! : '';
-    _formController.genderController.text = widget.register.gender != null ? widget.register.gender! : '';
+    _formController.genuController.text = widget.register.genu != null ? widget.register.genu! : '';
     _formController.obsController.text = widget.register.observation != null ? widget.register.observation! : '';
+  
+    _speciesFocusNode.addListener(_handleFocusChange);
+    _classFocusNode.addListener(_handleFocusChange);
+    _orderFocusNode.addListener(_handleFocusChange);
+    _familyFocusNode.addListener(_handleFocusChange);
+    _genusFocusNode.addListener(_handleFocusChange);
+  }
+
+  void _handleFocusChange() {
+    if (_speciesFocusNode.hasFocus ||
+        _classFocusNode.hasFocus ||
+        _orderFocusNode.hasFocus ||
+        _familyFocusNode.hasFocus ||
+        _genusFocusNode.hasFocus) {
+    }
   }
 
   @override
   void dispose() {
+    _speciesFocusNode.dispose();
+    _classFocusNode.dispose();
+    _orderFocusNode.dispose();
+    _familyFocusNode.dispose();
+    _genusFocusNode.dispose();
+    _formController.dispose();
     _formController.dispose();
     super.dispose();
   }
@@ -67,6 +93,7 @@ class _EvaluateRegisterFormState extends State<EvaluateRegisterForm> {
               controller: _formController.speciesController,
               validator: (value) => _formController.speciesError,
               items: species, //todo
+              focusNode: _speciesFocusNode,
             ),
             const SizedBox(height: 16),
             SearchInputField(
@@ -74,6 +101,7 @@ class _EvaluateRegisterFormState extends State<EvaluateRegisterForm> {
               controller: _formController.classController,
               validator: (value) => _formController.classError,
               items: species, //todo
+              focusNode: _classFocusNode,
             ),
             const SizedBox(height: 16),
             SearchInputField(
@@ -81,6 +109,7 @@ class _EvaluateRegisterFormState extends State<EvaluateRegisterForm> {
               controller: _formController.orderController,
               validator: (value) => _formController.orderError,
               items: species, //todo
+              focusNode: _orderFocusNode,
             ),
             const SizedBox(height: 16),
             SearchInputField(
@@ -88,13 +117,15 @@ class _EvaluateRegisterFormState extends State<EvaluateRegisterForm> {
               controller: _formController.familyController,
               validator: (value) => _formController.familyError,
               items: species,//todo
+              focusNode: _familyFocusNode,
             ),
             const SizedBox(height: 16),
             SearchInputField(
               text: "Gênero",
-              controller: _formController.genderController,
-              validator: (value) => _formController.genderError,
-              items: species, //todo
+              controller: _formController.genuController,
+              validator: (value) => _formController.genuError,
+              items: species,
+              focusNode: _genusFocusNode,
             ),
             RadioRowAnimal(
               onChanged:  (String value) {
