@@ -25,7 +25,8 @@ class MyRegistersController {
         'id': doc.id,
       });
     }).toList();
-
+    print('Documents found: ${registerSnapshot.docs.length}');
+    print('Raw data: ${registerSnapshot.docs.map((e) => e.data())}');
     return registers;
   }
 }

@@ -54,8 +54,16 @@ class NewRegisterFormController {
   }
 
   void dispose() {
-    nameController.dispose();
-    hourController.dispose();
+      nameController.dispose();
+      hourController.dispose();
+      speciesController.dispose();
+      cityController.dispose();
+      beachSpotController.dispose();
+      classController.dispose();
+      orderController.dispose();
+      familyController.dispose();
+      genuController.dispose();
+      obsController.dispose();
   }
 
   void clear() {
@@ -261,7 +269,7 @@ class NewRegisterFormController {
         double longitude = currentPosition!.longitude;
 
         try {
-          final response = await sendSimpleRegisterToApiMocked(
+          final response = await sendSimpleRegisterToApi(
             name,
             hour,
             witnessed,
@@ -328,7 +336,7 @@ class NewRegisterFormController {
         double longitude = currentPosition!.longitude;
 
         try {
-          final response = await sendTechnicalRegisterToApiMocked(
+          final response = await sendTechnicalRegisterToApi(
             name,
             hour,
             witnessed,
@@ -386,9 +394,9 @@ class NewRegisterFormController {
     }
   }
 
-  Future<SimpleRegisterRequest?> sendSimpleRegisterToApiMocked(
-    String name, String hour, bool witnessed,
-    double latitude, double longitude,) async {
+  Future<SimpleRegisterRequest?> sendSimpleRegisterToApi(
+      String name, String hour, bool witnessed,
+      double latitude, double longitude,) async {
     User user = FirebaseAuth.instance.currentUser!;
 
     final String imageUrl = await uploadImageToFirebaseStorage(_image!);
@@ -398,29 +406,34 @@ class NewRegisterFormController {
     final newRegister = SimpleRegisterRequest(
       userId: user.uid,
       registerNumber: registerId.toString(),
-      authorName: user.displayName!,
-      popularName: name,
+      authorName: user.displayName ?? 'Anônimo',
+      animal: {
+        "popularName": name,
+      },
       hour: hour,
       witnessed: witnessed,
+      location: {
+        "latitude": latitude.toString(),
+        "longitude": longitude.toString(),
+      },
       registerImageUrl: imageUrl,
       registerImageUrl2: imageUrl2,
-      latitude: latitude.toString(),
-      longitude: longitude.toString(),
       date: DateTime.now(),
       status: 'Enviado',
     );
+
     await addRegisterToFirestore(
       user.uid,
       newRegister.toJson(),
     );
+
     return newRegister;
   }
 
-  Future<TechnicalRegisterRequest?> sendTechnicalRegisterToApiMocked(
+  Future<TechnicalRegisterRequest?> sendTechnicalRegisterToApi(
       String name, String hour, bool witnessed, String species, String city,
       String beachSpot, String obs, String family, String genu, String order,
-      String classe, double latitude, double longitude) async {
-
+      String classe, double latitude, double longitude) async {        
     User user = FirebaseAuth.instance.currentUser!;
 
     final String imageUrl = await uploadImageToFirebaseStorage(_image!);
@@ -430,20 +443,24 @@ class NewRegisterFormController {
     final newRegister = TechnicalRegisterRequest(
       userId: user.uid,
       registerNumber: registerId.toString(),
-      authorName: user.displayName!,
-      popularName: name,
+      authorName: user.displayName ?? 'Anônimo',
+      animal: {
+        "popularName": name,
+        "species": species,
+        "family": family,
+        "genus": genu,
+        "order": order,
+        "class": classe,
+      },
       hour: hour,
       witnessed: witnessed,
-      species: species,
+      location: {
+        "latitude": latitude.toString(),
+        "longitude": longitude.toString(),
+      },
       city: city,
       beachSpot: beachSpot,
       obs: obs,
-      family: family,
-      genu: genu,
-      order: order,
-      classe: classe,
-      latitude: latitude.toString(),
-      longitude: longitude.toString(),
       registerImageUrl: imageUrl,
       registerImageUrl2: imageUrl2,
       date: DateTime.now(),
@@ -453,6 +470,7 @@ class NewRegisterFormController {
       user.uid,
       newRegister.toJson(),
     );
+
     return newRegister;
   }
 

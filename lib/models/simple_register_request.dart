@@ -2,11 +2,10 @@ class SimpleRegisterRequest {
   final String userId;
   final String registerNumber;
   final String authorName;
-  final String popularName;
+  final Map<String, dynamic> animal;
   final String? hour;
   final bool witnessed;
-  final String latitude;
-  final String longitude;
+  final Map<String, dynamic> location;
   final String registerImageUrl;
   final String? registerImageUrl2;
   final DateTime date;
@@ -16,10 +15,9 @@ class SimpleRegisterRequest {
     required this.userId,
     required this.registerNumber,
     required this.authorName,
-    required this.popularName,
+    required this.animal,
     required this.witnessed,
-    required this.latitude,
-    required this.longitude,
+    required this.location,
     required this.date,
     required this.status,
     this.hour,
@@ -32,30 +30,27 @@ class SimpleRegisterRequest {
       'userId': userId,
       'registerNumber': registerNumber,
       'authorName': authorName,
-      'popularName': popularName,
+      'animal': animal,
       'hour': hour,
       'witnessed': witnessed,
-      'latitude': latitude,
-      'longitude': longitude,
-      'date': date,
-      'status': status,
+      'location': location,
       'registerImageUrl': registerImageUrl,
       'registerImageUrl2': registerImageUrl2,
+      'date': date.toIso8601String(),
+      'status': status,
     };
   }
 
   SimpleRegisterRequest.fromJson(Map<String, dynamic> json)
-    : 
-      userId = json['userId'],
-      registerNumber = json['registerNumber'],
-      authorName = json['authorName'],
-      popularName = json['popularName'],
-      hour = json['hour'],
-      witnessed = json['witnessed'],
-      registerImageUrl = json['registerImageUrl'],
-      latitude = json['latitude'],
-      longitude = json['longitude'],
-      date = json['date'],
-      status = json['status'],
-      registerImageUrl2 = json['registerImageUrl2'];
+      : userId = json['userId'],
+        registerNumber = json['registerNumber'],
+        authorName = json['authorName'],
+        animal = json['animal'],
+        hour = json['hour'],
+        witnessed = json['witnessed'],
+        location = json['location'],
+        registerImageUrl = json['registerImageUrl'],
+        registerImageUrl2 = json['registerImageUrl2'],
+        date = DateTime.parse(json['date']),
+        status = json['status'];
 }

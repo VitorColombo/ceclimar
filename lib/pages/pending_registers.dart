@@ -68,13 +68,13 @@ class _PendingRegistersState extends State<PendingRegisters> {
                 child: const Center(child: CircularProgressIndicator()),
               )
             else if (registers.isEmpty)
-              Center( // Center the message
+              Center(
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0), // Add some padding
+                  padding: const EdgeInsets.all(16.0),
                   child: Text(
                     "Nenhum registro pendente para avaliação no momento.",
-                    style: TextStyle(fontSize: 18), // Customize the style
-                    textAlign: TextAlign.center, // Center the text
+                    style: TextStyle(fontSize: 18),
+                    textAlign: TextAlign.center,
                   ),
                 ),
               )

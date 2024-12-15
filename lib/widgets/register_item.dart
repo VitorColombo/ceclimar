@@ -57,7 +57,7 @@ class RegisterItem extends StatelessWidget {
                 title: Row(
                   children: [
                     Text(
-                      register.popularName,
+                      register.animal.popularName!,
                       style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                     SizedBox(width: 8),

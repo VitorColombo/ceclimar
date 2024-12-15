@@ -288,12 +288,15 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
 
   @override
   void dispose() {
+    if(mounted){
+
+    _formController.dispose();
     _speciesFocusNode.dispose();
     _classFocusNode.dispose();
     _orderFocusNode.dispose();
     _familyFocusNode.dispose();
     _genusFocusNode.dispose();
-    _formController.dispose();
+    }
     super.dispose();
   }
 
