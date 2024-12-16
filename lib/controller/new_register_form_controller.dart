@@ -139,11 +139,13 @@ class NewRegisterFormController {
 
   String? validateSpecies(String species) {
     final RegExp regex = RegExp(r'^[\p{L}\s]+$', unicode: true);
-    if (species.length < 5) {
-      return 'Caracteres mínimos: 5';
-    }
-    if (!regex.hasMatch(species)) {
-      return 'Caractere inválido';
+    if (species.isNotEmpty){
+      if (species.length < 5) {
+        return 'Caracteres mínimos: 5';
+      }
+      if (!regex.hasMatch(species)) {
+        return 'Caractere inválido';
+      }
     }
     return null;
   }
@@ -244,8 +246,7 @@ class NewRegisterFormController {
 
   bool isBtnEnabledTechnical() {
     if (!isSwitchOn) {
-      if(nameController.text.isEmpty ||
-        speciesController.text.isEmpty ||
+      if(nameController.text.isEmpty || beachSpotController.text.isEmpty ||
         cityController.text.isEmpty){
         return false;
       }

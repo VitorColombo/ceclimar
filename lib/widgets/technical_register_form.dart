@@ -570,7 +570,7 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
             ),
             const SizedBox(height: 16),
             SearchInputField(
-              text: "Espécie",
+              text: "Espécie (Opcional)",
               controller: _formController.speciesController,
               validator: (value) => _formController.speciesError,
               onChanged: (_) {

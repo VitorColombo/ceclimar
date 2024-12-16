@@ -154,10 +154,13 @@ class _SearchInputFieldState extends State<SearchInputField> {
                     const EdgeInsets.symmetric(vertical: 16.0, horizontal: 10.0),
               ),
               onChanged: (value) {
-
                 _filterItems(value.trim());
                 widget.onChanged!(value);
               },
+            ),
+            Visibility(
+              visible: widget.validator != null && widget.validator!(widget.controller.text) != null,
+              child: SizedBox(height: 5)
             ),
             if (_isDropdownOpen && _filteredItems.isNotEmpty)
               Container(

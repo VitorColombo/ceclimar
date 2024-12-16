@@ -175,7 +175,7 @@ class EvaluateRegisterFormController {
           ScaffoldMessenger.of(context).hideCurrentSnackBar();
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Registro enviado com sucesso!',
+              content: Text('Avaliação enviada com sucesso!',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 16,
