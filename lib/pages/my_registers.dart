@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:tcc_ceclimar/controller/my_registers_controller.dart';
 import 'package:tcc_ceclimar/pages/register_view.dart';
 import 'package:tcc_ceclimar/widgets/register_status_label.dart';
@@ -73,7 +74,8 @@ class _MyRegistersState extends State<MyRegisters> {
               padding: const EdgeInsets.only(top: 0, left: 20.0, bottom: 10),
               child: Row(
                 children: [
-                  Text("Filtro", style: TextStyle(color: Colors.grey[500])),
+                  Icon(PhosphorIcons.funnel(), color: Colors.grey[500], size: 16),
+                  Text("Filtrar:", style: TextStyle(color: Colors.grey[500])),
                   SizedBox(width: 10),
                   InkWell(
                     onTap: () {
@@ -108,7 +110,7 @@ class _MyRegistersState extends State<MyRegisters> {
                   ),
                 ],
               ),
-            ),            
+            ),
             isLoading
               ? Container(
                   padding: const EdgeInsets.only(top: 250),

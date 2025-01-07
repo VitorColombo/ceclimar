@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tcc_ceclimar/controller/new_register_form_controller.dart';
 import 'package:tcc_ceclimar/models/register_response.dart';
 import 'package:tcc_ceclimar/pages/about_us.dart';
 import 'package:tcc_ceclimar/pages/base_page.dart';
@@ -20,8 +21,20 @@ import 'package:tcc_ceclimar/pages/login.dart';
 import 'package:tcc_ceclimar/pages/new_researcher_user.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  NewRegisterFormController controller = NewRegisterFormController();
+  @override
+  void initState() {
+    super.initState();
+    controller.initConnectivityListener();
+  }
 
   @override
   Widget build(BuildContext context) {

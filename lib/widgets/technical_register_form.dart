@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:tcc_ceclimar/models/animal_response.dart';
@@ -381,17 +382,36 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
   }
 
   Future<void> _getAddressFromLatLng(Position position) async {
-    await placemarkFromCoordinates(
-            position.latitude, position.longitude)
-        .then((List<Placemark> placemarks) {
-      Placemark place = placemarks[0];
-      setState(() {
-        _formController.currentAddress =
-            '${place.street}, ${place.subLocality}, ${place.subAdministrativeArea}, ${place.postalCode}';
+    try {
+      await placemarkFromCoordinates(
+              position.latitude, position.longitude)
+          .then((List<Placemark> placemarks) {
+        Placemark place = placemarks[0];
+        setState(() {
+          _formController.currentAddress =
+              '${place.street}, ${place.subLocality}, ${place.subAdministrativeArea}, ${place.postalCode}';
+        });
+      }).catchError((e) {
+        debugPrint(e);
       });
-    }).catchError((e) {
-      debugPrint(e);
-    });
+    } on PlatformException catch (e) {
+      debugPrint('Error when getting the address from lat and long $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+           content: Text(
+               'Falha ao obter endereço: ${e.message ?? 'Erro desconhecido'}',
+               style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontFamily: "Inter"
+                 ),
+           ),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } catch (e) {
+      print('Erro desconhecido: $e');
+    }
   }
 
   @override

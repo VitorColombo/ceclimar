@@ -19,7 +19,7 @@ class _StatusLabelState extends State<StatusLabel> {
         borderRadius: BorderRadius.circular(4),
         border: Border.all(
           color: widget.borderColor,
-          width: 1,
+          width: 2,
         ),
       ),
       child: Text(
