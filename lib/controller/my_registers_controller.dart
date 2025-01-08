@@ -25,8 +25,7 @@ class MyRegistersController {
         'id': doc.id,
       });
     }).toList();
-    print('Documents found: ${registerSnapshot.docs.length}');
-    print('Raw data: ${registerSnapshot.docs.map((e) => e.data())}');
+    registers.sort((a, b) => b.date.compareTo(a.date));
     return registers;
   }
 }

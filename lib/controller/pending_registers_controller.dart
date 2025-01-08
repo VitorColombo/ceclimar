@@ -16,7 +16,7 @@ class PendingRegistersController {
         'id': doc.id,
       });
     }).toList();
-
+    registers.sort((a, b) => b.date.compareTo(a.date));
     return registers;
   }
 }
