@@ -164,7 +164,7 @@ class _MyProfileState extends State<MyProfile> {
                         ),
                         isLoading? const Skeletonizer(
                           enabled: true, 
-                          child: Text("XX", style: TextStyle(fontSize: 18)),
+                          child: Text("XX", style: TextStyle(fontSize: 16)),
                           ) 
                         : Text("${registers.length}", 
                           style: Theme.of(context).textTheme.bodyLarge,

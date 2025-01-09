@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:tcc_ceclimar/utils/user_role.dart';
 import '../utils/firebase_auth_services.dart';
 import 'package:tcc_ceclimar/models/user_data.dart';
 
@@ -155,6 +156,7 @@ class AuthenticationController {
         'email': email,
         'createdAt': FieldValue.serverTimestamp(),
         'profileImageUrl': '',
+        'role': 'user',
       });
 
       Navigator.pushReplacementNamed(context, '/login');
@@ -627,5 +629,25 @@ class AuthenticationController {
       return null;
     }
     return null;
+  }
+
+  Future<UserRole?> getUserRole() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+      String role = userDoc['role'];
+      if (role == UserRole.admin.roleString) {
+        return UserRole.admin;
+      } else {
+        return UserRole.user;
+      }
+    }
+    return null;
+  }
+
+  Future<void> _setRole(String uid, UserRole role) async{
+      await FirebaseFirestore.instance.collection('users').doc(uid).set({
+        'role': role.roleString,
+      });
   }
 }
