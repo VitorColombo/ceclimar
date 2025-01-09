@@ -17,6 +17,8 @@ class PendingRegistersController {
       });
     }).toList();
     registers.sort((a, b) => b.date.compareTo(a.date));
+    await Future.delayed(Duration(milliseconds: 500));
+    
     return registers;
   }
 }

@@ -1,12 +1,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import 'package:tcc_ceclimar/controller/auth_user_controller.dart';
 import 'package:tcc_ceclimar/controller/my_profile_controller.dart';
 import 'package:tcc_ceclimar/models/animal_response.dart';
 import 'package:tcc_ceclimar/models/register_response.dart';
 import 'package:tcc_ceclimar/pages/edit_profile.dart';
 import 'package:tcc_ceclimar/pages/register_view.dart';
+import 'package:tcc_ceclimar/utils/placeholder_registers.dart';
 import 'package:tcc_ceclimar/widgets/badge_item.dart';
 import 'package:tcc_ceclimar/widgets/login_header.dart';
 import 'package:tcc_ceclimar/widgets/modal_bottomsheet.dart';
@@ -153,9 +155,21 @@ class _MyProfileState extends State<MyProfile> {
                       ),
                     ),
                     SizedBox(height: 9),
-                    Text(
-                      "Registros realizados: ${registers.length}", 
-                      style: Theme.of(context).textTheme.bodyLarge,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [                    
+                        Text(
+                          "Registros realizados: ", 
+                          style: Theme.of(context).textTheme.bodyLarge,
+                        ),
+                        isLoading? const Skeletonizer(
+                          enabled: true, 
+                          child: Text("XX", style: TextStyle(fontSize: 18)),
+                          ) 
+                        : Text("${registers.length}", 
+                          style: Theme.of(context).textTheme.bodyLarge,
+                        ),
+                      ],
                     ),
                     SizedBox(height: 20),
                     ProfileSwitch(
@@ -167,21 +181,9 @@ class _MyProfileState extends State<MyProfile> {
                 ValueListenableBuilder<bool>(
                   valueListenable: isUltimosRegistrosNotifier,
                   builder: (context, isUltimosRegistros, child) {
-                    return isLoading
-                        ? Padding(
-                          padding: const EdgeInsets.all(40.0),
-                          child: Align(
-                            alignment: Alignment.center,
-                            child: const LinearProgressIndicator(
-                                color: Color.fromRGBO(71, 169, 218, 1), 
-                                backgroundColor: Color.fromARGB(255, 31, 73, 95),
-                                minHeight: 4,
-                              ),
-                          ),
-                        )
-                        : !isUltimosRegistros
-                            ? UltimosRegistrosContent(registers: registers)
-                            : AnimaisEncontradosContent(registers: registers);
+                    return !isUltimosRegistros
+                            ? UltimosRegistrosContent(registers: registers, isLoading: isLoading)
+                            : AnimaisEncontradosContent(registers: registers, isLoading: isLoading);
                   },
                 ),
               ]
@@ -312,11 +314,11 @@ class _MyProfileState extends State<MyProfile> {
 
 class UltimosRegistrosContent extends StatelessWidget {
   final List<RegisterResponse> registers;
-
-  const UltimosRegistrosContent({super.key, required this.registers});
+  final bool isLoading;
+  const UltimosRegistrosContent({super.key, required this.registers, required this.isLoading});
   @override
   Widget build(BuildContext context) {
-    if (registers.isEmpty) {
+    if (!isLoading && registers.isEmpty) {
       return Center(
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 20),
@@ -328,20 +330,26 @@ class UltimosRegistrosContent extends StatelessWidget {
       );
     }
     final limitedRegisters = registers.take(10).toList();
+    final placeholderRegisters = generatePlaceholderRegisters(6);
+    final displayRegisters = isLoading ? placeholderRegisters : limitedRegisters;
 
     return SizedBox(
       height: 400,
-      child: ListView.builder(
-        padding: EdgeInsets.only(top: 0, bottom: 70),
-        physics: AlwaysScrollableScrollPhysics(),
-        shrinkWrap: true,
-        itemCount: limitedRegisters.length,
-        itemBuilder: (context, index) {
-          return RegisterItem(
-            register: limitedRegisters[index],
-            route: RegisterDetailPage.routeName  
-          );
-        },
+      child: Skeletonizer(
+        enabled: isLoading,
+        child: ListView.builder(
+          padding: EdgeInsets.only(top: 0, bottom: 70),
+          physics: AlwaysScrollableScrollPhysics(),
+          shrinkWrap: true,
+          itemCount: displayRegisters.length,
+          itemBuilder: (context, index) {
+            return RegisterItem(
+              isLoading: isLoading,
+              register: displayRegisters[index],
+              route: RegisterDetailPage.routeName  
+            );
+          },
+        ),
       ),
     );
   }
@@ -349,12 +357,12 @@ class UltimosRegistrosContent extends StatelessWidget {
 
 class AnimaisEncontradosContent extends StatelessWidget {
   final List<dynamic> registers;
-
-  const AnimaisEncontradosContent({super.key, required this.registers});
+  final bool isLoading;
+  const AnimaisEncontradosContent({super.key, required this.registers, required this.isLoading});
 
   @override
   Widget build(BuildContext context) {
-    if (registers.isEmpty) {
+    if (!isLoading && registers.isEmpty) {
       return Center(
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 20),
@@ -365,19 +373,25 @@ class AnimaisEncontradosContent extends StatelessWidget {
         ),
       );
     }
+    final placeholderRegisters = generatePlaceholderRegisters(6);
+    final displayRegisters = isLoading ? placeholderRegisters : registers;
+
     return SizedBox(
       height: 400,
-      child: GridView.builder(
-        padding: EdgeInsets.only(top: 0, bottom: 70, left: 1, right: 1),
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3,
-          crossAxisSpacing: 9,
-          mainAxisSpacing: 1,
+      child: Skeletonizer(
+        enabled: isLoading,
+        child: GridView.builder(
+          padding: EdgeInsets.only(top: 0, bottom: 70, left: 1, right: 1),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3,
+            crossAxisSpacing: 9,
+            mainAxisSpacing: 1,
+          ),
+          itemCount: displayRegisters.length,
+          itemBuilder: (context, index) {
+            return BadgeItem(register: displayRegisters[index]);
+          },
         ),
-        itemCount: registers.length,
-        itemBuilder: (context, index) {
-          return BadgeItem(register: registers[index]);
-        },
       ),
     );
   }

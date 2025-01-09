@@ -36,6 +36,7 @@ dependencies:
   path_provider: ^2.1.1
   connectivity_plus: ^5.0.2
   build_runner: ^2.4.8
+  skeletonizer: ^1.4.2
   
 dev_dependencies:
   flutter_test:

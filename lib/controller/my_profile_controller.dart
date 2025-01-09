@@ -25,7 +25,9 @@ class MyProfileController {
         'id': doc.id,
       });
     }).toList();
-    print(registers);
+    registers.sort((a, b) => b.date.compareTo(a.date));
+    await Future.delayed(Duration(milliseconds: 500));
+    
     return registers;
   }
 }

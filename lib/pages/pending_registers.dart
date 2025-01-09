@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tcc_ceclimar/controller/pending_registers_controller.dart';
 import 'package:tcc_ceclimar/models/register_response.dart';
 import 'package:tcc_ceclimar/pages/evaluate_register.dart';
+import 'package:tcc_ceclimar/utils/placeholder_registers.dart';
 import 'package:tcc_ceclimar/widgets/register_item.dart';
 import '../widgets/page_header.dart';
 
@@ -52,6 +53,9 @@ class _PendingRegistersState extends State<PendingRegisters> {
 
 @override
   Widget build(BuildContext context) {
+    final placeholderRegisters = generatePlaceholderRegisters(6);
+    final displayRegisters = isLoading ? placeholderRegisters : registers;
+
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
@@ -61,13 +65,7 @@ class _PendingRegistersState extends State<PendingRegisters> {
               icon: const Icon(Icons.arrow_back),
               onTap: () => widget.updateIndex(0),
             ),
-            if (isLoading)
-              Container(
-                padding: const EdgeInsets.only(top: 250),
-                alignment: Alignment.center,
-                child: const Center(child: CircularProgressIndicator()),
-              )
-            else if (registers.isEmpty)
+            if (!isLoading && registers.isEmpty)
               Center(
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
@@ -85,10 +83,11 @@ class _PendingRegistersState extends State<PendingRegisters> {
                   padding: EdgeInsets.only(top: 0, bottom: 180),
                   physics: AlwaysScrollableScrollPhysics(),
                   shrinkWrap: true,
-                  itemCount: registers.length,
+                  itemCount: displayRegisters.length,
                   itemBuilder: (context, index) {
                     return RegisterItem(
-                      register: registers[index],
+                      isLoading: isLoading,
+                      register: displayRegisters[index],
                       route: EvaluateRegister.routeName,
                     );
                   },

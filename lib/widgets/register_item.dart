@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import '../models/register_response.dart';
 
 class RegisterItem extends StatelessWidget {
   final RegisterResponse register;
   final String route;
+  final bool isLoading;
 
   const RegisterItem({
     super.key, 
     required this.register, 
-    required this.route
+    required this.route,
+    required this.isLoading,
   });
 
   @override
@@ -33,70 +36,73 @@ class RegisterItem extends StatelessWidget {
                 borderRadius: BorderRadius.circular(15),
                 side: const BorderSide(color: Colors.transparent),
               ),
-              child: ListTile(
-              leading: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                  color: Colors.grey[200],
-                ),
-                width: 70,
-                height: 60,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(16),
-                  child: register.registerImageUrl.isNotEmpty
-                      ? Image.network(
-                          register.registerImageUrl,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return const Icon(Icons.broken_image, size: 40, color: Colors.grey);
-                          },
-                        )
-                      : const Icon(Icons.image_not_supported, size: 40, color: Colors.grey),
-                ),
-              ),
-                title: Row(
-                  children: [
-                    Text(
-                      register.animal.popularName!,
-                      style: const TextStyle(fontWeight: FontWeight.bold),
+              child: Skeletonizer(
+                enabled: isLoading,
+                child: ListTile(
+                  leading: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16),
+                      color: Colors.grey[200],
                     ),
-                    SizedBox(width: 8),
-                    Baseline(
-                      baseline: 14,
-                      baselineType: TextBaseline.alphabetic,
-                      child: Container(
-                        width: 10,
-                        height: 10,
-                        decoration: BoxDecoration(
-                          color: register.status == "Validado" ? Color.fromARGB(255, 178, 227, 170) : Colors.grey[200],
-                          shape: BoxShape.circle,
+                  width: 70,
+                  height: 60,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: register.registerImageUrl.isNotEmpty
+                        ? Image.network(
+                            register.registerImageUrl,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return const Icon(Icons.broken_image, size: 40, color: Colors.grey);
+                            },
+                          )
+                        : const Icon(Icons.image_not_supported, size: 40, color: Colors.grey),
+                    ),
+                  ),
+                  title: Row(
+                    children: [
+                      Text(
+                        register.animal.popularName!,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(width: 8),
+                      Baseline(
+                        baseline: 14,
+                        baselineType: TextBaseline.alphabetic,
+                        child: Container(
+                          width: 10,
+                          height: 10,
+                          decoration: BoxDecoration(
+                            color: register.status == "Validado" ? Color.fromARGB(255, 178, 227, 170) : Colors.grey[200],
+                            shape: BoxShape.circle,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Icon(PhosphorIcons.mapPin(), color: Colors.black, size: 20),
+                          SizedBox(width: 6),
+                          Text(register.city.isEmpty ? "Cidade não informada" : register.city),
+                        ],
+                      ), 
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Icon(PhosphorIcons.calendarBlank(), color: Colors.black, size: 20),
+                          SizedBox(width: 6),
+                          Text(DateFormat('dd/MM/yyyy').format(register.date)),
+                        ],
+                      ), 
+                    ],
+                  ),
+                  trailing: const Icon(Icons.arrow_forward_ios),
                 ),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Icon(PhosphorIcons.mapPin(), color: Colors.black, size: 20),
-                        SizedBox(width: 6),
-                        Text(register.city.isEmpty ? "Cidade não informada" : register.city),
-                      ],
-                    ), 
-                    const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        Icon(PhosphorIcons.calendarBlank(), color: Colors.black, size: 20),
-                        SizedBox(width: 6),
-                        Text(DateFormat('dd/MM/yyyy').format(register.date)),
-                      ],
-                    ), 
-                  ],
-                ),
-                trailing: const Icon(Icons.arrow_forward_ios),
               ),
             ),
           ),

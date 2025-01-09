@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import 'package:tcc_ceclimar/controller/my_registers_controller.dart';
 import 'package:tcc_ceclimar/pages/register_view.dart';
+import 'package:tcc_ceclimar/utils/placeholder_registers.dart';
 import 'package:tcc_ceclimar/widgets/register_status_label.dart';
 import '../models/register_response.dart';
+import '../models/animal_response.dart';
 import '../widgets/page_header.dart';
 import '../widgets/register_item.dart';
 
@@ -65,6 +68,9 @@ class _MyRegistersState extends State<MyRegisters> {
 
   @override
   Widget build(BuildContext context) {
+    final placeholderRegisters = generatePlaceholderRegisters(6);
+    final displayRegisters = isLoading ? placeholderRegisters : registers;
+
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
@@ -111,39 +117,35 @@ class _MyRegistersState extends State<MyRegisters> {
                 ],
               ),
             ),
-            isLoading
-              ? Container(
-                  padding: const EdgeInsets.only(top: 250),
-                  alignment: Alignment.center,
-                  child: const Center(
-                    child: CircularProgressIndicator(),
+            !isLoading && registers.isEmpty ?
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text(
+                    "Nenhum registro encontrado.",
+                    style: TextStyle(fontSize: 18),
+                    textAlign: TextAlign.center,
                   ),
-                )
-              : registers.isEmpty
-                  ? Padding(
-                      padding: const EdgeInsets.only(top: 250),
-                      child: Center(
-                        child: Text(
-                          'Nenhum registro encontrado',
-                          style: TextStyle(fontSize: 16, color: Colors.grey),
-                        ),
-                      ),
-                    )
-                  : SizedBox(
-                      height: MediaQuery.of(context).size.height - kToolbarHeight,
+                ),
+              ) : SizedBox(
+                    height: MediaQuery.of(context).size.height - kToolbarHeight,
+                    child: Skeletonizer(
+                      enabled: isLoading,
                       child: ListView.builder(
                         padding: EdgeInsets.only(top: 0, bottom: 180),
                         physics: AlwaysScrollableScrollPhysics(),
                         shrinkWrap: true,
-                        itemCount: registers.length,
+                        itemCount: displayRegisters.length,
                         itemBuilder: (context, index) {
                           return RegisterItem(
-                            register: registers[index],
+                            register: displayRegisters[index],
                             route: RegisterDetailPage.routeName,
+                            isLoading: isLoading,
                           );
                         },
                       ),
                     ),
+                  ),
           ],
         ),
       ),
