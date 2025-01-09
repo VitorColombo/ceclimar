@@ -174,7 +174,8 @@ class _MyProfileState extends State<MyProfile> {
                     SizedBox(height: 20),
                     ProfileSwitch(
                         size: 600,
-                        isUltimosRegistrosNotifier: isUltimosRegistrosNotifier),
+                        isUltimosRegistrosNotifier: isUltimosRegistrosNotifier
+                    ),
                     SizedBox(height: 10),
                   ],
                 ),

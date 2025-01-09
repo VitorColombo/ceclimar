@@ -512,15 +512,15 @@ class AuthenticationController {
   }
 
   Future<void> _updateUserInFirestore(String userId, Map<String, dynamic> userData) async {
-  try {
-    await FirebaseFirestore.instance.collection('users').doc(userId).set(
-      userData,
-      SetOptions(merge: true),
-    );
-  } catch (e) {
-    throw Exception('Erro ao atualizar o Firestore: $e');
+    try {
+      await FirebaseFirestore.instance.collection('users').doc(userId).set(
+        userData,
+        SetOptions(merge: true),
+      );
+    } catch (e) {
+      throw Exception('Erro ao atualizar o Firestore: $e');
+    }
   }
-}
 
   Future<String?> _uploadImage() async {
     if (_image == null) return null;
