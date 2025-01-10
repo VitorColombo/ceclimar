@@ -160,7 +160,7 @@ class AuthenticationController {
         'role': 'user',
       });
 
-      Navigator.pushReplacementNamed(context, '/login');
+      Navigator.pushReplacementNamed(context, '/basePage');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Usuário cadastrado com sucesso!'),

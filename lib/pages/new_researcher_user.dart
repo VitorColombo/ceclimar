@@ -113,36 +113,36 @@ class NewResearcherPageState extends State<NewResearcherPage> {
                               const SizedBox(height: 24),
                               Text("Senha temporária gerada:"),
                               Padding(
-   padding: const EdgeInsets.only(top: 8.0),
-child: Container(
-  width: 200,
-  height: 50,
-  decoration: BoxDecoration(
-    color: Colors.grey[200],
-    borderRadius: BorderRadius.circular(8.0),
-  ),
-  child: Stack(
-    children: [
-      Center(
-        child: Text(
-          _generatedPassword,
-          style: const TextStyle(
-            color: Colors.black,
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ),
-      Positioned(
-        right: 0,
-        child: IconButton(
-          onPressed: () => _copyToClipboard(_generatedPassword),
-          icon: const Icon(Icons.copy, color: Colors.grey),
-        ),
-      ),
-    ],
-  ),
-),
+                                padding: const EdgeInsets.only(top: 8.0),
+                                child: Container(
+                                  width: 200,
+                                  height: 50,
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[200],
+                                    borderRadius: BorderRadius.circular(8.0),
+                                  ),
+                                  child: Stack(
+                                    children: [
+                                      Center(
+                                        child: Text(
+                                          _generatedPassword,
+                                          style: const TextStyle(
+                                            color: Colors.black,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ),
+                                      Positioned(
+                                        right: 0,
+                                        child: IconButton(
+                                          onPressed: () => _copyToClipboard(_generatedPassword),
+                                          icon: const Icon(Icons.copy, color: Colors.grey),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               )
                             ],
                           ),
