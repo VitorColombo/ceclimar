@@ -5,6 +5,7 @@ import 'package:tcc_ceclimar/models/register_response.dart';
 class MyRegistersController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final CollectionReference _registersCollection = FirebaseFirestore.instance.collection('registers');
 
   Future<List<RegisterResponse>> getRegisters() async {
     User? user = _auth.currentUser;
@@ -29,5 +30,19 @@ class MyRegistersController {
     await Future.delayed(Duration(milliseconds: 500));
 
     return registers;
+  }
+
+  Stream<int> getRegistersCountStream() {
+      User? user = _auth.currentUser;
+        if (user == null) {
+        return Stream.value(0);
+      }
+    
+    return _firestore
+        .collection('users')
+        .doc(user.uid)
+        .collection('registers')
+        .snapshots()
+        .map((snapshot) => snapshot.docs.length);
   }
 }

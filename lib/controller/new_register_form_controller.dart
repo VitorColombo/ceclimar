@@ -358,7 +358,7 @@ class NewRegisterFormController {
           };
         if (connectivityResult == ConnectivityResult.none) {
           _queueRegister(registerData, 'technical', _image, _image2, context);
-           _showSuccessMessage(context, 'Registro salvo localmente. Será enviado quando a internet voltar.');
+          _showSuccessMessage(context, 'Registro salvo localmente. Será enviado quando a internet voltar.');
           } else {
            try {
              final response = await sendTechnicalRegisterToApi(
@@ -474,7 +474,7 @@ class NewRegisterFormController {
         user.uid,
         newRegister.toJson(),
       );
-
+      
       return newRegister;
     } catch(e){
       debugPrint("error when sending technical register $e");
