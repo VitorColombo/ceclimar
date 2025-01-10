@@ -33,7 +33,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    controller.initConnectivityListener();
+    controller.initConnectivityListener(context);
   }
 
   @override

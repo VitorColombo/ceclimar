@@ -293,7 +293,7 @@ class NewRegisterFormController {
              "longitude": longitude,
            };
           if (connectivityResult == ConnectivityResult.none) {
-             _queueRegister(registerData, 'simple', _image, _image2);
+             _queueRegister(registerData, 'simple', _image, _image2, context);
             _showSuccessMessage(context, 'Registro salvo localmente. Será enviado quando a internet voltar.');
           } else {
             try {
@@ -357,7 +357,7 @@ class NewRegisterFormController {
               "longitude": longitude
           };
         if (connectivityResult == ConnectivityResult.none) {
-          _queueRegister(registerData, 'technical', _image, _image2);
+          _queueRegister(registerData, 'technical', _image, _image2, context);
            _showSuccessMessage(context, 'Registro salvo localmente. Será enviado quando a internet voltar.');
           } else {
            try {
@@ -495,7 +495,7 @@ class NewRegisterFormController {
     }
   }
 
-Future<String> uploadImageToFirebaseStorage(File imageFile) async {
+  Future<String> uploadImageToFirebaseStorage(File imageFile) async {
     try {
       final storageRef = FirebaseStorage.instance.ref();
       final fileName = DateTime.now().millisecondsSinceEpoch.toString();
@@ -534,7 +534,7 @@ Future<String> uploadImageToFirebaseStorage(File imageFile) async {
     }
   }
 
- void _queueRegister(Map<String, dynamic> registerData, String registerType, File? image, File? image2) {
+  void _queueRegister(Map<String, dynamic> registerData, String registerType, File? image, File? image2, BuildContext context) {
       final newRegister = LocalRegister(
         registerType: registerType,
         data: registerData,
@@ -542,8 +542,10 @@ Future<String> uploadImageToFirebaseStorage(File imageFile) async {
         registerImagePath: image?.path,
         registerImagePath2: image2?.path
       );
-        _registerBox.add(newRegister);
-    }
+      _registerBox.add(newRegister);
+      _showSuccessMessage(context, 'Registro salvo localmente. Será enviado quando a internet voltar.');
+      Navigator.pushNamedAndRemoveUntil(context, BasePage.routeName, (Route<dynamic> route) => false, arguments: 0);
+  }
   
   void _showSuccessMessage(BuildContext context, String message){
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
@@ -623,7 +625,7 @@ Future<String> uploadImageToFirebaseStorage(File imageFile) async {
                   register.data['longitude'],
                 );
               }
-                _updateRegisterStatus(register, RegisterStatus.sent);
+              _updateRegisterStatus(register, RegisterStatus.sent);
               isSent = true;
           } catch (e) {
                 _updateRegisterStatus(register, RegisterStatus.error);
@@ -646,7 +648,7 @@ Future<String> uploadImageToFirebaseStorage(File imageFile) async {
     }
   }
 
-  void initConnectivityListener(){
+  void initConnectivityListener(BuildContext context){
     Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
       if (result != ConnectivityResult.none){
         retryPendingRegisters();
@@ -654,12 +656,12 @@ Future<String> uploadImageToFirebaseStorage(File imageFile) async {
     });
   }
 
-   void _checkHiveData() {
+  void _checkHiveData() {
       final registerBox = Hive.box<LocalRegister>('registers');
         print('------- Hive Data -------');
         for (var register in registerBox.values) {
           print(register.toJson());
       }
         print('------- End of Hive Data -------');
-    }
+  }
 }
