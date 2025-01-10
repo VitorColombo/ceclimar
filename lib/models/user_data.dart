@@ -16,11 +16,11 @@ class UserResponse {
 
   factory UserResponse.fromJson(Map<String, dynamic> json) {
     return UserResponse(
-      uid: json['uid'],
-      name: json['name'],
-      email: json['email'],
-      photoURL: json['photoURL'],
-      role: json['role'],
+      uid: json['uid'] ?? '',
+      name: json['name'] ?? '',
+      email: json['email'] ?? '',
+      photoURL: json['photoURL'] ?? '',
+      role: json['role'] ?? '',
     );
   }
 }

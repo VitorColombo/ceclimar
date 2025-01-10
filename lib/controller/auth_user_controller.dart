@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:tcc_ceclimar/utils/pass_generator.dart';
 import 'package:tcc_ceclimar/utils/user_role.dart';
 import '../utils/firebase_auth_services.dart';
 import 'package:tcc_ceclimar/models/user_data.dart';
@@ -647,13 +648,57 @@ class AuthenticationController {
     return null;
   }
 
-  Future<void> _setRole(UserRole role) async{
-      User? user = FirebaseAuth.instance.currentUser;
-      if (user != null) {
-        await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
-          'role': role.roleString,
-        });
+  Future<void> setRole(UserRole role, context) async {
+    try {
+      await checkIfUserIsAdmin(emailController.text);
+
+      QuerySnapshot userSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .where('email', isEqualTo: emailController.text)
+          .get();
+
+      if (userSnapshot.docs.length > 1) {
+        throw Exception('Mais de um usuário encontrado com esse email.');
       }
+
+      DocumentSnapshot userDoc = userSnapshot.docs.first;
+
+      await FirebaseFirestore.instance.collection('users').doc(userDoc.id).update({
+        'role': role.roleString,
+      });
+
+      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Função de pesquisador concedida!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } catch (e) {
+      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erro ao definir o papel do usuário: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  Future<void> checkIfUserIsAdmin(String email) async {
+    QuerySnapshot userSnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .where('email', isEqualTo: email)
+        .get();
+
+    if (userSnapshot.docs.isNotEmpty) {
+      var userData = userSnapshot.docs.first.data() as Map<String, dynamic>;
+      UserRole userRole = roleFromString(userData['role']);
+
+      if (userRole == UserRole.admin) {
+        throw Exception('O usuário já é um pesquisador.');
+      }
+    }
   }
 
   Future<UserResponse> getLoggedUserData() async {
@@ -672,5 +717,90 @@ class AuthenticationController {
     });
 
     return userData;
+  }
+
+  Future<bool> isEmailRegistered() async {
+    QuerySnapshot usersSnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .get();
+
+    List<UserResponse> users = usersSnapshot.docs.map((doc) {
+      return UserResponse.fromJson({
+        ...doc.data() as Map<String, dynamic>, 
+        'id': doc.id,
+      });
+    }).toList();
+    for (UserResponse user in users) {
+      if (user.email == emailController.text) {
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  Future<bool> validateNewResearcher() async {
+    nameController.text = nameController.text.trim();
+    emailController.text = emailController.text.trim();
+
+    nameError = validateName(nameController.text);
+    emailError = validateEmail(emailController.text);
+    return nameError == null && emailError == null && await isEmailRegistered();
+  }
+
+  Future<String> addNewResearcher(BuildContext context) async {
+    String name = nameController.text;
+    String email = emailController.text;
+    String password = PassGenerator.generate();    
+    try {
+      User? user = await _auth.createUserWithEmailAndPassword(email, password);
+      if (user != null) {
+        await user.updateDisplayName(name);
+        await user.reload();
+        user = FirebaseAuth.instance.currentUser;
+
+        await FirebaseFirestore.instance.collection('users').doc(user?.uid).set({
+          'name': name,
+          'email': email,
+          'createdAt': FieldValue.serverTimestamp(),
+          'profileImageUrl': '',
+          'role': 'admin',
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Pesquisador cadastrado com sucesso!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        return password;
+      }
+      return "falha";
+    } on FirebaseAuthException catch (e) {
+      String message;
+      switch (e.code) {
+        case 'email-already-in-use':
+          message = 'E-mail já cadastrado.';
+          return "email_already_exists";
+        case 'invalid-email':
+          message = 'E-mail inválido.';
+          break;
+        case 'weak-password':
+          message = 'A senha é muito fraca.';
+          break;
+        default:
+          message = 'Ocorreu um erro. Por favor, tente novamente.';
+      }
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(message), backgroundColor: Colors.red),
+      );
+      return "falha";
+    } catch (e) {
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString()), backgroundColor: Colors.red),
+      );
+      return "falha";
+    }
   }
 }
