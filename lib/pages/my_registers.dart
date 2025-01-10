@@ -6,7 +6,6 @@ import 'package:tcc_ceclimar/pages/register_view.dart';
 import 'package:tcc_ceclimar/utils/placeholder_registers.dart';
 import 'package:tcc_ceclimar/widgets/register_status_label.dart';
 import '../models/register_response.dart';
-import '../models/animal_response.dart';
 import '../widgets/page_header.dart';
 import '../widgets/register_item.dart';
 

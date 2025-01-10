@@ -288,6 +288,7 @@ class AuthenticationController {
             'email': user.email,
             'createdAt': FieldValue.serverTimestamp(),
             'profileImageUrl': user.photoURL,
+            'role': 'user',
           });
         }
 
@@ -362,6 +363,7 @@ class AuthenticationController {
         name: user.displayName,
         email: user.email,
         photoURL: user.photoURL,
+        role: '',
       );
     }
     return null;
@@ -645,9 +647,30 @@ class AuthenticationController {
     return null;
   }
 
-  Future<void> _setRole(String uid, UserRole role) async{
-      await FirebaseFirestore.instance.collection('users').doc(uid).set({
-        'role': role.roleString,
-      });
+  Future<void> _setRole(UserRole role) async{
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+          'role': role.roleString,
+        });
+      }
+  }
+
+  Future<UserResponse> getLoggedUserData() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if(user == null) {
+      throw Exception('Usuário não logado');
+    }
+    DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .get();
+
+    UserResponse userData = UserResponse.fromJson({
+      ...userSnapshot.data() as Map<String, dynamic>,
+      'uid': user.uid,
+    });
+
+    return userData;
   }
 }
