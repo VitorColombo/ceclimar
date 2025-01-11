@@ -27,7 +27,6 @@ dependencies:
   photo_view: ^0.15.0
   geolocator: ^13.0.2
   geocoding: ^3.0.0
-  location: ^5.0.0
   phosphor_flutter: ^2.1.0
   url_launcher: ^6.3.1
   accordion: ^2.6.0

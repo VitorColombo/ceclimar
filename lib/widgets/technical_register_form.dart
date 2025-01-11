@@ -335,6 +335,8 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
               )
             )
           );
+      await Future.delayed(const Duration(seconds: 3));
+      await Geolocator.openLocationSettings();
       return false;
     }
     permission = await Geolocator.checkPermission();
@@ -359,8 +361,10 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
               'As permissões de localização foram negadas, para enviar o registro é necessário habilitar a localização nas configurações do dispositivo',
               style: TextStyle(color: Colors.white),
               )
-            )
-          );
+        )
+      );
+      await Future.delayed(const Duration(seconds: 3));
+      await Geolocator.openLocationSettings();
       return false;
     }
     return true;

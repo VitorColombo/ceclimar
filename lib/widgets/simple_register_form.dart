@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:tcc_ceclimar/widgets/custom_switch.dart';
 import 'package:tcc_ceclimar/widgets/input_field.dart';
 import 'package:tcc_ceclimar/widgets/send_btn.dart';
 import 'package:tcc_ceclimar/widgets/send_btn_disabled.dart';
-
 import '../controller/new_register_form_controller.dart';
 import 'image_selector.dart';
 import 'modal_help_register_image_btnsheet.dart';
@@ -98,8 +98,8 @@ class _SimpleRegisterFormState extends State<SimpleRegisterForm> {
               )
             )
           );
-          await Future.delayed(const Duration(seconds: 3));
-          await Geolocator.openLocationSettings();
+      await Future.delayed(const Duration(seconds: 3));
+      await Geolocator.openLocationSettings();
       return false;
     }
     return true;
@@ -121,6 +121,7 @@ class _SimpleRegisterFormState extends State<SimpleRegisterForm> {
   }
 
   Future<void> _getAddressFromLatLng(Position position) async {
+    try {
       await placemarkFromCoordinates(
               position.latitude, position.longitude)
           .then((List<Placemark> placemarks) {
@@ -132,6 +133,24 @@ class _SimpleRegisterFormState extends State<SimpleRegisterForm> {
       }).catchError((e) {
         debugPrint(e);
       });
+    } on PlatformException catch (e) {
+      debugPrint('Error when getting the address from lat and long $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+           content: Text(
+               'Falha ao obter endereço: ${e.message ?? 'Erro desconhecido'}',
+               style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontFamily: "Inter"
+                 ),
+           ),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } catch (e) {
+      print('Erro desconhecido: $e');
+    }
   }
 
   @override
