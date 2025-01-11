@@ -293,7 +293,7 @@ class NewRegisterFormController {
              "longitude": longitude,
            };
           if (connectivityResult == ConnectivityResult.none) {
-             _queueRegister(registerData, 'simple', _image, _image2, context);
+            _queueRegister(registerData, 'simple', _image, _image2, context);
             _showSuccessMessage(context, 'Registro salvo localmente. Será enviado quando a internet voltar.');
           } else {
             try {
@@ -310,15 +310,21 @@ class NewRegisterFormController {
               } else {
                 _handleError(context, 'Falha ao enviar o registro.');
               }
-           } catch (e) {
-              _handleError(context, 'Falha ao enviar registro: $e');
-           }
+            } catch (e) {
+                _handleError(context, 'Falha ao enviar registro: $e');
+            }
         }
       }
     } else {
-      if (imageError != null) {
-        _handleError(context, imageError!);
-      }
+        if (imageError != null) {
+          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(imageError!),
+              backgroundColor: Colors.red,
+              ),
+          );
+        }
     }
   }
 
@@ -388,8 +394,14 @@ class NewRegisterFormController {
           }
       }
     } else {
-       if (imageError != null) {
-         _handleError(context, imageError!);
+        if (imageError != null) {
+          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(imageError!),
+              backgroundColor: Colors.red,
+              ),
+          );
         }
     }
   }
@@ -399,6 +411,10 @@ class NewRegisterFormController {
       double latitude, double longitude,) async {
     User user = FirebaseAuth.instance.currentUser!;
     try{
+      if(_image == null){
+        _image = _image2;
+        _image2 = null;
+      }
       final String imageUrl = await uploadImageToFirebaseStorage(_image!);
       final String? imageUrl2 = _image2 != null ? await uploadImageToFirebaseStorage(_image2!) : null;
       final int registerId = await getNextRegisterId();
@@ -440,6 +456,10 @@ class NewRegisterFormController {
       String classe, double latitude, double longitude) async {     
     User user = FirebaseAuth.instance.currentUser!;
     try{
+      if(_image == null){
+        _image = _image2;
+        _image2 = null;
+      }
       final String imageUrl = await uploadImageToFirebaseStorage(_image!);
       final String? imageUrl2 = _image2 != null ? await uploadImageToFirebaseStorage(_image2!) : null;
       final int registerId = await getNextRegisterId();
