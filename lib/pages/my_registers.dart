@@ -15,9 +15,7 @@ class MyRegisters extends StatefulWidget {
 
   const MyRegisters({super.key, this.updateIndex = _defaultUpdateIndex});
 
-  static void _defaultUpdateIndex(int index) {
-
-  }
+  static void _defaultUpdateIndex(int index) {}
 
   @override
   State<MyRegisters> createState() => _MyRegistersState();
@@ -29,7 +27,6 @@ class _MyRegistersState extends State<MyRegisters> {
   bool isLoading = true;
   bool isFiltered = false;
   String selectedFilter = "Todos";
-  Color selectedFilterColor = Colors.transparent;
 
   @override
   void initState() {
@@ -42,19 +39,21 @@ class _MyRegistersState extends State<MyRegisters> {
       isLoading = true;
     });
     try {
-      List<RegisterResponse> fetchedRegisters = await _myRegistersController.getRegisters();
-      if(mounted){
+      List<RegisterResponse> fetchedRegisters =
+          await _myRegistersController.getRegisters();
+      if (mounted) {
         setState(() {
           registers = fetchedRegisters;
           isLoading = false;
           if (status != "Todos") {
-            registers = registers.where((element) => element.status == status).toList();
+            registers =
+                registers.where((element) => element.status == status).toList();
           }
           selectedFilter = status;
         });
       }
     } catch (e) {
-      if(mounted){
+      if (mounted) {
         setState(() {
           isLoading = false;
         });
@@ -74,14 +73,29 @@ class _MyRegistersState extends State<MyRegisters> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            PageHeader(text: "Meus registros", icon: const Icon(Icons.arrow_back), onTap: () => widget.updateIndex(0)),
+            PageHeader(
+                text: "Meus registros",
+                icon: const Icon(Icons.arrow_back),
+                onTap: () => widget.updateIndex(0)),
             Padding(
               padding: const EdgeInsets.only(top: 0, left: 20.0, bottom: 10),
               child: Row(
                 children: [
                   Icon(PhosphorIcons.funnel(), color: Colors.grey[500], size: 16),
                   Text("Filtrar:", style: TextStyle(color: Colors.grey[500])),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
+                  InkWell(
+                    onTap: () {
+                      fetchRegisters("Todos");
+                    },
+                    child: StatusLabel(
+                      status: "Todos",
+                      borderColor: selectedFilter == "Todos"
+                          ? Colors.blue
+                          : Colors.transparent,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
                   InkWell(
                     onTap: () {
                       if (selectedFilter == "Validado") {
@@ -97,7 +111,7 @@ class _MyRegistersState extends State<MyRegisters> {
                           : Colors.transparent,
                     ),
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   InkWell(
                     onTap: () {
                       if (selectedFilter == "Enviado") {
@@ -116,23 +130,24 @@ class _MyRegistersState extends State<MyRegisters> {
                 ],
               ),
             ),
-            !isLoading && registers.isEmpty ?
-              Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Text(
-                    "Nenhum registro encontrado.",
-                    style: TextStyle(fontSize: 18),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ) : SizedBox(
+            !isLoading && registers.isEmpty
+                ? Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Text(
+                        "Nenhum registro encontrado.",
+                        style: const TextStyle(fontSize: 18),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  )
+                : SizedBox(
                     height: MediaQuery.of(context).size.height - kToolbarHeight,
                     child: Skeletonizer(
                       enabled: isLoading,
                       child: ListView.builder(
-                        padding: EdgeInsets.only(top: 0, bottom: 180),
-                        physics: AlwaysScrollableScrollPhysics(),
+                        padding: const EdgeInsets.only(top: 0, bottom: 180),
+                        physics: const AlwaysScrollableScrollPhysics(),
                         shrinkWrap: true,
                         itemCount: displayRegisters.length,
                         itemBuilder: (context, index) {

@@ -73,7 +73,11 @@ class RegisterItem extends StatelessWidget {
                           width: 10,
                           height: 10,
                           decoration: BoxDecoration(
-                            color: register.status == "Validado" ? Color.fromARGB(255, 178, 227, 170) : Colors.grey[200],
+                            color: register.status == "Validado"
+                              ? Color.fromARGB(255, 178, 227, 170) 
+                              : register.status == "Enviado" 
+                                ? Color.fromARGB(255, 255, 242, 124) 
+                                : Colors.grey[200],
                             shape: BoxShape.circle,
                           ),
                         ),

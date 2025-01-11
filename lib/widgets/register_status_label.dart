@@ -15,7 +15,11 @@ class _StatusLabelState extends State<StatusLabel> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: widget.status == "Validado" ? Color.fromARGB(255, 178, 227, 170) : Colors.grey[200],
+        color: widget.status == "Validado"
+        ? Color.fromARGB(255, 178, 227, 170)
+        : widget.status == "Enviado"
+            ? Color.fromARGB(255, 255, 242, 124)
+            : Colors.grey[200],
         borderRadius: BorderRadius.circular(4),
         border: Border.all(
           color: widget.borderColor,
