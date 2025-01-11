@@ -391,6 +391,11 @@ class AuthenticationController {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Conta deletada com sucesso'), backgroundColor: Colors.green,));
           return true;
         } else{
+          DocumentSnapshot userDoc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+          if (userDoc.exists) {
+            String imageUrl = userDoc['profileImageUrl'] ?? '';
+            await deleteUserImage(imageUrl);
+          }
           await reauthenticateUser(user.email!, password, context);
           await FirebaseFirestore.instance.collection('users').doc(user.uid).delete();
           await user.delete();          
@@ -424,6 +429,17 @@ class AuthenticationController {
       }
     }
     return false;
+  }
+
+  Future<void> deleteUserImage(String imageUrl) async {
+    try {
+      if (imageUrl.isNotEmpty) {
+        Reference storageReference = FirebaseStorage.instance.refFromURL(imageUrl);
+        await storageReference.delete();
+      }
+    } catch (e) {
+      throw Exception('Erro ao deletar a imagem do usuário: $e');
+    }
   }
 
   Future<void> reauthenticateUser(String email, String password, BuildContext context) async {
