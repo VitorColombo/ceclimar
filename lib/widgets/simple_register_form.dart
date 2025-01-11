@@ -256,7 +256,11 @@ class _SimpleRegisterFormState extends State<SimpleRegisterForm> {
     showModalBottomSheet(
       context: context,
       builder: (context) {
-        return const ModalHelpRegisterImageBottomSheet(text: "Sugerimos o envio de 2 imagens da ocorrência, sendo uma com escala e outra sem. Para representar a escala, podem ser usados objetos ou até mesmo o pé.");
+        return const ModalHelpRegisterImageBottomSheet(
+          text: "Sugerimos o envio de 2 imagens, sendo uma com escala e outra sem. A escala, pode ser representada por objetos como chinelos, óculos ou até mesmo o pé.",
+          imagePath: "assets/images/exemplo_foto_escala.jpg",
+          height: 600,
+          );
       },
     );
   }
@@ -265,7 +269,10 @@ class _SimpleRegisterFormState extends State<SimpleRegisterForm> {
     showModalBottomSheet(
       context: context,
       builder: (context) {
-        return const ModalHelpRegisterImageBottomSheet(text: "Marque esse campo se você presenciou o mar trazendo o animal para a faixa de areia.");
+        return const ModalHelpRegisterImageBottomSheet(
+          text: "Marque esse campo se você presenciou o mar trazendo o animal para a faixa de areia.",
+          height: 250,
+          );
       },
     );
   }
