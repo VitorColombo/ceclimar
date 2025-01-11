@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:tcc_ceclimar/widgets/custom_switch.dart';
@@ -71,6 +70,8 @@ class _SimpleRegisterFormState extends State<SimpleRegisterForm> {
               )
             )
           );
+      await Future.delayed(const Duration(seconds: 3));
+      await Geolocator.openLocationSettings();
       return false;
     }
     permission = await Geolocator.checkPermission();
@@ -92,11 +93,13 @@ class _SimpleRegisterFormState extends State<SimpleRegisterForm> {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           backgroundColor: Colors.red,
           content: Text(
-              'As permissões de localização foram negadas, para enviar o registro é necessário habilitar a localização nas configurações do dispositivo',
+              'As permissões de localização foram negadas, para enviar o registro é necessário permitir a localização nas configurações do dispositivo',
               style: TextStyle(color: Colors.white),
               )
             )
           );
+          await Future.delayed(const Duration(seconds: 3));
+          await Geolocator.openLocationSettings();
       return false;
     }
     return true;
@@ -118,7 +121,6 @@ class _SimpleRegisterFormState extends State<SimpleRegisterForm> {
   }
 
   Future<void> _getAddressFromLatLng(Position position) async {
-    try {
       await placemarkFromCoordinates(
               position.latitude, position.longitude)
           .then((List<Placemark> placemarks) {
@@ -130,24 +132,6 @@ class _SimpleRegisterFormState extends State<SimpleRegisterForm> {
       }).catchError((e) {
         debugPrint(e);
       });
-    } on PlatformException catch (e) {
-      debugPrint('Error when getting the address from lat and long $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-           content: Text(
-               'Falha ao obter endereço: ${e.message ?? 'Erro desconhecido'}',
-               style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontFamily: "Inter"
-                 ),
-           ),
-          backgroundColor: Colors.red,
-        ),
-      );
-    } catch (e) {
-      print('Erro desconhecido: $e');
-    }
   }
 
   @override
