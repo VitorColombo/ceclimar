@@ -127,14 +127,15 @@ class _EvaluateRegisterState extends State<EvaluateRegister> {
                                   ),
                                   const SizedBox(height: 8),
                                   Row(children: [
-                                    if(widget.register.hour != null)
+                                    if(widget.register.hour!.isNotEmpty)
                                       Text("Encalhe presenciado às ${widget.register.hour}")
                                     else
                                       Text("Encalhe não presenciado")
                                   ]),
                                   const SizedBox(height: 8),
                                   Row(children: [
-                                    Text("Próximo a guarita ${widget.register.beachSpot}")
+                                    if(widget.register.beachSpot.isNotEmpty)
+                                      Text("Próximo a guarita ${widget.register.beachSpot}")
                                   ]),
                                 ],
                               ),

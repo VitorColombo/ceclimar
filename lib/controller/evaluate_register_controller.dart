@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:tcc_ceclimar/models/animal_update_request.dart';
 import 'package:tcc_ceclimar/models/register_response.dart';
 import 'package:tcc_ceclimar/models/update_register_request.dart';
 import 'package:tcc_ceclimar/pages/base_page.dart';
@@ -221,12 +222,14 @@ class EvaluateRegisterFormController {
 
   Future<RegisterResponse?> sendTechnicalEvaluation(RegisterResponse register) async {
     final updatedRegister = UpdateRegisterRequest(
-      popularName: nameController.text,
-      species: speciesController.text,
-      classe: classController.text,
-      order: orderController.text,
-      family: familyController.text,
-      genu: genuController.text,
+      animal: AnimalUpdateRequest(      
+        popularName: nameController.text,
+        species: speciesController.text,
+        classe: classController.text,
+        order: orderController.text,
+        family: familyController.text,
+        genus: genuController.text,
+      ),
       status: "Validado",
       sampleState: int.tryParse(animalStateController.text) ?? 0,
       specialistReturn: obsController.text,

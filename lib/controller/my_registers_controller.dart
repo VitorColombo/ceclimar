@@ -5,7 +5,6 @@ import 'package:tcc_ceclimar/models/register_response.dart';
 class MyRegistersController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final CollectionReference _registersCollection = FirebaseFirestore.instance.collection('registers');
 
   Future<List<RegisterResponse>> getRegisters() async {
     User? user = _auth.currentUser;
@@ -27,7 +26,7 @@ class MyRegistersController {
       });
     }).toList();
     registers.sort((a, b) => b.date.compareTo(a.date));
-    await Future.delayed(Duration(milliseconds: 500));
+    await Future.delayed(Duration(milliseconds: 100));
 
     return registers;
   }

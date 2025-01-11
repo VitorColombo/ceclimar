@@ -240,17 +240,43 @@ class RegisterDetailPage extends StatelessWidget {
                                     ),
                                   ),
                                   const SizedBox(height: 8),
-                                  Text(
-                                    'Animal de espécie ${register!.animal.species} ordem ${register!.animal.order} família ${register!.animal.family} gênero ${register!.animal.genus}.',
-                                    style: const TextStyle(fontSize: 16),
-                                  ),
+                                    RichText(
+                                    text: TextSpan(
+                                      style: const TextStyle(fontSize: 16, color: Colors.black),
+                                      children: [
+                                      const TextSpan(text: 'Animal da espécie '),
+                                      TextSpan(
+                                        text: register!.animal.species,
+                                        style: const TextStyle(fontStyle: FontStyle.italic),
+                                      ),
+                                      const TextSpan(text: ', ordem '),
+                                      TextSpan(
+                                        text: register!.animal.order,
+                                        style: const TextStyle(fontStyle: FontStyle.italic),
+                                      ),
+                                      const TextSpan(text: ', família '),
+                                      TextSpan(
+                                        text: register!.animal.family,
+                                        style: const TextStyle(fontStyle: FontStyle.italic),
+                                      ),
+                                      const TextSpan(text: ' e gênero '),
+                                      TextSpan(
+                                        text: register!.animal.genus,
+                                        style: const TextStyle(fontStyle: FontStyle.italic),
+                                      ),
+                                      const TextSpan(text: '.'),
+                                      ],
+                                    ),
+                                    ),
                                   const SizedBox(height: 8),
                                   Visibility(
                                     visible: register?.specialistReturn != null && register!.specialistReturn!.isNotEmpty,
-                                    child: Text(
-                                      "${register!.specialistReturn}",
-                                      style: const TextStyle(fontSize: 16),
-                                    ),
+                                    child: RichText(
+                                    text: TextSpan(
+                                      text: "${register!.specialistReturn}",
+                                      style: const TextStyle(fontSize: 16, color: Colors.black),
+                                      ),
+                                    )
                                   ),
                                 ],
                               ),

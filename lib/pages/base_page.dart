@@ -98,11 +98,10 @@ class _BasePageState extends State<BasePage> {
     });
   }
 
-    @override
+  @override
   void dispose() {
     super.dispose();
   }
-
 
   List<Widget> get pages => [
     HomePage(updateIndex: updateIndex),
