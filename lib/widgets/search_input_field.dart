@@ -9,7 +9,7 @@ class SearchInputField extends StatefulWidget {
   final int? maxLines;
   final List<String> items;
   final FocusNode focusNode;
-  final Function? onFocusUpdate; 
+  final Function? onFocusUpdate;
 
   const SearchInputField({
     super.key,
@@ -30,12 +30,16 @@ class SearchInputField extends StatefulWidget {
 class _SearchInputFieldState extends State<SearchInputField> {
   List<String> _filteredItems = [];
   bool _isDropdownOpen = false;
+  bool _isFocused = false;
 
   @override
   void initState() {
     super.initState();
     _filteredItems = widget.items;
     widget.focusNode.addListener(() {
+      setState(() {
+        _isFocused = widget.focusNode.hasFocus;
+      });
       if (widget.focusNode.hasFocus) {
         if (widget.onFocusUpdate != null) {
           widget.onFocusUpdate!();
@@ -61,16 +65,16 @@ class _SearchInputFieldState extends State<SearchInputField> {
     setState(() {
       _isDropdownOpen = true;
       _filteredItems = widget.items
-        .where((item) =>
-            _formatString(item).toLowerCase().contains(_formatString(query)) && item.isNotEmpty)
-        .toList();
-      if(_filteredItems.isEmpty){
+          .where((item) =>
+          _formatString(item).toLowerCase().contains(_formatString(query)) && item.isNotEmpty)
+          .toList();
+      if (_filteredItems.isEmpty) {
         _filteredItems.add("Outro");
       }
     });
   }
 
-  String _formatString(String input){
+  String _formatString(String input) {
     return removeDiacritics(input).toLowerCase();
   }
 
@@ -84,11 +88,18 @@ class _SearchInputFieldState extends State<SearchInputField> {
     if (_isDropdownOpen) {
       _closeDropdown();
       widget.focusNode.unfocus();
-      return false; 
+      return false;
     }
     return true;
   }
 
+  void _clearInput() {
+    widget.controller.clear();
+    _filterItems("");
+     if (widget.onChanged != null) {
+          widget.onChanged!("");
+        }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -151,7 +162,13 @@ class _SearchInputFieldState extends State<SearchInputField> {
                   height: 0.5,
                 ),
                 contentPadding:
-                    const EdgeInsets.symmetric(vertical: 16.0, horizontal: 10.0),
+                  const EdgeInsets.symmetric(vertical: 16.0, horizontal: 10.0),
+                  suffixIcon: _isFocused
+                    ? IconButton(
+                      icon: const Icon(Icons.clear, color: Colors.grey),
+                      onPressed: _clearInput,
+                    )
+                    : null,
               ),
               onChanged: (value) {
                 _filterItems(value.trim());
@@ -160,21 +177,21 @@ class _SearchInputFieldState extends State<SearchInputField> {
             ),
             Visibility(
               visible: widget.validator != null && widget.validator!(widget.controller.text) != null,
-              child: SizedBox(height: 5)
+              child: const SizedBox(height: 5)
             ),
             if (_isDropdownOpen && _filteredItems.isNotEmpty)
               Container(
-                constraints: BoxConstraints(
-                  maxHeight: 300, 
-                ),
+                constraints: const BoxConstraints(
+                    maxHeight: 300,
+                  ),
                 decoration: BoxDecoration(
                   color: const Color(0xF6F6F6F6),
                   border: Border.all(color: Colors.grey),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: ListView.builder(
-                  padding: EdgeInsets.only(top: 0),
-                  physics: AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.only(top: 0),
+                  physics: const AlwaysScrollableScrollPhysics(),
                   shrinkWrap: true,
                   itemCount: _filteredItems.length,
                   itemBuilder: (context, index) {
@@ -184,7 +201,7 @@ class _SearchInputFieldState extends State<SearchInputField> {
                         widget.focusNode.requestFocus();
                         widget.controller.text = _filteredItems[index];
                         widget.focusNode.unfocus();
-                          setState(() {
+                        setState(() {
                           _isDropdownOpen = false;
                         });
                         if (widget.onChanged != null) {
