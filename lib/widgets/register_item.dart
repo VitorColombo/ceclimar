@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:intl/intl.dart';
@@ -10,8 +11,8 @@ class RegisterItem extends StatelessWidget {
   final bool isLoading;
 
   const RegisterItem({
-    super.key, 
-    required this.register, 
+    super.key,
+    required this.register,
     required this.route,
     required this.isLoading,
   });
@@ -24,11 +25,11 @@ class RegisterItem extends StatelessWidget {
           padding: const EdgeInsets.all(4),
           child: GestureDetector(
             onTap: () {
-                Navigator.pushNamed(
+              Navigator.pushNamed(
                 context,
                 route,
                 arguments: register,
-                );
+              );
             },
             child: Card(
               elevation: 0,
@@ -44,19 +45,17 @@ class RegisterItem extends StatelessWidget {
                       borderRadius: BorderRadius.circular(16),
                       color: Colors.grey[200],
                     ),
-                  width: 70,
-                  height: 60,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
-                    child: register.registerImageUrl.isNotEmpty
-                        ? Image.network(
-                            register.registerImageUrl,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              return const Icon(Icons.broken_image, size: 40, color: Colors.grey);
-                            },
-                          )
-                        : const Icon(Icons.image_not_supported, size: 40, color: Colors.grey),
+                    width: 70,
+                    height: 60,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: register.registerImageUrl.isNotEmpty
+                          ? CachedNetworkImage(
+                              imageUrl: register.registerImageUrl,
+                              fit: BoxFit.cover,
+                              errorWidget: (context, url, error) => const Icon(Icons.broken_image, size: 40, color: Colors.grey),
+                            )
+                          : const Icon(Icons.image_not_supported, size: 40, color: Colors.grey),
                     ),
                   ),
                   title: Row(
@@ -65,7 +64,7 @@ class RegisterItem extends StatelessWidget {
                         register.animal.popularName!,
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      SizedBox(width: 8),
+                      const SizedBox(width: 8),
                       Baseline(
                         baseline: 14,
                         baselineType: TextBaseline.alphabetic,
@@ -74,10 +73,10 @@ class RegisterItem extends StatelessWidget {
                           height: 10,
                           decoration: BoxDecoration(
                             color: register.status == "Validado"
-                              ? Color.fromARGB(255, 178, 227, 170) 
-                              : register.status == "Enviado" 
-                                ? Color.fromARGB(255, 255, 242, 124) 
-                                : Colors.grey[200],
+                                ? const Color.fromARGB(255, 178, 227, 170)
+                                : register.status == "Enviado"
+                                  ? const Color.fromARGB(255, 255, 242, 124)
+                                  : Colors.grey[200],
                             shape: BoxShape.circle,
                           ),
                         ),
@@ -91,18 +90,18 @@ class RegisterItem extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Icon(PhosphorIcons.mapPin(), color: Colors.black, size: 20),
-                          SizedBox(width: 6),
+                          const SizedBox(width: 6),
                           Text(register.city.isEmpty ? "Cidade não informada" : register.city),
                         ],
-                      ), 
+                      ),
                       const SizedBox(height: 4),
                       Row(
                         children: [
                           Icon(PhosphorIcons.calendarBlank(), color: Colors.black, size: 20),
-                          SizedBox(width: 6),
+                          const SizedBox(width: 6),
                           Text(DateFormat('dd/MM/yyyy').format(register.date)),
                         ],
-                      ), 
+                      ),
                     ],
                   ),
                   trailing: const Icon(Icons.arrow_forward_ios),
