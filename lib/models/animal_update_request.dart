@@ -6,7 +6,6 @@ class AnimalUpdateRequest {
   final String? family;
   final String? genus;
 
-
   AnimalUpdateRequest({
     this.popularName,
     this.species,
@@ -15,7 +14,6 @@ class AnimalUpdateRequest {
     this.family,
     this.genus,
   });
-
 
   Map<String, dynamic> toJson() {
     return {
@@ -28,7 +26,7 @@ class AnimalUpdateRequest {
     };
   }
 
- factory AnimalUpdateRequest.fromJson(Map<String, dynamic> json) {
+  factory AnimalUpdateRequest.fromJson(Map<String, dynamic> json) {
     return AnimalUpdateRequest(
       popularName: json['popularName'] ?? '',
       species: json['species'] ?? '',

@@ -1,9 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:tcc_ceclimar/models/animal_response.dart';
 import 'package:tcc_ceclimar/models/animal_update_request.dart';
 import 'package:tcc_ceclimar/models/register_response.dart';
 import 'package:tcc_ceclimar/models/update_register_request.dart';
 import 'package:tcc_ceclimar/pages/base_page.dart';
+import 'package:tcc_ceclimar/utils/animals_service.dart';
 
 class EvaluateRegisterFormController {
   final TextEditingController nameController = TextEditingController();
@@ -172,7 +174,7 @@ class EvaluateRegisterFormController {
   Future<void> sendEvaluation(BuildContext context, RegisterResponse register) async {
     if (validateForm()) {
         try {
-          await sendTechnicalEvaluation(register);
+          sendTechnicalEvaluation(register);
           ScaffoldMessenger.of(context).hideCurrentSnackBar();
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -220,9 +222,9 @@ class EvaluateRegisterFormController {
       }
   }
 
-  Future<RegisterResponse?> sendTechnicalEvaluation(RegisterResponse register) async {
+  void sendTechnicalEvaluation(RegisterResponse register) async {
     final updatedRegister = UpdateRegisterRequest(
-      animal: AnimalUpdateRequest(      
+        animal: AnimalUpdateRequest(
         popularName: nameController.text,
         species: speciesController.text,
         classe: classController.text,
@@ -243,23 +245,29 @@ class EvaluateRegisterFormController {
           .where('registerNumber', isEqualTo: register.registerNumber)
           .get();
 
-    if (response.docs.isNotEmpty) {
-      final docId = response.docs.first.id;
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(register.userId)
-          .collection('registers')
-          .doc(docId)
-          .update(updatedRegister.toJson());
+      if (response.docs.isNotEmpty) {
+        final docId = response.docs.first.id;
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(register.userId)
+            .collection('registers')
+            .doc(docId)
+            .update(updatedRegister.toJson());
 
-      final updatedDoc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(register.userId)
-          .collection('registers')
-          .doc(docId)
-          .get();
-
-      return RegisterResponse.fromJson(updatedDoc.data()!); 
+        AnimalService animalService = AnimalService();
+        AnimalResponse? animal = await animalService.getAnimalFromSpecies(speciesController.text);
+        if(animal != null){
+          print(animal.scientificName);
+          print(animal.id);
+          await FirebaseFirestore.instance
+              .collection('animals')
+              .doc(animal.id.toString())
+              .update({
+            'quantity': FieldValue.increment(1)
+          });
+        } else{
+            throw Exception('Falha ao atualizar quantidade de animais encontrados');
+        }
       } else {
         throw Exception('Registro não encontrado');
       }

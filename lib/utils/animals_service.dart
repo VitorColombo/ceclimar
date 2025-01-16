@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:tcc_ceclimar/models/animal_response.dart';
 
 class AnimalService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final List<AnimalResponse> _animals = [];
-
 
     List<Map<String, dynamic>> animalsCreate = [
     {'id': 1, 'popularName': 'tartaruga-cabeçuda', 'scientificName': 'Caretta caretta', 'genus': 'Caretta', 'species': 'caretta', 'family': 'Cheloniidae', 'order': 'Testudines', 'class': 'Reptilia', 'quantity': 597, 'imageUrl': '', 'badgeUrl': ''},
@@ -187,7 +187,6 @@ class AnimalService {
         query = query.where('species', isEqualTo: speciesFilter);
       }
 
-      print("filtrou $classFilter, $orderFilter, $familyFilter, $genusFilter, $speciesFilter");
       QuerySnapshot querySnapshot = await query.get();
       List<AnimalResponse> filteredAnimals = [];
       for (var doc in querySnapshot.docs) {
@@ -198,6 +197,23 @@ class AnimalService {
     } catch (e) {
       print('Failed to filter animals: $e');
       return [];
+    }
+  }
+
+  Future<AnimalResponse?> getAnimalFromSpecies(String species) async {
+    try {
+      Query query = _firestore.collection('animals');
+      query = query.where('scientificName', isEqualTo: species);
+
+      QuerySnapshot querySnapshot = await query.get();
+      AnimalResponse? animal;
+      for (var doc in querySnapshot.docs) {
+        animal = AnimalResponse.fromMap(doc.data() as Map<String, dynamic>);
+      }
+      return animal;
+    } catch (e) {
+      print('Failed to filter animals: $e');
+      return null;
     }
   }
 }
