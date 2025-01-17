@@ -74,7 +74,7 @@ class _RegisterPannelState extends State<RegisterPannel> {
                     ),
                   ],
                 ),
-              ),           
+              ),
             ),
           ),
           SliverList(

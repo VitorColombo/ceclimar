@@ -109,24 +109,27 @@ class _MyProfileState extends State<MyProfile> {
             backgroundColor: Colors.white,
             shadowColor: Color.fromARGB(0, 173, 145, 145),
             flexibleSpace: FlexibleSpaceBar(
-              background: Stack(
-                children: [
-                  LoginHeaderWidget(imageFuture: Future.value(image)),
-                  PageHeader(
-                    text: "Meu perfil",
-                    icon: const Icon(Icons.arrow_back, color: Colors.white,),
-                    onTap: () => widget.updateIndex(0),
-                    color: Colors.white,
-                  ),
-                  Positioned(
-                    top: 55,
-                    right: 16,
-                    child: TextButton(
-                      onPressed: () => _logout(context),
-                      child: const Text("Logout", style: TextStyle(color: Colors.white),),
+              background: Container(
+                  color: Colors.white,
+                  child: Stack(
+                  children: [
+                    LoginHeaderWidget(imageFuture: Future.value(image)),
+                    PageHeader(
+                      text: "Meu perfil",
+                      icon: const Icon(Icons.arrow_back, color: Colors.white,),
+                      onTap: () => widget.updateIndex(0),
+                      color: Colors.white,
                     ),
-                  ),
-                ],
+                    Positioned(
+                      top: 55,
+                      right: 16,
+                      child: TextButton(
+                        onPressed: () => _logout(context),
+                        child: const Text("Logout", style: TextStyle(color: Colors.white),),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
