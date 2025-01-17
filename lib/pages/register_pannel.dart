@@ -59,18 +59,22 @@ class _RegisterPannelState extends State<RegisterPannel> {
             automaticallyImplyLeading: false,
             pinned: true,
             collapsedHeight: 80,
-            expandedHeight: 60,
+            expandedHeight: 80,
             backgroundColor: Colors.white,
             shadowColor: Color.fromARGB(0, 173, 145, 145),
             flexibleSpace: FlexibleSpaceBar(
+              expandedTitleScale: 20,
               background: Container(
                 color: Colors.white,
                 child: Stack(
                   children: [
-                    PageHeader(
-                      text: "Painel de registros",
-                      icon: const Icon(Icons.arrow_back),
-                      onTap: () => widget.updateIndex(0),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 5.0),
+                      child: PageHeader(
+                        text: "Painel de registros",
+                        icon: const Icon(Icons.arrow_back),
+                        onTap: () => widget.updateIndex(0),
+                      ),
                     ),
                   ],
                 ),

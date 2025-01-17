@@ -72,7 +72,7 @@ class _MyRegistersState extends State<MyRegisters> {
     return Scaffold(
       body: CustomScrollView(
         slivers: [
-SliverAppBar(
+          SliverAppBar(
             automaticallyImplyLeading: false,
             pinned: true,
             collapsedHeight: 115,
@@ -166,11 +166,11 @@ SliverAppBar(
                               ),
                             )
                           : SizedBox(
-                              height: MediaQuery.of(context).size.height - kToolbarHeight,
+                              height: MediaQuery.of(context).size.height - 250,
                               child: Skeletonizer(
                                 enabled: isLoading,
                                 child: ListView.builder(
-                                  padding: const EdgeInsets.only(top: 0, bottom: 200),
+                                  padding: const EdgeInsets.only(top: 0, bottom: 100),
                                   physics: const AlwaysScrollableScrollPhysics(),
                                   shrinkWrap: true,
                                   itemCount: displayRegisters.length,

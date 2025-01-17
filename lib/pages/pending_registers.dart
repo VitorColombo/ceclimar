@@ -57,45 +57,76 @@ class _PendingRegistersState extends State<PendingRegisters> {
     final displayRegisters = isLoading ? placeholderRegisters : registers;
 
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            PageHeader(
-              text: "Registros pendentes",
-              icon: const Icon(Icons.arrow_back),
-              onTap: () => widget.updateIndex(0),
-            ),
-            if (!isLoading && registers.isEmpty)
-              Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Text(
-                    "Nenhum registro pendente para avaliação no momento.",
-                    style: TextStyle(fontSize: 18),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              )
-            else
-              SizedBox(
-                height: MediaQuery.of(context).size.height - kToolbarHeight,
-                child: ListView.builder(
-                  padding: EdgeInsets.only(top: 0, bottom: 180),
-                  physics: AlwaysScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  itemCount: displayRegisters.length,
-                  itemBuilder: (context, index) {
-                    return RegisterItem(
-                      isLoading: isLoading,
-                      register: displayRegisters[index],
-                      route: EvaluateRegister.routeName,
-                    );
-                  },
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            automaticallyImplyLeading: false,
+            pinned: true,
+            collapsedHeight: 80,
+            expandedHeight: 80,
+            backgroundColor: Colors.white,
+            shadowColor: Color.fromARGB(0, 173, 145, 145),
+            flexibleSpace: FlexibleSpaceBar(
+              background: Container(
+                color: Colors.white,
+                child: Stack(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(top: 5.0),
+                      child: PageHeader(
+                        text: "Registros pendentes",
+                        icon: const Icon(Icons.arrow_back),
+                        onTap: () => widget.updateIndex(0),
+                      ),
+                    )
+                  ],
                 ),
               ),
-          ],
-        ),
-      ),
+            ),
+          ),
+          SliverList(
+            delegate: SliverChildListDelegate(
+              [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    children: [
+                      if (!isLoading && registers.isEmpty)
+                        Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Text(
+                              "Nenhum registro pendente para avaliação no momento.",
+                              style: TextStyle(fontSize: 18),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        )
+                      else
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height - 180,
+                          child: ListView.builder(
+                            padding: EdgeInsets.only(top: 0, bottom: 100),
+                            physics: AlwaysScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            itemCount: displayRegisters.length,
+                            itemBuilder: (context, index) {
+                              return RegisterItem(
+                                isLoading: isLoading,
+                                register: displayRegisters[index],
+                                route: EvaluateRegister.routeName,
+                              );
+                            },
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ]
+            )
+          )
+        ],
+      )
     );
   }
 }
