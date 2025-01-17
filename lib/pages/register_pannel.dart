@@ -53,99 +53,124 @@ class _RegisterPannelState extends State<RegisterPannel> {
     double chartSize = MediaQuery.of(context).size.width * 0.8;
     return Scaffold(
       key: _scaffoldKey,
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Center(
-          child: Column(
-            children: <Widget>[
-              PageHeader(
-                text: "Painel de registros",
-                icon: const Icon(Icons.arrow_back),
-                onTap: () => widget.updateIndex(0),
-              ),
-              Text("Total de registros: "),
-              Skeletonizer(
-                enabled: totalRegisters == 0,
-                child: Text("${totalRegisters}")
-                ),
-              const Text("Registros avaliados: 123"),
-              const Text("Registros pendentes: 111"),
-              Transform(
-                transform: Matrix4.translationValues(0.0, -120.0, 0.0),
-                child: Container(
-                  padding: const EdgeInsets.all(10),
-                  width: 300,
-                  height: 800,
-                  child: FutureBuilder<List<AnimalResponse>>(
-                    future: animalData,
-                    builder: (context, snapshot) {
-                      if (snapshot.hasError) {
-                        return Text('Error: ${snapshot.error}');
-                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                        return const Text('No data available');
-                      } else {
-                        return LayoutBuilder(
-                          builder: (context, constraints) {
-                            return Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                SizedBox(
-                                  width: chartSize,
-                                  child: Stack(
-                                    alignment: Alignment.center,
-                                    children: [
-                                      PieChart(
-                                        dataMap: dataMap,
-                                        animationDuration: const Duration(milliseconds: 800),
-                                        chartLegendSpacing: 32,
-                                        chartRadius: chartSize * 0.8,
-                                        chartValuesOptions: const ChartValuesOptions(
-                                          decimalPlaces: 0,
-                                          showChartValues: true,
-                                        ),
-                                        legendOptions: LegendOptions(
-                                          legendPosition: LegendPosition.bottom,
-                                          legendTextStyle: const TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 14,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            );
-                          },
-                        );
-                      }
-                    },
-                  ),
-                ),
-              ),
-                Transform(
-                transform: Matrix4.translationValues(0.0, -120.0, 0.0),
+      body: CustomScrollView(
+        slivers:[
+          SliverAppBar(
+            automaticallyImplyLeading: false,
+            pinned: true,
+            collapsedHeight: 80,
+            expandedHeight: 60,
+            backgroundColor: Colors.white,
+            shadowColor: Color.fromARGB(0, 173, 145, 145),
+            flexibleSpace: FlexibleSpaceBar(
+              background: Container(
+                color: Colors.white,
                 child: Stack(
-                  alignment: Alignment.center,
                   children: [
-                  SendBtn(
-                    text: "Exportar Dados",
-                    onValidate: () => true,
-                    onSend: () {
-                    },
-                  ),
-                  Positioned(
-                    top: 10,
-                    right: 10,
-                    child: Icon(PhosphorIcons.export(), size: 30, color: Colors.white),
-                  ),
+                    PageHeader(
+                      text: "Painel de registros",
+                      icon: const Icon(Icons.arrow_back),
+                      onTap: () => widget.updateIndex(0),
+                    ),
                   ],
                 ),
-                ),
-            ]
+              ),           
+            ),
           ),
-        ),
-      ),
+          SliverList(
+            delegate: SliverChildListDelegate(
+              [
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    children: [
+                      Text("Total de registros: "),
+                      Skeletonizer(
+                        enabled: totalRegisters == 0,
+                        child: Text("${totalRegisters}")
+                        ),
+                      const Text("Registros avaliados: 123"),
+                      const Text("Registros pendentes: 111"),
+                      Transform(
+                        transform: Matrix4.translationValues(0.0, -120.0, 0.0),
+                        child: Container(
+                          padding: const EdgeInsets.all(10),
+                          width: 300,
+                          height: 800,
+                          child: FutureBuilder<List<AnimalResponse>>(
+                            future: animalData,
+                            builder: (context, snapshot) {
+                              if (snapshot.hasError) {
+                                return Text('Error: ${snapshot.error}');
+                              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                                return const Text('No data available');
+                              } else {
+                                return LayoutBuilder(
+                                  builder: (context, constraints) {
+                                    return Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        SizedBox(
+                                          width: chartSize,
+                                          child: Stack(
+                                            alignment: Alignment.center,
+                                            children: [
+                                              PieChart(
+                                                dataMap: dataMap,
+                                                animationDuration: const Duration(milliseconds: 800),
+                                                chartLegendSpacing: 32,
+                                                chartRadius: chartSize * 0.8,
+                                                chartValuesOptions: const ChartValuesOptions(
+                                                  decimalPlaces: 0,
+                                                  showChartValues: true,
+                                                ),
+                                                legendOptions: LegendOptions(
+                                                  legendPosition: LegendPosition.bottom,
+                                                  legendTextStyle: const TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 14,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              }
+                            },
+                          ),
+                        ),
+                      ),
+                        Transform(
+                        transform: Matrix4.translationValues(0.0, -120.0, 0.0),
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            SendBtn(
+                              text: "Exportar Dados",
+                              onValidate: () => true,
+                              onSend: () {
+                              },
+                            ),
+                            Positioned(
+                              top: 10,
+                              right: 10,
+                              child: Icon(PhosphorIcons.export(), size: 30, color: Colors.white),
+                            ),
+                          ]
+                        ),
+                      )
+                    ]
+                  ),
+                )
+              ]
+            )
+          )
+        ]
+      )
     );
   }
 }
