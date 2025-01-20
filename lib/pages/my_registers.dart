@@ -195,3 +195,8 @@ class _MyRegistersState extends State<MyRegisters> {
     );
   }
 }
+
+double getResponsiveTextSize(BuildContext context, double baseSize) {
+  double screenWidth = MediaQuery.of(context).size.width;
+  return baseSize * (screenWidth / 375.0);
+}

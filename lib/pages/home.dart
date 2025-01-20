@@ -91,6 +91,8 @@ class HomeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double textSize = getResponsiveTextSize(context, 16.0);
+
     return Stack(
       children: [
         Card(
@@ -110,7 +112,7 @@ class HomeCard extends StatelessWidget {
                     alignment: Alignment.topLeft,
                     child: Text(
                       text,
-                      style: Theme.of(context).textTheme.titleMedium,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontSize: textSize),
                     ),
                   ),
                   const SizedBox(height: 14.0),
@@ -141,4 +143,9 @@ class HomeCard extends StatelessWidget {
       ],
     );
   }
+}
+
+double getResponsiveTextSize(BuildContext context, double baseSize) {
+  double screenWidth = MediaQuery.of(context).size.width;
+  return baseSize * (screenWidth / 375.0);
 }

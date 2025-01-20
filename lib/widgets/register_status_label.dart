@@ -12,6 +12,8 @@ class StatusLabel extends StatefulWidget {
 class _StatusLabelState extends State<StatusLabel> {
   @override
   Widget build(BuildContext context) {
+    double textSize = getResponsiveTextSize(context, 12.0);
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
@@ -28,11 +30,15 @@ class _StatusLabelState extends State<StatusLabel> {
       ),
       child: Text(
         widget.status,
-        style: const TextStyle(
+        style: TextStyle(
           color: Colors.black,
-          fontSize: 12,
+          fontSize: textSize,
         ),
       ),
     );
   }
+}
+double getResponsiveTextSize(BuildContext context, double baseSize) {
+  double screenWidth = MediaQuery.of(context).size.width;
+  return baseSize * (screenWidth / 375.0);
 }
