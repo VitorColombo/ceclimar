@@ -4,6 +4,7 @@ import 'package:tcc_ceclimar/utils/user_role.dart';
 import 'package:tcc_ceclimar/widgets/new_register_floating_btn.dart';
 import 'package:tcc_ceclimar/widgets/page_header.dart';
 import 'package:tcc_ceclimar/controller/auth_user_controller.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class HomePage extends StatefulWidget {
   static const String routeName = '/home';
@@ -19,8 +20,9 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-    AuthenticationController authController = AuthenticationController();
-    late Future<UserResponse> loggedUser;
+  AuthenticationController authController = AuthenticationController();
+  late Future<UserResponse> loggedUser;
+
   @override
   void initState() {
     loggedUser = authController.getLoggedUserData();
@@ -28,7 +30,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   @override
-  Widget build(BuildContext context) {    
+  Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
         children: [
@@ -37,9 +39,7 @@ class _HomePageState extends State<HomePage> {
             child: FutureBuilder<UserResponse>(
               future: loggedUser,
               builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
+                if (snapshot.hasError) {
                   return Center(child: Text('Error: ${snapshot.error}'));
                 } else if (snapshot.hasData) {
                   final user = snapshot.data!;
@@ -61,16 +61,28 @@ class _HomePageState extends State<HomePage> {
                     ],
                   );
                 } else {
-                  return Center(child: Text('No data available'));
+                  return GridView.count(
+                    crossAxisCount: 2,
+                    padding: const EdgeInsets.all(16.0),
+                    crossAxisSpacing: 16.0,
+                    mainAxisSpacing: 16.0,
+                    children: [
+                      HomeCard(text: "Meus Registros", index: 1, updateIndex: widget.updateIndex, icon: Image.asset('assets/images/my_registers.png', height: 72, width: 72,)),
+                      HomeCard(text: "Meu Perfil", index: 2, updateIndex: widget.updateIndex, icon: Image.asset('assets/images/profile.png', height: 72, width: 72,)),
+                      HomeCard(text: "Novo Registro", index: 3, updateIndex: widget.updateIndex, icon: Image.asset('assets/images/new_register.png', height: 72, width: 72,)),
+                      HomeCard(text: "Fauna Local", index: 4, updateIndex: widget.updateIndex, icon: Image.asset('assets/images/bird.png', height: 72, width: 72,)),
+                      HomeCard(text: "Painel de Registros", index: 5, updateIndex: widget.updateIndex, icon: Image.asset('assets/images/register_pannel.png', height: 72, width: 72,)),
+                    ],
+                  );
                 }
               },
             ),
-            ),
-          ],  
-        ),
-      );
-    }
+          ),
+        ],
+      ),
+    );
   }
+}
 
 class HomeCard extends StatelessWidget {
   final String text;
