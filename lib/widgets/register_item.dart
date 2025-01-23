@@ -59,30 +59,35 @@ class RegisterItem extends StatelessWidget {
                     ),
                   ),
                   title: Row(
-                    children: [
-                      Text(
-                        register.animal.popularName!,
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(width: 8),
-                      Baseline(
-                        baseline: 14,
-                        baselineType: TextBaseline.alphabetic,
-                        child: Container(
-                          width: 10,
-                          height: 10,
-                          decoration: BoxDecoration(
-                            color: register.status == "Validado"
-                                ? const Color.fromARGB(255, 178, 227, 170)
-                                : register.status == "Enviado"
-                                  ? const Color.fromARGB(255, 255, 242, 124)
-                                  : Colors.grey[200],
-                            shape: BoxShape.circle,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Flexible(
+                            child: Text(
+                              register.animal.popularName!,
+                              style: const TextStyle(fontWeight: FontWeight.bold),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
                           ),
-                        ),
+                          const SizedBox(width: 8),
+                          Baseline(
+                            baseline: 14,
+                            baselineType: TextBaseline.alphabetic,
+                            child: Container(
+                              width: 10,
+                              height: 10,
+                              decoration: BoxDecoration(
+                                color: register.status == "Validado"
+                                    ? const Color.fromARGB(255, 178, 227, 170)
+                                    : register.status == "Enviado"
+                                      ? const Color.fromARGB(255, 255, 242, 124)
+                                      : Colors.grey[200],
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -91,7 +96,14 @@ class RegisterItem extends StatelessWidget {
                         children: [
                           Icon(PhosphorIcons.mapPin(), color: Colors.black, size: 20),
                           const SizedBox(width: 6),
-                          Text(register.city.isEmpty ? "Cidade não informada" : register.city),
+                            SizedBox(
+                                width: MediaQuery.of(context).size.width * 0.4,
+                                child: Text(register.city.isEmpty ? "Cidade não informada" : register.city,
+                                   maxLines: 1,
+                                   overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(fontSize: 14),
+                                ),
+                              ),
                         ],
                       ),
                       const SizedBox(height: 4),
@@ -99,12 +111,15 @@ class RegisterItem extends StatelessWidget {
                         children: [
                           Icon(PhosphorIcons.calendarBlank(), color: Colors.black, size: 20),
                           const SizedBox(width: 6),
-                          Text(DateFormat('dd/MM/yyyy').format(register.date)),
+                          Text(
+                            DateFormat('dd/MM/yyyy').format(register.date),
+                            style: const TextStyle(fontSize: 14),
+                          ),
                         ],
                       ),
                     ],
                   ),
-                  trailing: const Icon(Icons.arrow_forward_ios),
+                  trailing: const Icon(Icons.arrow_forward_ios, color: Colors.grey),
                 ),
               ),
             ),

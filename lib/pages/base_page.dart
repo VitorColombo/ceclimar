@@ -301,14 +301,15 @@ class _BasePageState extends State<BasePage> {
       offset: const Offset(0, -10),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 2.0),
-        child: Text(
+        child: RichText(
           textAlign: TextAlign.center,
-          s,
-          style: TextStyle(
-            fontWeight:
-                selectedIndex == index ? FontWeight.bold : FontWeight.normal,
-            color: Colors.black,
-            fontSize: 12,
+          text: TextSpan(
+            text: s,
+            style: TextStyle(
+              fontWeight: selectedIndex == index ? FontWeight.bold : FontWeight.normal,
+              color: Colors.black,
+              fontSize: 12,
+            ),
           ),
         ),
       ),

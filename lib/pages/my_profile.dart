@@ -147,9 +147,11 @@ class _MyProfileState extends State<MyProfile> {
                         children: [
                           Visibility(
                             visible: userData?.name != null,
-                            child: Text(
-                              '${userData?.name}',
+                            child: RichText(
+                              text: TextSpan(
+                              text: '${userData?.name}',
                               style: Theme.of(context).textTheme.titleLarge,
+                              ),
                             ),
                           ),
                           SizedBox(width: 8),
@@ -161,17 +163,23 @@ class _MyProfileState extends State<MyProfile> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [                    
-                        Text(
-                          "Registros realizados: ", 
+                        RichText(
+                          text: TextSpan(
+                          text: "Registros realizados: ",
                           style: Theme.of(context).textTheme.bodyLarge,
+                          ),
                         ),
-                        isLoading? const Skeletonizer(
-                          enabled: true, 
-                          child: Text("XX", style: TextStyle(fontSize: 16)),
+                        isLoading
+                          ? const Skeletonizer(
+                            enabled: true, 
+                            child: Text("XX", style: TextStyle(fontSize: 16)),
                           ) 
-                        : Text("${registers.length}", 
-                          style: Theme.of(context).textTheme.bodyLarge,
-                        ),
+                          : RichText(
+                            text: TextSpan(
+                            text: "${registers.length}",
+                            style: Theme.of(context).textTheme.bodyLarge,
+                            ),
+                          ),
                       ],
                     ),
                     SizedBox(height: 20),

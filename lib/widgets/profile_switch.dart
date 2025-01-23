@@ -55,15 +55,19 @@ class _ProfileSwitchState extends State<ProfileSwitch> {
                                 : Color.fromARGB(255, 232, 232, 232)
                               ),
                         child: Center(
-                            child: Text(
-                          'Últimos registros',
-                          style: TextStyle(
-                              fontSize: textSize - 2,
+                          child: RichText(
+                            text: TextSpan(
+                              text: 'Últimos registros',
+                              style: TextStyle(
+                              fontSize: textSize,
                               fontWeight: FontWeight.bold,
                               color: foundAnimalsChecked
-                                  ? Color.fromARGB(255, 0, 111, 130)
-                                  : Colors.white),
-                        )),
+                                ? Color.fromARGB(255, 0, 111, 130)
+                                : Color.fromARGB(255, 189, 189, 189),
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
                     ),
                     GestureDetector(
@@ -82,17 +86,22 @@ class _ProfileSwitchState extends State<ProfileSwitch> {
                                 BorderRadius.circular(30),
                             color: lastRegistersChecked
                                 ? Colors.white
-                                : Color.fromARGB(255, 232, 232, 232)),
+                                : Color.fromARGB(255, 232, 232, 232)
+                        ),
                         child: Center(
-                            child: Text(
-                          'Animais encontrados',
-                          style: TextStyle(
-                              fontSize: textSize - 2,
+                          child: RichText(
+                            text: TextSpan(
+                              text: 'Animais encontrados',
+                              style: TextStyle(
+                              fontSize: textSize,
                               fontWeight: FontWeight.bold,
                               color: lastRegistersChecked
-                                  ? Color.fromARGB(255, 0, 111, 130)
-                                  : Color.fromARGB(255, 189, 189, 189)),
-                        )),
+                                ? Color.fromARGB(255, 0, 111, 130)
+                                : Color.fromARGB(255, 189, 189, 189),
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
                     ),
                   ],
