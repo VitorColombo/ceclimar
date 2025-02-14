@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:tcc_ceclimar/models/user_data.dart';
 import 'package:tcc_ceclimar/utils/user_role.dart';
-import 'package:tcc_ceclimar/widgets/new_register_floating_btn.dart';
+import 'package:tcc_ceclimar/widgets/home_card.dart';
 import 'package:tcc_ceclimar/widgets/page_header.dart';
 import 'package:tcc_ceclimar/controller/auth_user_controller.dart';
-import 'package:skeletonizer/skeletonizer.dart';
+import '../widgets/redirect_home_card.dart';
 
 class HomePage extends StatefulWidget {
   static const String routeName = '/home';
@@ -52,7 +52,7 @@ class _HomePageState extends State<HomePage> {
                       HomeCard(text: "Meus Registros", index: 1, updateIndex: widget.updateIndex, icon: Image.asset('assets/images/my_registers.png', height: 72, width: 72,)),
                       HomeCard(text: "Meu Perfil", index: 2, updateIndex: widget.updateIndex, icon: Image.asset('assets/images/profile.png', height: 72, width: 72,)),
                       HomeCard(text: "Novo Registro", index: 3, updateIndex: widget.updateIndex, icon: Image.asset('assets/images/new_register.png', height: 72, width: 72,)),
-                      HomeCard(text: "Fauna Local", index: 4, updateIndex: widget.updateIndex, icon: Image.asset('assets/images/bird.png', height: 72, width: 72,)),
+                      RedirectHomeCard(text: "Fauna Local", icon: Image.asset('assets/images/bird.png', height: 72, width: 72,), websiteUrl: "https://www.ufrgs.br/faunamarinhars/"),
                       HomeCard(text: "Painel de Registros", index: 5, updateIndex: widget.updateIndex, icon: Image.asset('assets/images/register_pannel.png', height: 72, width: 72,)),
                       if (user.role == UserRole.admin.roleString)
                         HomeCard(text: "Avaliar Registro", index: 6, updateIndex: widget.updateIndex, icon: Image.asset('assets/images/search.png', height: 72, width: 72,)),
@@ -82,82 +82,4 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
-}
-
-class HomeCard extends StatelessWidget {
-  final String text;
-  final Widget icon;
-  final int index;
-  final Function(int) updateIndex;
-  late final AddNewRegisterFloatingBtn addNewRegisterFloatingBtn;
-
-  HomeCard({
-    super.key,
-    required this.text,
-    required this.icon,
-    required this.index,
-    required this.updateIndex,
-  }) {
-    addNewRegisterFloatingBtn = AddNewRegisterFloatingBtn(updateIndex: updateIndex);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    double textSize = getResponsiveTextSize(context, 16.0);
-
-    return Stack(
-      children: [
-        Card(
-          shadowColor: Colors.black.withOpacity(0.7),
-          elevation: 6.0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.0),
-          ),
-          color: const Color.fromARGB(255, 71, 169, 218),
-          child: Padding(
-            padding: const EdgeInsets.only(top: 7.0, bottom: 5.0, left: 15.0, right: 15.0),
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Align(
-                    alignment: Alignment.topLeft,
-                    child: Text(
-                      text,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontSize: textSize),
-                    ),
-                  ),
-                  const SizedBox(height: 14.0),
-                  Align(
-                    alignment: Alignment.bottomRight,
-                    child: icon,
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-        Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: () {
-              if (text == "Novo Registro") {
-                addNewRegisterFloatingBtn.showAddRegisterBottomSheet(context);
-              } else {
-                updateIndex(index);
-              }
-            },
-            splashColor: Colors.white.withOpacity(0.2),
-            highlightColor: Colors.white.withOpacity(0.2),
-            borderRadius: BorderRadius.circular(10.0),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-double getResponsiveTextSize(BuildContext context, double baseSize) {
-  double screenWidth = MediaQuery.of(context).size.width;
-  return baseSize * (screenWidth / 375.0);
 }
