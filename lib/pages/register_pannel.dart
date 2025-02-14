@@ -302,7 +302,7 @@ class _RegisterPannelState extends State<RegisterPannel> {
                       children: [
                         Container(
                           width: 150,
-                          child: TextField(
+                            child: TextField(
                             style: TextStyle(color: Colors.black, fontSize: 14),
                             controller: initDateController,
                             readOnly: true,
@@ -310,24 +310,38 @@ class _RegisterPannelState extends State<RegisterPannel> {
                               labelText: 'Data Inicial',
                               border: OutlineInputBorder(),
                               suffixIcon: IconButton(
-                                icon: Icon(Icons.calendar_today),
-                                onPressed: () async {
-                                  final DateTime? picked = await showDatePicker(
-                                    context: context,
-                                    initialDate: initDate ?? DateTime.now(),
-                                    firstDate: DateTime(2015, 8),
-                                    lastDate: DateTime.now(),
-                                  );
-                                  if (picked != null && picked != initDate) {
-                                    setState(() {
-                                      initDate = picked;
-                                      initDateController.text = dateFormat.format(picked);
-                                    });
-                                  }
-                                },
+                              icon: Icon(Icons.calendar_today),
+                              onPressed: () async {
+                                final DateTime? picked = await showDatePicker(
+                                context: context,
+                                initialDate: initDate ?? DateTime.now(),
+                                firstDate: DateTime(2015, 8),
+                                lastDate: DateTime.now(),
+                                );
+                                if (picked != null && picked != initDate) {
+                                setState(() {
+                                  initDate = picked;
+                                  initDateController.text = dateFormat.format(picked);
+                                });
+                                }
+                              },
                               ),
                             ),
-                          ),
+                            onTap: () async {
+                              final DateTime? picked = await showDatePicker(
+                              context: context,
+                              initialDate: initDate ?? DateTime.now(),
+                              firstDate: DateTime(2015, 8),
+                              lastDate: DateTime.now(),
+                              );
+                              if (picked != null && picked != initDate) {
+                              setState(() {
+                                initDate = picked;
+                                initDateController.text = dateFormat.format(picked);
+                              });
+                              }
+                            },
+                            ),
                         ),                        
                         Container(
                           width: 150,
@@ -356,6 +370,20 @@ class _RegisterPannelState extends State<RegisterPannel> {
                                 },
                               ),
                             ),
+                            onTap: () async {
+                              final DateTime? picked = await showDatePicker(
+                              context: context,
+                              initialDate: initDate ?? DateTime.now(),
+                              firstDate: DateTime(2015, 8),
+                              lastDate: DateTime.now(),
+                              );
+                              if (picked != null && picked != initDate) {
+                              setState(() {
+                                initDate = picked;
+                                initDateController.text = dateFormat.format(picked);
+                              });
+                              }
+                            },
                           ),
                         ),
                       ],
@@ -395,7 +423,8 @@ class _RegisterPannelState extends State<RegisterPannel> {
                                 marks: [
                                   LineMark(
                                     shape: ShapeEncode(
-                                        value: BasicLineShape(dash: [5, 2])),
+                                        value: BasicLineShape(dash: [5, 2])
+                                      ),
                                     selected: {'touchMove': {1}},
                                   )
                                 ],
@@ -420,15 +449,15 @@ class _RegisterPannelState extends State<RegisterPannel> {
                                   offset: const Offset(-20, -20),
                                 ),
                                 crosshair: CrosshairGuide(
-                                    followPointer: [false, true]),
+                                    followPointer: [false, true]
+                                  ),
                               );
                              }
                           },
                         ),
                       ),
                     ),
-                    Divider(
-                        height: 40, thickness: 1.2, color: Colors.grey[200]),
+                    Divider(height: 40, thickness: 1.2, color: Colors.grey[200]),
                     Stack(
                         alignment: Alignment.center,
                         children: [
@@ -440,8 +469,11 @@ class _RegisterPannelState extends State<RegisterPannel> {
                           Positioned(
                             top: 10,
                             right: 10,
-                            child: Icon(PhosphorIcons.export(),
-                                size: 30, color: Colors.white),
+                            child: 
+                              Icon(
+                                PhosphorIcons.export(),
+                                size: 30, color: Colors.white
+                              ),
                           ),
                         ]),
                     Divider(height: 20),
