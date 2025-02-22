@@ -368,12 +368,7 @@ class _RegisterDetailPageState extends State<RegisterDetailPage> {
                                     text: TextSpan(
                                       style: const TextStyle(fontSize: 16, color: Colors.black),
                                       children: [
-                                      const TextSpan(text: 'Animal da espécie '),
-                                      TextSpan(
-                                        text: widget.register!.animal.species,
-                                        style: const TextStyle(fontStyle: FontStyle.italic),
-                                      ),
-                                      const TextSpan(text: ', ordem '),
+                                      const TextSpan(text: 'Animal da ordem '),
                                       TextSpan(
                                         text: widget.register!.animal.order,
                                         style: const TextStyle(fontStyle: FontStyle.normal),
@@ -383,9 +378,14 @@ class _RegisterDetailPageState extends State<RegisterDetailPage> {
                                         text: widget.register!.animal.family,
                                         style: const TextStyle(fontStyle: FontStyle.normal),
                                       ),
-                                      const TextSpan(text: ' e gênero '),
+                                      const TextSpan(text: ', genêro '),
                                       TextSpan(
                                         text: widget.register!.animal.genus,
+                                        style: const TextStyle(fontStyle: FontStyle.italic),
+                                      ),
+                                      const TextSpan(text: ', espécie '),
+                                      TextSpan(
+                                        text: widget.register!.animal.species,
                                         style: const TextStyle(fontStyle: FontStyle.italic),
                                       ),
                                       const TextSpan(text: '.'),

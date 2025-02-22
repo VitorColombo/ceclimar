@@ -76,7 +76,7 @@ class EvaluateRegisterFormController {
     if (value == null || value.isEmpty) {
       return 'Campo obrigatório';
     }
-    final RegExp regex = RegExp(r'^[\p{L}\s]+$', unicode: true);
+    final RegExp regex = RegExp(r'^[\p{L}\s\-]+$', unicode: true);
     if (!regex.hasMatch(value)) {
       return 'Caractere inválido';
     }
@@ -89,44 +89,41 @@ class EvaluateRegisterFormController {
     return null;
   }
 
-  String? validateSpecies(String? species) {
-    if (species == null || species.isEmpty) {
-      return 'Campo obrigatório';
-    }
-    final RegExp regex = RegExp(r'^[\p{L}\s]+$', unicode: true);
-    if (species.length < 5) {
-      return 'Caracteres mínimos: 5';
-    }
-    if (!regex.hasMatch(species)) {
-      return 'Caractere inválido';
-    }
-    return null;
-  }
-
-  String? validateGender(String? gender) {
-    if (gender == null || gender.isEmpty) {
-      return 'Campo obrigatório';
-    }
-    final RegExp regex = RegExp(r'^[\p{L}\s]+$', unicode: true);
-    if (gender.length < 3) {
-      return 'Caracteres mínimos: 3';
-    }
-    if (!regex.hasMatch(gender)) {
-      return 'Caractere inválido';
+  String? validateSpecies(String text) {
+    if (text.isNotEmpty) {
+      final RegExp regex = RegExp(r'^[\p{L}\s\-]+$', unicode: true);
+      if (text.length < 3) {
+        return 'Caracteres mínimos: 3';
+      }
+      if (!regex.hasMatch(text)) {
+        return 'Caractere inválido';
+      }
     }
     return null;
   }
 
-  String? validateFamily(String? family) {
-    if (family == null || family.isEmpty) {
-      return 'Campo obrigatório';
+  String? validateGender(String text) {
+    if (text.isNotEmpty) {
+      final RegExp regex = RegExp(r'^[\p{L}\s\-]+$', unicode: true);
+      if (text.length < 3) {
+        return 'Caracteres mínimos: 3';
+      }
+      if (!regex.hasMatch(text)) {
+        return 'Caractere inválido';
+      }
     }
-    final RegExp regex = RegExp(r'^[\p{L}\s]+$', unicode: true);
-    if (family.length < 3) {
-      return 'Caracteres mínimos: 3';
-    }
-    if (!regex.hasMatch(family)) {
-      return 'Caractere inválido';
+    return null;
+  }
+
+  String? validateFamily(String text) {
+    if (text.isNotEmpty) {
+      final RegExp regex = RegExp(r'^[\p{L}\s\-]+$', unicode: true);
+      if (text.length < 3) {
+        return 'Caracteres mínimos: 3';
+      }
+      if (!regex.hasMatch(text)) {
+        return 'Caractere inválido';
+      }
     }
     return null;
   }
@@ -135,7 +132,7 @@ class EvaluateRegisterFormController {
     if (order == null || order.isEmpty) {
       return 'Campo obrigatório';
     }
-    final RegExp regex = RegExp(r'^[\p{L}\s]+$', unicode: true);
+    final RegExp regex = RegExp(r'^[\p{L}\s\-]+$', unicode: true);
     if (order.length < 3) {
       return 'Caracteres mínimos: 3';
     }
@@ -149,7 +146,7 @@ class EvaluateRegisterFormController {
     if (text == null || text.isEmpty) {
       return 'Campo obrigatório';
     }
-    final RegExp regex = RegExp(r'^[\p{L}\s]+$', unicode: true);
+    final RegExp regex = RegExp(r'^[\p{L}\s\-]+$', unicode: true);
     if (text.length < 3) {
       return 'Caracteres mínimos: 3';
     }

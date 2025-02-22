@@ -319,7 +319,7 @@ class _EvaluateRegisterFormState extends State<EvaluateRegisterForm> {
             ),
             const SizedBox(height: 16),
             SearchInputField(
-              text: "Classe (Opcional)",
+              text: "Classe",
               controller: _formController.classController,
               validator: (value) => _formController.classError,
               onChanged: (_) {
@@ -334,7 +334,7 @@ class _EvaluateRegisterFormState extends State<EvaluateRegisterForm> {
             ),
             const SizedBox(height: 16),
             SearchInputField(
-              text: "Ordem (Opcional)",
+              text: "Ordem",
               controller: _formController.orderController,
               validator: (value) => _formController.orderError,
               onChanged: (_) {
@@ -379,7 +379,7 @@ class _EvaluateRegisterFormState extends State<EvaluateRegisterForm> {
             ),
             const SizedBox(height: 16),
             SearchInputField(
-              text: "Espécie",
+              text: "Espécie (Opcional)",
               controller: _formController.speciesController,
               validator: (value) => _formController.speciesError,
               onChanged: (_) {
