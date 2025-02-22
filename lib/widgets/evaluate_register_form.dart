@@ -406,6 +406,7 @@ class _EvaluateRegisterFormState extends State<EvaluateRegisterForm> {
                 text: "Informações Adicionais (Opcional)",
                 controller: _formController.obsController,
                 validator: (value) => _formController.obsError,
+                maxLength: 600,
                 maxLines: 10,
               ),
             ),

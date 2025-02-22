@@ -132,7 +132,7 @@ class NewRegisterFormController {
     if (value == null || value.isEmpty) {
       return RegisterError.requiredField.message;
     }
-    final RegExp regex = RegExp(r'^[\p{L}\s]+$', unicode: true);
+    final RegExp regex = RegExp(r'^[\p{L}\s\-]+$', unicode: true);
     if (!regex.hasMatch(value)) {
       return RegisterError.invalidCharacter.message;
     }

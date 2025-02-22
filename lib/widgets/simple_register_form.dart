@@ -191,6 +191,7 @@ class _SimpleRegisterFormState extends State<SimpleRegisterForm> {
               controller: _formController.nameController,
               validator: (value) => _formController.nameError,
               onChanged: (_) => _updateBtnStatus(),
+              maxLength: 50,
             ),
             const SizedBox(height: 9),
             CustomSwitch(
