@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:graphic/graphic.dart';
 import 'package:intl/intl.dart';
@@ -9,7 +10,9 @@ import 'package:tcc_ceclimar/controller/register_pannel_controller.dart';
 import 'package:tcc_ceclimar/utils/animals_service.dart';
 import 'package:tcc_ceclimar/widgets/page_header.dart';
 import 'package:tcc_ceclimar/widgets/search_input_field.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../models/animal_response.dart';
+import '../utils/table_manipulation.dart';
 import '../widgets/send_btn.dart';
 import '../models/register_response.dart';
 
@@ -461,11 +464,35 @@ class _RegisterPannelState extends State<RegisterPannel> {
                     Stack(
                         alignment: Alignment.center,
                         children: [
-                          SendBtn(
-                            text: "Exportar Dados",
-                            onValidate: () => true,
-                            onSend: () {},
-                          ),
+                            SizedBox(
+                              width: 260,
+                              child: TextButton(
+                                style: TextButton.styleFrom(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  backgroundColor: const Color.fromRGBO(71, 169, 218, 1),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 40,
+                                    vertical: 16,
+                                  ),
+                                  textStyle: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: "Inter"
+                                  ),
+                                ),
+                                onPressed: () {
+                                  showModalBottomSheet(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return const TableManipulationBottomSheet();
+                                    },
+                                  );
+                              },
+                              child: Text('Exportar dados', style: TextStyle(color: Colors.white)),            
+                              ),
+                            ),
                           Positioned(
                             top: 10,
                             right: 10,
@@ -475,7 +502,10 @@ class _RegisterPannelState extends State<RegisterPannel> {
                                 size: 30, color: Colors.white
                               ),
                           ),
-                        ]),
+                        ]
+                    ),
+                    Divider(height: 20),
+                    Text("Ainda to trabalhando nessa tela!", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.red)),
                     Divider(height: 20),
                   ],
                 ),

@@ -376,12 +376,12 @@ class _RegisterDetailPageState extends State<RegisterDetailPage> {
                                       const TextSpan(text: ', ordem '),
                                       TextSpan(
                                         text: widget.register!.animal.order,
-                                        style: const TextStyle(fontStyle: FontStyle.italic),
+                                        style: const TextStyle(fontStyle: FontStyle.normal),
                                       ),
                                       const TextSpan(text: ', família '),
                                       TextSpan(
                                         text: widget.register!.animal.family,
-                                        style: const TextStyle(fontStyle: FontStyle.italic),
+                                        style: const TextStyle(fontStyle: FontStyle.normal),
                                       ),
                                       const TextSpan(text: ' e gênero '),
                                       TextSpan(

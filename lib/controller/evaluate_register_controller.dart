@@ -164,8 +164,8 @@ class EvaluateRegisterFormController {
       if (text.length < 10) {
         return 'Caracteres mínimos: 10';
       }
-      if (text.length > 200) {
-        return 'Caracteres máximos: 200';
+      if (text.length > 600) {
+        return 'Caracteres máximos: 600';
       }
     }
     return null;
