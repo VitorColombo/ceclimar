@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:tcc_ceclimar/models/animal_response.dart';
 import 'package:collection/collection.dart';
 import 'package:tcc_ceclimar/utils/animals_service.dart';
+import 'package:tcc_ceclimar/utils/guarita_data.dart';
 import 'package:tcc_ceclimar/widgets/custom_switch.dart';
 import 'package:tcc_ceclimar/widgets/input_field.dart';
 import 'package:tcc_ceclimar/widgets/search_input_field.dart';
@@ -28,7 +27,9 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
   final _formKey = GlobalKey<FormState>();
   final AnimalService _animalService = AnimalService();
   bool isSwitchOn = false;
+  bool isOnLocal = false;
   bool isBtnEnabled = false;
+  bool _isFormSubmitted = false;
   
   final List<String> species = [];
   final List<String> classes = [];
@@ -308,18 +309,35 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
     return _formKey.currentState?.validate() ?? false;
   }
 
-  void _onSwitchChanged(bool value) {
+  void _onSwitchChanged(bool valueHour) {
+    if (_isFormSubmitted) return;
+
     setState(() {
-      _formController.changeSwitch();
+      _formController.changeHourSwitch();
       _formController.hourController.text = '';
-      isSwitchOn = value;
+      _formController.hourError = null;
+      isSwitchOn = valueHour;
+      _updateBtnStatus();
+    });
+  }
+
+  void _onLocalSwitchChanged(bool valueLocal) {
+    if (_isFormSubmitted) return;
+
+    setState(() {
+      _formController.changeLocalSwitch();
+      _formController.cityController.text = '';
+      _formController.beachSpotController.text = '';
+      _formController.beachSpotError = null;
+      _formController.cityError = null;
+      isOnLocal = valueLocal;
       _updateBtnStatus();
     });
   }
 
   void _updateBtnStatus() {
     setState(() {
-      isBtnEnabled = _formController.isBtnEnabledTechnical();
+      isBtnEnabled = _formController.isBtnEnable();
     });
   }
 
@@ -378,43 +396,33 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
     }
     await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
         .then((Position position) {
-      setState(() => _formController.currentPosition = position);
-      _getAddressFromLatLng(_formController.currentPosition!);
+          setState(() => 
+            _formController.currentPosition = position
+          );
     }).catchError((e) {
       debugPrint(e);
     });
   }
 
-  Future<void> _getAddressFromLatLng(Position position) async {
-    try {
-      await placemarkFromCoordinates(
-              position.latitude, position.longitude)
-          .then((List<Placemark> placemarks) {
-        Placemark place = placemarks[0];
-        setState(() {
-          _formController.currentAddress =
-              '${place.street}, ${place.subLocality}, ${place.subAdministrativeArea}, ${place.postalCode}';
-        });
-      }).catchError((e) {
-        debugPrint(e);
+  Future<void> _submitForm() async {
+    if (_validateForm()) {
+      setState(() {
+        _isFormSubmitted = true;
       });
-    } on PlatformException catch (e) {
-      debugPrint('Error when getting the address from lat and long $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-           content: Text(
-               'Falha ao obter endereço: ${e.message ?? 'Erro desconhecido'}',
-               style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontFamily: "Inter"
-                 ),
-           ),
-          backgroundColor: Colors.red,
-        ),
-      );
-    } catch (e) {
-      print('Erro desconhecido: $e');
+
+      await _formController.sendSimpleRegister(context, _getCurrentPosition);
+    }
+  }
+  
+  List<String> _getCities() {
+    return guaritas.where((element) => element.city != null).map((guarita) => guarita.city!).toSet().toList();
+  }
+
+  List<GuaritaData> _getFilteredGuaritas() {
+    if (_formController.cityController.text.isEmpty) {
+      return guaritas;
+    } else {
+      return guaritas.where((guarita) => guarita.city == _formController.cityController.text).toList();
     }
   }
 
@@ -458,39 +466,149 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
               onChanged: (_) => _updateBtnStatus(),
               maxLength: 50,
             ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: InputField(
-                    text: "Município",
-                    controller: _formController.cityController,
-                    validator: (value) => _formController.cityError,
-                    onChanged: (_) => _updateBtnStatus(),
-                    maxLength: 50,
-                  ),
-                ),
-                const SizedBox(width: 20),
-                SizedBox(
-                  width: 115,
-                  child: InputField(
-                    text: "Nº Guarita",
-                    controller: _formController.beachSpotController,
-                    validator: (value) => _formController.beachSpotError,
-                    onChanged: (_) => _updateBtnStatus(),
-                    maxLength: 3,
-                  ),
-                ),
-              ],
+            Padding(
+              padding: const EdgeInsets.only(left: 8),
+              child: CustomSwitch(
+                text: "Não estou mais no local",
+                value: isOnLocal,
+                onChanged: _onLocalSwitchChanged,
+                onTap: _showSwitchLocalInfoBottomSheet,
+                isDisabled: _isFormSubmitted,
+              ),
             ),
-            const SizedBox(height: 9),
-            CustomSwitch(
-              text: "Presenciou o animal encalhando?",
-              value: isSwitchOn,
-              onChanged: _onSwitchChanged,
-              onTap: _showSwitchInfoBottomSheet,
+            const SizedBox(height: 5),
+            Visibility(
+              visible: isOnLocal,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: DropdownButtonFormField<String>(
+                      menuMaxHeight: 400,
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: const Color(0xF6F6F6F6),
+                        labelText: "Município",
+                        labelStyle: Theme.of(context).textTheme.labelLarge,
+                        enabledBorder: const OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                          borderSide: BorderSide(
+                            color: Colors.grey,
+                            width: 1.0,
+                            style: BorderStyle.solid,
+                          ),
+                        ),
+                        focusedBorder: const OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.lightBlue,
+                            width: 1.0,
+                          ),
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                        ),
+                        floatingLabelStyle: const TextStyle(
+                            color: Colors.grey, fontSize: 17),
+                        contentPadding: const EdgeInsets.symmetric(
+                            vertical: 16.0, horizontal: 10.0),
+                      ),
+                      value: _formController.cityController.text.isEmpty
+                          ? null
+                          : _formController.cityController.text,
+                      items: _getCities().map((String city) {
+                        return DropdownMenuItem<String>(
+                          value: city,
+                          child: Text(
+                            city,
+                            style: const TextStyle(
+                                color: Colors.black,
+                                fontSize: 16,
+                                fontWeight: FontWeight.normal),
+                          ),
+                        );
+                      }).toList(),
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          _formController.cityController.text = newValue ?? '';
+                          _formController.beachSpotController.text = '';
+                          _updateBtnStatus();
+                        });
+                      },
+                      validator: (value) => _formController.cityError,
+                    ),
+                  ),
+                  const SizedBox(width: 20),
+                  SizedBox(
+                    width: 125,
+                    child: DropdownButtonFormField<String>(
+                      menuMaxHeight: 400,
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: const Color(0xF6F6F6F6),
+                        labelText: "Nº Guarita",
+                        labelStyle: Theme.of(context).textTheme.labelLarge,
+                        enabledBorder: const OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                          borderSide: BorderSide(
+                            color: Colors.grey,
+                            width: 1.0,
+                            style: BorderStyle.solid,
+                          ),
+                        ),
+                        focusedBorder: const OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.lightBlue,
+                            width: 1.0,
+                          ),
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                        ),
+                        floatingLabelStyle: const TextStyle(
+                            color: Colors.grey, fontSize: 17),
+                        contentPadding: const EdgeInsets.symmetric(
+                            vertical: 16.0, horizontal: 10.0),
+                      ),
+                      value: _formController.beachSpotController.text.isEmpty
+                          ? null
+                          : _formController.beachSpotController.text,
+                      items: _getFilteredGuaritas()
+                          .map((GuaritaData guarita) {
+                        return DropdownMenuItem<String>(
+                          value: guarita.number,
+                          child: Text(
+                            guarita.number,
+                            style: const TextStyle(
+                                color: Colors.black,
+                                fontSize: 16,
+                                fontWeight: FontWeight.normal),
+                          ),
+                        );
+                      }).toList(),
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          _formController.beachSpotController.text = newValue ?? '';
+                          _formController.currentGuarita = _getFilteredGuaritas().firstWhere((element) => element.number == newValue);
+                          if (_formController.cityController.text.isEmpty && _formController.currentGuarita != null && _formController.currentGuarita!.city != null) {
+                            _formController.cityController.text = _formController.currentGuarita!.city!;
+                          }
+                          _updateBtnStatus();
+                        });
+                      },
+                      validator: (value) => _formController.beachSpotError,
+                    ),
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: 9),
+            Padding(
+              padding: const EdgeInsets.only(left: 8),
+              child: CustomSwitch(
+                text: "Presenciou o animal encalhando?",
+                value: isSwitchOn,
+                onChanged: _onSwitchChanged,
+                onTap: _showSwitchInfoBottomSheet,
+                isDisabled: _isFormSubmitted,
+              ),
+            ),
+            const SizedBox(height: 5),
             if (isSwitchOn)
               Column(
                 children: [
@@ -618,7 +736,7 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
                 width: double.infinity,
                 height: 56,
                 child: SendBtn(
-                    onSend: () => _formController.sendTechnicalRegister(context, _getCurrentPosition),
+                    onSend: _submitForm,
                     onValidate: _validateForm,
                     text: "Enviar Registro",
                 ),
@@ -662,4 +780,16 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
       },
     );
   }
+  
+  void _showSwitchLocalInfoBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return const ModalHelpRegisterImageBottomSheet(
+          text: "Marque esse campo se você está enviando o registro após ter saído do local onde encontrou o animal.",
+          height: 250,
+          );
+      },
+    );
+  }  
 }

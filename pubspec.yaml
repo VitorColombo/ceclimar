@@ -41,6 +41,8 @@ dependencies:
   pie_chart: ^5.4.0
   graphic: ^2.5.0
   share_plus: ^7.1.0
+  exif: ^3.0.1
+  latlong2: ^0.9.0
 
 dev_dependencies:
   flutter_test:

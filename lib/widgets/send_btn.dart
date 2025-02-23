@@ -21,16 +21,19 @@ class _SendBtnState extends State<SendBtn> {
 
   void _handlePress() async {
     if (widget.onValidate()) {
-      setState(() {
-        _isLoading = true;
-      });
-
+      if(mounted){
+        setState(() {
+          _isLoading = true;
+        });
+      }
       try {
         await widget.onSend();
       } finally {
-        setState(() {
-          _isLoading = false;
-        });
+        if(mounted){
+          setState(() {
+            _isLoading = false;
+          });
+        }
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
