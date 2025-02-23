@@ -391,7 +391,7 @@ class _RegisterPannelState extends State<RegisterPannel> {
                         ),
                       ],
                     ),
-                     Visibility(
+                    Visibility(
                       visible: initDate != null && endDate != null,
                       child: Container(
                         margin: const EdgeInsets.only(top: 10),
@@ -400,14 +400,13 @@ class _RegisterPannelState extends State<RegisterPannel> {
                         child: FutureBuilder<List<RegisterResponse>>(
                           future: _fetchChartData(),
                           builder: (context, snapshot) {
-                             if (snapshot.connectionState == ConnectionState.waiting) {
-                                return const Center(child: CircularProgressIndicator());
+                            if (snapshot.connectionState == ConnectionState.waiting) {
+                              return const Center(child: CircularProgressIndicator());
                             } else if (snapshot.hasError) {
                               return Text('Error: ${snapshot.error}');
-                            }
-                            else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                                return Center(child: const Text('Sem dados disponíveis para o período selecionado', textAlign: TextAlign.center,));
-                              }else {
+                            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                              return Center(child: const Text('Sem dados disponíveis para o período selecionado', textAlign: TextAlign.center,));
+                            } else {
                               return Chart(
                                 data: _generateChartData(snapshot.data!),
                                 variables: {
@@ -424,11 +423,8 @@ class _RegisterPannelState extends State<RegisterPannel> {
                                   ),
                                 },
                                 marks: [
-                                  LineMark(
-                                    shape: ShapeEncode(
-                                        value: BasicLineShape(dash: [5, 2])
-                                      ),
-                                    selected: {'touchMove': {1}},
+                                  IntervalMark(
+                                    color: ColorEncode(value: Color(0xFF4c88ff)),  // Customize bar color
                                   )
                                 ],
                                 coord: RectCoord(color: Colors.white),
@@ -452,10 +448,10 @@ class _RegisterPannelState extends State<RegisterPannel> {
                                   offset: const Offset(-20, -20),
                                 ),
                                 crosshair: CrosshairGuide(
-                                    followPointer: [false, true]
-                                  ),
+                                  followPointer: [false, true]
+                                ),
                               );
-                             }
+                            }
                           },
                         ),
                       ),
