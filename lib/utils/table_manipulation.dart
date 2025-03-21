@@ -1,115 +1,179 @@
 import 'dart:io';
-import 'package:accordion/accordion.dart';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:intl/intl.dart';
-import 'package:open_filex/open_filex.dart';
+import 'package:excel/excel.dart';
 import 'package:tcc_ceclimar/models/register_response.dart';
+import 'dart:math';
 
 class TableManipulationBottomSheet extends StatelessWidget {
   const TableManipulationBottomSheet({super.key, required this.data});
 
   final List<RegisterResponse> data;
 
-  Future<File> _createAndGetFile() async {
+  Future<File> _createAndGetExcelFile() async {
     final directory = await getTemporaryDirectory();
-    final filePath = '${directory.path}/dados_fauna_marinha.csv';
+    final filePath = '${directory.path}/dados_fauna_marinha.xlsx';
     final file = File(filePath);
-    String csv = convertDataToCsv(data);
-    await file.writeAsString(csv);
+
+    var excelData = convertDataToExcel(data);
+    List<int>? encodedData = excelData.encode();
+    
+    if (encodedData != null) {
+      await file.writeAsBytes(Uint8List.fromList(encodedData));
+    }
 
     return file;
   }
 
-String convertDataToCsv(List<RegisterResponse> data) {
-  String csvHeader = 'ID,Data,Horário,Hora Encalhe,Imagem,Nome popular,Espécie,Gênero,Família,Ordem,Classe,ID Guarita,Latitude,Longitude,Localidade,Município,Nome do informante,Percepção do observador,Grau de decomposição,Observações\n';
-  final dateFormatter = DateFormat('dd/MM/yyyy');
-  final timeFormatter = DateFormat('HH:mm:ss');
+  Excel convertDataToExcel(List<RegisterResponse> data) {
+    var excel = Excel.createExcel();
+    Sheet sheet = excel['Registros'];
+    excel.setDefaultSheet(sheet.sheetName);
+    var titleCell = sheet.cell(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: 0));
+    titleCell.value = TextCellValue('Fauna Marinha RS');
 
-  String csvData = csvHeader;
-  for (RegisterResponse register in data) {
-    String formattedDate = dateFormatter.format(register.date);
-    String formattedTime = timeFormatter.format(register.date);
-    String csvRow =
-        '${_escapeCsvField(register.registerNumber.toString())},' // ID
-        '${_escapeCsvField(formattedDate)},' // Data
-        '${_escapeCsvField(formattedTime)},' // Horário
-        '${_escapeCsvField(register.hour ?? "")},'  // Hora Encalhe
-        '${_escapeCsvField("${register.registerImageUrl} ${register.registerImageUrl2 ?? ""}")},' //Imagens
-        '${_escapeCsvField(register.animal.popularName ?? "")},' // Nome popular
-        '${_escapeCsvField(register.animal.species ?? "")},' // Espécie
-        '${_escapeCsvField(register.animal.genus ?? "")},' // Gênero
-        '${_escapeCsvField(register.animal.family ?? "")},' // Família
-        '${_escapeCsvField(register.animal.order ?? "")},' // Ordem
-        '${_escapeCsvField(register.animal.classe ?? "")},' // Classe
-        '${_escapeCsvField(register.beachSpot)},'// ID Guarita
-        '${_escapeCsvField(register.latitude.toString())},' // Latitude
-        '${_escapeCsvField(register.longitude.toString())},' // Longitude
-        '${_escapeCsvField("localidade")},' //Localidade
-        '${_escapeCsvField(register.city)},' // Município
-        '${_escapeCsvField(register.authorName)},' // Nome do informante
-        '${_escapeCsvField(register.obs ?? "")},' // Percepção do observador
-        '${_escapeCsvField(register.sampleState.toString() ?? "")},' // Grau de decomposição
-        '${_escapeCsvField(register.specialistReturn ?? "")}\n'; // Observações
+    CellStyle titleStyle = CellStyle(
+      backgroundColorHex: ExcelColor.fromHexString('#0099FF'),
+      fontColorHex: ExcelColor.fromHexString('#FFFFFF'), 
+      bold: true,
+      horizontalAlign: HorizontalAlign.Center,
+      verticalAlign: VerticalAlign.Center,
+    );
 
-    csvData += csvRow;
+    titleCell.cellStyle = titleStyle;
+
+    List<String> headers = [
+      'ID', 'Data', 'Horário', 'Hora Encalhe', 'Imagem', 'Nome popular',
+      'Espécie', 'Gênero', 'Família', 'Ordem', 'Classe', 'ID Guarita',
+      'Latitude', 'Longitude', 'Município', 'Nome do informante',
+      'Percepção do observador', 'Grau de decomposição', 'Observações', 'Status'
+    ];
+
+    CellStyle headerStyle = CellStyle(
+      bold: true,
+      horizontalAlign: HorizontalAlign.Center,
+      verticalAlign: VerticalAlign.Center,
+    );
+
+    CellStyle centeredStyle = CellStyle(
+      horizontalAlign: HorizontalAlign.Center,
+      verticalAlign: VerticalAlign.Center,
+    );
+    Map<int, int> maxColumnWidths = {};
+
+    sheet.merge(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: 0),
+    CellIndex.indexByColumnRow(columnIndex: headers.length - 1, rowIndex: 0));
+
+    for (int i = 0; i < headers.length; i++) {
+      var cell = sheet.cell(CellIndex.indexByColumnRow(columnIndex: i, rowIndex: 1));
+      cell.value = TextCellValue(headers[i]);
+      cell.cellStyle = headerStyle;
+
+      maxColumnWidths[i] = headers[i].length;
+    }
+
+    final dateFormatter = DateFormat('dd/MM/yyyy');
+    final timeFormatter = DateFormat('HH:mm:ss');
+
+    for (int i = 0; i < data.length; i++) {
+      RegisterResponse register = data[i];
+      int currentRow = i + 2;
+
+      List<String> rowData = [
+        register.registerNumber.toString(),
+        dateFormatter.format(register.date),
+        timeFormatter.format(register.date),
+        register.hour ?? "",
+        "${register.registerImageUrl} ${register.registerImageUrl2 ?? ""}",
+        register.animal.popularName ?? "",
+        register.animal.species ?? "",
+        register.animal.genus ?? "",
+        register.animal.family ?? "",
+        register.animal.order ?? "",
+        register.animal.classe ?? "",
+        register.beachSpot,
+        register.latitude.toString(),
+        register.longitude.toString(),
+        register.city,
+        register.authorName,
+        register.obs ?? "",
+        register.sampleState?.toString() ?? "",
+        register.specialistReturn ?? "",
+        register.status,
+      ];
+
+      for (int j = 0; j < rowData.length; j++) {
+        var cell = sheet.cell(CellIndex.indexByColumnRow(columnIndex: j, rowIndex: currentRow));
+        cell.value = TextCellValue(rowData[j]);
+
+        if (![4, 16, 18].contains(j)) {
+          cell.cellStyle = centeredStyle;
+        }
+
+        if (![4, 16, 18].contains(j)) {
+          maxColumnWidths[j] = maxColumnWidths.containsKey(j)
+              ? max(maxColumnWidths[j]!, rowData[j].length)
+              : rowData[j].length;
+        }
+      }
+    }
+
+    for (int i = 0; i < headers.length; i++) {
+      if (![4, 16, 18].contains(i)) {
+        sheet.setColumnWidth(i, (maxColumnWidths[i]! + 2).toDouble());
+      }else{
+      sheet.setColumnWidth(i, (40));  
+      }
+    }
+
+    return excel;
   }
-
-  return csvData;
-}
-
-String _escapeCsvField(String field) {
-  if (field.contains(',') || field.contains('"') || field.contains('\n')) {
-    return '"${field.replaceAll('"', '""')}"';
-  }
-  return field;
-}
-
 
   Future<void> _downloadFile(BuildContext context) async {
     try {
-      final file = await _createAndGetFile();
+      final file = await _createAndGetExcelFile();
       final result = await OpenFilex.open(file.path);
 
-      if (result.type == ResultType.done) {
-        print('Sucesso ao baixar arquivo!');
-      } else {
+      if (result.type != ResultType.done) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Não foi possível abrir o arquivo: ${result.message}')),
+          SnackBar(content: Text('Erro ao abrir arquivo: ${result.message}')),
         );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Não foi possível fazer o download: $e')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erro no download: $e')));
     }
   }
 
   Future<void> _shareFile(BuildContext context) async {
     try {
-      final file = await _createAndGetFile();
+      final file = await _createAndGetExcelFile();
 
       await Share.shareXFiles(
         [XFile(file.path)],
         subject: 'Dados de registros Fauna Marinha RS',
-        text: 'Arquivo gerado a partir do app com os registros selecionados',
+        text: 'Arquivo gerado com registros selecionados.',
       );
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erro no compartilhamento do arquivo: $e')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erro ao compartilhar: $e')));
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(20.0),
-      height: 230,
+      padding: const EdgeInsets.all(20.0),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ListTile(
             leading: Icon(PhosphorIconsLight.download),
-            title: Text('Baixar Tabela'),
+            title: const Text('Baixar Tabela'),
             onTap: () async {
               Navigator.pop(context);
               await _downloadFile(context);
@@ -117,7 +181,7 @@ String _escapeCsvField(String field) {
           ),
           ListTile(
             leading: Icon(PhosphorIconsLight.share),
-            title: Text('Compartilhar tabela'),
+            title: const Text('Compartilhar Tabela'),
             onTap: () async {
               Navigator.pop(context);
               await _shareFile(context);
