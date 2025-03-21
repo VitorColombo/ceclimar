@@ -1,63 +1,98 @@
 import 'dart:io';
+import 'package:accordion/accordion.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:intl/intl.dart';
+import 'package:open_filex/open_filex.dart';
+import 'package:tcc_ceclimar/models/register_response.dart';
 
-// Separate Widget for Table Manipulation Bottom Sheet
 class TableManipulationBottomSheet extends StatelessWidget {
-  const TableManipulationBottomSheet({Key? key}) : super(key: key);
+  const TableManipulationBottomSheet({super.key, required this.data});
+
+  final List<RegisterResponse> data;
 
   Future<File> _createAndGetFile() async {
-    String fileContent = "Arquivo placeholder, aqui ira ser enviada a tabela gerada com todos os dados selecionados";
-
     final directory = await getTemporaryDirectory();
-    final filePath = '${directory.path}/data.txt';
-
+    final filePath = '${directory.path}/dados_fauna_marinha.csv';
     final file = File(filePath);
-    await file.writeAsString(fileContent);
+    String csv = convertDataToCsv(data);
+    await file.writeAsString(csv);
 
     return file;
   }
 
+String convertDataToCsv(List<RegisterResponse> data) {
+  String csvHeader = 'ID,Data,Horário,Hora Encalhe,Imagem,Nome popular,Espécie,Gênero,Família,Ordem,Classe,ID Guarita,Latitude,Longitude,Localidade,Município,Nome do informante,Percepção do observador,Grau de decomposição,Observações\n';
+  final dateFormatter = DateFormat('dd/MM/yyyy');
+  final timeFormatter = DateFormat('HH:mm:ss');
+
+  String csvData = csvHeader;
+  for (RegisterResponse register in data) {
+    String formattedDate = dateFormatter.format(register.date);
+    String formattedTime = timeFormatter.format(register.date);
+    String csvRow =
+        '${_escapeCsvField(register.registerNumber.toString())},' // ID
+        '${_escapeCsvField(formattedDate)},' // Data
+        '${_escapeCsvField(formattedTime)},' // Horário
+        '${_escapeCsvField(register.hour ?? "")},'  // Hora Encalhe
+        '${_escapeCsvField("${register.registerImageUrl} ${register.registerImageUrl2 ?? ""}")},' //Imagens
+        '${_escapeCsvField(register.animal.popularName ?? "")},' // Nome popular
+        '${_escapeCsvField(register.animal.species ?? "")},' // Espécie
+        '${_escapeCsvField(register.animal.genus ?? "")},' // Gênero
+        '${_escapeCsvField(register.animal.family ?? "")},' // Família
+        '${_escapeCsvField(register.animal.order ?? "")},' // Ordem
+        '${_escapeCsvField(register.animal.classe ?? "")},' // Classe
+        '${_escapeCsvField(register.beachSpot)},'// ID Guarita
+        '${_escapeCsvField(register.latitude.toString())},' // Latitude
+        '${_escapeCsvField(register.longitude.toString())},' // Longitude
+        '${_escapeCsvField("localidade")},' //Localidade
+        '${_escapeCsvField(register.city)},' // Município
+        '${_escapeCsvField(register.authorName)},' // Nome do informante
+        '${_escapeCsvField(register.obs ?? "")},' // Percepção do observador
+        '${_escapeCsvField(register.sampleState.toString() ?? "")},' // Grau de decomposição
+        '${_escapeCsvField(register.specialistReturn ?? "")}\n'; // Observações
+
+    csvData += csvRow;
+  }
+
+  return csvData;
+}
+
+String _escapeCsvField(String field) {
+  if (field.contains(',') || field.contains('"') || field.contains('\n')) {
+    return '"${field.replaceAll('"', '""')}"';
+  }
+  return field;
+}
+
+
   Future<void> _downloadFile(BuildContext context) async {
     try {
       final file = await _createAndGetFile();
-      final url = Uri.file(file.path);
-      if (await canLaunchUrl(url)) {
-        await launchUrl(url);
+      final result = await OpenFilex.open(file.path);
+
+      if (result.type == ResultType.done) {
+        print('Sucesso ao baixar arquivo!');
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Não foi possível fazer o download ${file.path}')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Não foi possível abrir o arquivo: ${result.message}')),
+        );
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Não foi possível fazer o download: $e')));
     }
   }
 
-  Future<void> _shareFileViaEmail(BuildContext context) async {
+  Future<void> _shareFile(BuildContext context) async {
     try {
       final file = await _createAndGetFile();
 
       await Share.shareXFiles(
         [XFile(file.path)],
         subject: 'Dados de registros Fauna Marinha RS',
-        text: 'Aqui será enviado o dado gerado com todos os registros selecionados',
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erro no compartilhamento do arquivo: $e')));
-    }
-  }
-
-  Future<void> _shareFileViaWhatsApp(BuildContext context) async {
-    try {
-      final file = await _createAndGetFile();
-
-      // Share the file using share_plus
-      await Share.shareXFiles(
-        [XFile(file.path)],
-        subject: 'Dados de registros Fauna Marinha RS',
-        text: 'Segue em anexo os dados exportados.',
+        text: 'Arquivo gerado a partir do app com os registros selecionados',
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erro no compartilhamento do arquivo: $e')));
@@ -76,24 +111,16 @@ class TableManipulationBottomSheet extends StatelessWidget {
             leading: Icon(PhosphorIconsLight.download),
             title: Text('Baixar Tabela'),
             onTap: () async {
-              Navigator.pop(context); // Close the bottom sheet first
+              Navigator.pop(context);
               await _downloadFile(context);
             },
           ),
           ListTile(
-            leading: Icon(PhosphorIconsLight.envelope),
-            title: Text('Enviar Tabela por Email'),
+            leading: Icon(PhosphorIconsLight.share),
+            title: Text('Compartilhar tabela'),
             onTap: () async {
-              Navigator.pop(context); // Close the bottom sheet
-              await _shareFileViaEmail(context);
-            },
-          ),
-          ListTile(
-            leading: Icon(PhosphorIconsLight.whatsappLogo),
-            title: Text('Enviar Tabela por WhatsApp'),
-            onTap: () async {
-              Navigator.pop(context); // Close the bottom sheet
-              await _shareFileViaWhatsApp(context);
+              Navigator.pop(context);
+              await _shareFile(context);
             },
           ),
         ],
@@ -101,20 +128,3 @@ class TableManipulationBottomSheet extends StatelessWidget {
     );
   }
 }
-
-// How to use the bottom sheet:
-// In the widget where you want to show the bottom sheet:
-
-/*
-ElevatedButton(
-  onPressed: () {
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext context) {
-        return const TableManipulationBottomSheet();
-      },
-    );
-  },
-  child: const Text('Show Options'),
-),
-*/

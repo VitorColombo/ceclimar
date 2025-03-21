@@ -254,8 +254,6 @@ class EvaluateRegisterFormController {
         AnimalService animalService = AnimalService();
         AnimalResponse? animal = await animalService.getAnimalFromSpecies(speciesController.text);
         if(animal != null){
-          print(animal.scientificName);
-          print(animal.id);
           await FirebaseFirestore.instance
               .collection('animals')
               .doc(animal.id.toString())

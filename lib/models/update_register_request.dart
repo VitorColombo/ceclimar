@@ -13,7 +13,6 @@ class UpdateRegisterRequest {
     required this.status,
   });
 
-
   Map<String, dynamic> toJson() {
     return {
       'animal': animal.toJson(),

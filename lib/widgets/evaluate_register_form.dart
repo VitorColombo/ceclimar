@@ -54,8 +54,7 @@ class _EvaluateRegisterFormState extends State<EvaluateRegisterForm> {
     _formController.orderController.text = widget.register.animal.order != null ? widget.register.animal.order! : '';
     _formController.familyController.text = widget.register.animal.family != null ? widget.register.animal.family! : '';
     _formController.genuController.text = widget.register.animal.genus != null ? widget.register.animal.genus! : '';
-
-    _formController.obsController.text = widget.register.observation != null ? widget.register.observation! : '';
+    _formController.obsController.text = widget.register.obs != null ? widget.register.obs! : '';
     _loadAnimals();
     _initializeFilteredLists();
     

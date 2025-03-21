@@ -330,38 +330,38 @@ class NewRegisterFormController {
           latitude = currentGuarita!.latitude ?? 0.0;
           longitude = currentGuarita!.longitude ?? 0.0;
         }
-          final registerData = {
-            "name": name,
-            "hour": hour,
-            "witnessed": witnessed,
-            "latitude": latitude,
-            "longitude": longitude,
-            "city": city,
-            "beachSpot": beachSpot
-          };
-          if (connectivityResult == ConnectivityResult.none) {
-            _queueRegister(registerData, 'simple', _image, _image2, context);
-            _showSuccessMessage(context, 'Registro salvo localmente. Será enviado quando a internet voltar.');
-          } else {
-            try {
-              final response = await sendSimpleRegisterToApi(
-                name,
-                hour,
-                witnessed,
-                latitude,
-                longitude,
-                city,
-                beachSpot
-              );
-              if (response != null) {
-                _showSuccessMessage(context, 'Registro enviado com sucesso!');
-                Navigator.pushNamedAndRemoveUntil(context, BasePage.routeName, (Route<dynamic> route) => false, arguments: 0);
-              } else {
-                _handleError(context, 'Falha ao enviar o registro.');
-              }
-            } catch (e) {
-                _handleError(context, 'Falha ao enviar registro: $e');
+        final registerData = {
+          "name": name,
+          "hour": hour,
+          "witnessed": witnessed,
+          "latitude": latitude,
+          "longitude": longitude,
+          "city": city,
+          "beachSpot": beachSpot
+        };
+        if (connectivityResult == ConnectivityResult.none) {
+          _queueRegister(registerData, 'simple', _image, _image2, context);
+          _showSuccessMessage(context, 'Registro salvo localmente. Será enviado quando a internet voltar.');
+        } else {
+          try {
+            final response = await sendSimpleRegisterToApi(
+              name,
+              hour,
+              witnessed,
+              latitude,
+              longitude,
+              city,
+              beachSpot
+            );
+            if (response != null) {
+              _showSuccessMessage(context, 'Registro enviado com sucesso!');
+              Navigator.pushNamedAndRemoveUntil(context, BasePage.routeName, (Route<dynamic> route) => false, arguments: 0);
+            } else {
+              _handleError(context, 'Falha ao enviar o registro.');
             }
+          } catch (e) {
+              _handleError(context, 'Falha ao enviar registro: $e');
+          }
         }
       }
     } else {
@@ -554,7 +554,6 @@ class NewRegisterFormController {
         user.uid,
         newRegister.toJson(),
       );
-      
       return newRegister;
     } catch(e){
       debugPrint("error when sending technical register $e");

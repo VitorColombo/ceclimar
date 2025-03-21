@@ -410,7 +410,7 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
         _isFormSubmitted = true;
       });
 
-      await _formController.sendSimpleRegister(context, _getCurrentPosition);
+      await _formController.sendTechnicalRegister(context, _getCurrentPosition);
     }
   }
   

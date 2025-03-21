@@ -14,7 +14,7 @@ class RegisterResponse {
   final String latitude;
   final String longitude;
   final String? specialistReturn;
-  final String? observation;
+  final String? obs;
   final String registerImageUrl;
   final String? registerImageUrl2;
   final String status;
@@ -36,7 +36,7 @@ class RegisterResponse {
     required this.latitude,
     required this.longitude,
     this.specialistReturn,
-    this.observation,
+    this.obs,
     required this.animal,
   });
 
@@ -56,7 +56,7 @@ class RegisterResponse {
       latitude: json['location']?['latitude'] ?? '',
       longitude: json['location']?['longitude'] ?? '',
       specialistReturn: json['specialistReturn'],
-      observation: json['observation'],
+      obs: json['obs'],
       registerImageUrl: json['registerImageUrl'] ?? '',
       registerImageUrl2: json['registerImageUrl2'],
       status: json['status'] ?? '',
@@ -78,7 +78,7 @@ class RegisterResponse {
       'latitude': latitude,
       'longitude': longitude,
       'specialistReturn': specialistReturn,
-      'observation': observation,
+      'obs': obs,
       'registerImageUrl': registerImageUrl,
       'registerImageUrl2': registerImageUrl2,
       'status': status,

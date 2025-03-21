@@ -45,7 +45,7 @@ class _RegisterPannelState extends State<RegisterPannel> {
   final TextEditingController endDateController = TextEditingController();
   final TextEditingController speciesController = TextEditingController();
   final DateFormat dateFormat = DateFormat('dd-MM-yyyy');
-  late Future<List<RegisterResponse>> registerData;
+  List<RegisterResponse> registerData = [];
   final FocusNode focusNode = FocusNode();
   List<RegisterResponse> speciesRegisters = [];
   bool showSpeciesRegisters = false;
@@ -81,6 +81,7 @@ class _RegisterPannelState extends State<RegisterPannel> {
   Future<void> _updateRegisterCount() async {
       List<RegisterResponse> allRegisters = await _registerController.getAllRegisters();
       setState(() {
+        registerData = allRegisters;
         evaluatedRegisters = allRegisters.where((reg) => reg.status == "Validado").length;
         pendingRegisters = allRegisters.where((reg) => reg.status == "Enviado").length;
       });
@@ -479,12 +480,12 @@ class _RegisterPannelState extends State<RegisterPannel> {
                                   ),
                                 ),
                                 onPressed: () {
-                                  showModalBottomSheet(
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      return const TableManipulationBottomSheet();
-                                    },
-                                  );
+                                showModalBottomSheet(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return TableManipulationBottomSheet(data: registerData);
+                                  },
+                                );
                               },
                               child: Text('Exportar dados', style: TextStyle(color: Colors.white)),            
                               ),
