@@ -24,7 +24,6 @@ class RegisterPannelController {
           'id': doc.id,
       });
     }).toList();
-
     return registers;
   }
 

@@ -5,7 +5,7 @@ class SearchInputField extends StatefulWidget {
   final String text;
   final TextEditingController controller;
   final String? Function(String?)? validator;
-  final Function? onChanged;
+  final Function(String)? onChanged;
   final int? maxLines;
   final List<String> items;
   final FocusNode focusNode;
@@ -31,6 +31,7 @@ class _SearchInputFieldState extends State<SearchInputField> {
   List<String> _filteredItems = [];
   bool _isDropdownOpen = false;
   bool _isFocused = false;
+  int _clearButtonPressCount = 0;
 
   @override
   void initState() {
@@ -56,17 +57,13 @@ class _SearchInputFieldState extends State<SearchInputField> {
     });
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
   void _filterItems(String query) {
     setState(() {
       _isDropdownOpen = true;
       _filteredItems = widget.items
           .where((item) =>
-          _formatString(item).toLowerCase().contains(_formatString(query)) && item.isNotEmpty)
+              _formatString(item).toLowerCase().contains(_formatString(query)) &&
+              item.isNotEmpty)
           .toList();
       if (_filteredItems.isEmpty) {
         _filteredItems.add("Outro");
@@ -94,11 +91,21 @@ class _SearchInputFieldState extends State<SearchInputField> {
   }
 
   void _clearInput() {
+    _clearButtonPressCount++;
+
     widget.controller.clear();
     _filterItems("");
-     if (widget.onChanged != null) {
-          widget.onChanged!("");
-        }
+    if (widget.onChanged != null) {
+      widget.onChanged!("");
+    }
+    setState(() {
+      _isDropdownOpen = false;
+    });
+
+    if (_clearButtonPressCount >= 2) {
+      widget.focusNode.unfocus();
+      _clearButtonPressCount = 0; 
+    }
   }
 
   @override
@@ -162,28 +169,31 @@ class _SearchInputFieldState extends State<SearchInputField> {
                   height: 0.5,
                 ),
                 contentPadding:
-                  const EdgeInsets.symmetric(vertical: 16.0, horizontal: 10.0),
-                  suffixIcon: _isFocused
+                    const EdgeInsets.symmetric(vertical: 16.0, horizontal: 10.0),
+                suffixIcon: _isFocused
                     ? IconButton(
-                      icon: const Icon(Icons.clear, color: Colors.grey),
-                      onPressed: _clearInput,
-                    )
+                        icon: const Icon(Icons.clear, color: Colors.grey),
+                        onPressed: _clearInput,
+                      )
                     : null,
               ),
               onChanged: (value) {
                 _filterItems(value.trim());
-                widget.onChanged!(value);
+                if (widget.onChanged != null) {
+                  widget.onChanged!(value);
+                }
               },
             ),
             Visibility(
-              visible: widget.validator != null && widget.validator!(widget.controller.text) != null,
-              child: const SizedBox(height: 5)
+              visible: widget.validator != null &&
+                  widget.validator!(widget.controller.text) != null,
+              child: const SizedBox(height: 5),
             ),
             if (_isDropdownOpen && _filteredItems.isNotEmpty)
               Container(
                 constraints: const BoxConstraints(
-                    maxHeight: 300,
-                  ),
+                  maxHeight: 300,
+                ),
                 decoration: BoxDecoration(
                   color: const Color(0xF6F6F6F6),
                   border: Border.all(color: Colors.grey),
@@ -206,6 +216,8 @@ class _SearchInputFieldState extends State<SearchInputField> {
                         });
                         if (widget.onChanged != null) {
                           widget.onChanged!(widget.controller.text);
+                        }
+                        if (widget.onFocusUpdate != null) {
                           widget.onFocusUpdate!();
                         }
                       },

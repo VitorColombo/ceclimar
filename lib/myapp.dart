@@ -5,6 +5,7 @@ import 'package:tcc_ceclimar/pages/about_us.dart';
 import 'package:tcc_ceclimar/pages/base_page.dart';
 import 'package:tcc_ceclimar/pages/edit_profile.dart';
 import 'package:tcc_ceclimar/pages/evaluate_register.dart';
+import 'package:tcc_ceclimar/pages/evaluated_registers.dart';
 import 'package:tcc_ceclimar/pages/pending_registers.dart';
 import 'package:tcc_ceclimar/pages/forgot_pass.dart';
 import 'package:tcc_ceclimar/pages/home.dart';
@@ -94,6 +95,7 @@ class _MyAppState extends State<MyApp> {
                 register: ModalRoute.of(context)!.settings.arguments as RegisterResponse,
               ),
         EditProfile.routeName:(context) => const EditProfile(),
+        EvaluatedRegisters.routeName:(context) => const EvaluatedRegisters(),
       },
     );
   }

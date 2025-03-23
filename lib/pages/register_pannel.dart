@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:graphic/graphic.dart';
 import 'package:intl/intl.dart';
@@ -7,13 +6,16 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:pie_chart/pie_chart.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:tcc_ceclimar/controller/register_pannel_controller.dart';
+import 'package:tcc_ceclimar/pages/evaluated_registers.dart';
+import 'package:tcc_ceclimar/pages/pending_registers.dart';
+import 'package:tcc_ceclimar/pages/register_view.dart';
 import 'package:tcc_ceclimar/utils/animals_service.dart';
+import 'package:tcc_ceclimar/utils/map_screen.dart';
 import 'package:tcc_ceclimar/widgets/page_header.dart';
+import 'package:tcc_ceclimar/widgets/register_item.dart';
 import 'package:tcc_ceclimar/widgets/search_input_field.dart';
-import 'package:url_launcher/url_launcher.dart';
 import '../models/animal_response.dart';
 import '../utils/table_manipulation.dart';
-import '../widgets/send_btn.dart';
 import '../models/register_response.dart';
 
 class RegisterPannel extends StatefulWidget {
@@ -33,7 +35,6 @@ class _RegisterPannelState extends State<RegisterPannel> {
   final RegisterPannelController _registerController = RegisterPannelController();
   late Future<List<AnimalResponse>> animalData;
   late List<String> speciesList = [];
-  int? selectedIndex;
   late Map<String, double> dataMap = {};
   int totalRegisters = 0;
   int evaluatedRegisters = 0;
@@ -49,6 +50,11 @@ class _RegisterPannelState extends State<RegisterPannel> {
   final FocusNode focusNode = FocusNode();
   List<RegisterResponse> speciesRegisters = [];
   bool showSpeciesRegisters = false;
+  bool isDateRangeLoading = false;
+  bool isLoading = false;
+  List<RegisterResponse> displayRegisters = [];
+  Future<List<RegisterResponse>>? _registerDataFuture;
+
 
   @override
   void initState() {
@@ -58,38 +64,64 @@ class _RegisterPannelState extends State<RegisterPannel> {
   }
 
   Future<void> _loadInitialData() async {
-    animalData = _animalService.getAnimals().then((data) {
-      for (AnimalResponse animal in data) {
-        setState(() {
-          totalRegisters += animal.quantity!;
-          speciesList = data.map((e) => e.scientificName!).toList();
-        });
-      }
-
-      data.sort((a, b) => b.quantity!.compareTo(a.quantity!));
-      List<AnimalResponse> topTenAnimals = data.take(10).toList();
-      dataMap = {
-        for (var animal in topTenAnimals)
-          animal.scientificName!: animal.quantity!.toDouble()
-      };
-      return topTenAnimals;
+    setState(() {
+      isLoading = true;
     });
-    _updateRegisterCount();
-    totalRegisters += pendingRegisters;
+    try {
+      animalData = _animalService.getAnimals().then((data) {
+        for (AnimalResponse animal in data) {
+          setState(() {
+            totalRegisters += animal.quantity!;
+            speciesList = data.map((e) => e.scientificName!).toList();
+          });
+        }
+
+        data.sort((a, b) => b.quantity!.compareTo(a.quantity!));
+        List<AnimalResponse> topTenAnimals = data.take(10).toList();
+        dataMap = {
+          for (var animal in topTenAnimals)
+            animal.scientificName!: animal.quantity!.toDouble()
+        };
+        return data;
+      });
+
+      await _updateRegisterCount();
+      totalRegisters += pendingRegisters;
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
+
   Future<void> _updateRegisterCount() async {
+    setState(() {
+        isLoading = true;
+      });
+    try {
       List<RegisterResponse> allRegisters = await _registerController.getAllRegisters();
       setState(() {
         registerData = allRegisters;
         evaluatedRegisters = allRegisters.where((reg) => reg.status == "Validado").length;
         pendingRegisters = allRegisters.where((reg) => reg.status == "Enviado").length;
+        displayRegisters = allRegisters;
       });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
-  
+
   @override
   void dispose() {
+    focusNode.dispose();
     super.dispose();
+  }
+
+  void _unfocusTextField() {
+    focusNode.unfocus();
   }
 
   @override
@@ -128,17 +160,18 @@ class _RegisterPannelState extends State<RegisterPannel> {
           SliverList(
             delegate: SliverChildListDelegate([
               Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(10.0),
                 child: Column(
                   children: [
                     Skeletonizer(
-                      enabled: totalRegisters == 0,
-                      child: Text("${totalRegisters}",
-                          style: TextStyle(
-                            fontSize: 40,
-                            fontWeight: FontWeight.bold,
-                            color: const Color.fromRGBO(71, 169, 218, 1),
-                          )),
+                      enabled: isLoading,
+                      child: Text("$totalRegisters",
+                        style: TextStyle(
+                          fontSize: 40,
+                          fontWeight: FontWeight.bold,
+                          color: const Color.fromRGBO(71, 169, 218, 1),
+                        )
+                      ),
                     ),
                     Text(
                       style: TextStyle(
@@ -148,59 +181,93 @@ class _RegisterPannelState extends State<RegisterPannel> {
                       ),
                       "Registros Cadastrados",
                     ),
-                    Divider(
-                        height: 40, thickness: 1.2, color: Colors.grey[200]),
+                    Divider(height: 40, thickness: 1.2, color: Colors.grey[200]),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        Column(
+                        InkWell(
+                          onTap: () {
+                            Navigator.pushNamed(context, EvaluatedRegisters.routeName);
+                          },
+                          splashColor: Colors.blue.withOpacity(0.2),
+                          highlightColor: Colors.blue.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(8.0),
+                          child: Column(
                           children: [
                             Skeletonizer(
-                              enabled: totalRegisters == 0,
-                              child: Text("$evaluatedRegisters",
+                            enabled: isLoading,
+                            child: Text("$evaluatedRegisters",
+                              style: TextStyle(
+                                fontSize: 30,
+                                fontWeight: FontWeight.bold,
+                                color:
+                                  const Color.fromRGBO(71, 169, 218, 1),
+                              )),
+                            ),
+                            Row(
+                              children:[
+                                Text(
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                    color: const Color.fromRGBO(71, 169, 218, 1),
+                                  ),
+                                  "Registros avaliados",
+                                ),
+                                PhosphorIcon(
+                                  PhosphorIcons.arrowSquareIn(),
+                                  color: const Color.fromRGBO(71, 169, 218, 1),
+                                  size: 18,
+                                ),
+                              ]
+                            ),
+                          ],
+                          )
+                        ),
+                        InkWell(
+                          onTap: () {
+                            Navigator.pushNamed(context, PendingRegisters.routeName);
+                          },
+                          splashColor: Colors.blue.withOpacity(0.2),
+                          highlightColor: Colors.blue.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(8.0),
+                            child: Column(
+                            children: [
+                              Skeletonizer(
+                                enabled: isLoading,
+                                child: Text(
+                                  "$pendingRegisters",
                                   style: TextStyle(
                                     fontSize: 30,
                                     fontWeight: FontWeight.bold,
                                     color:
                                         const Color.fromRGBO(71, 169, 218, 1),
-                                  )),
-                            ),
-                            Text(
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                color: const Color.fromRGBO(71, 169, 218, 1),
+                                  )
+                                ),
                               ),
-                              "Registros avaliados",
-                            ),
-                          ],
-                        ),
-                        Column(
-                          children: [
-                            Skeletonizer(
-                              enabled: totalRegisters == 0,
-                              child: Text("$pendingRegisters",
-                                  style: TextStyle(
-                                    fontSize: 30,
-                                    fontWeight: FontWeight.bold,
-                                    color:
-                                        const Color.fromRGBO(71, 169, 218, 1),
-                                  )),
-                            ),
-                            Text(
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                color: const Color.fromRGBO(71, 169, 218, 1),
+                              Row(
+                                children:[
+                                  Text(
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                      color: const Color.fromRGBO(71, 169, 218, 1),
+                                    ),
+                                    "Registros pendentes",
+                                  ),
+                                  PhosphorIcon(
+                                    PhosphorIcons.arrowSquareIn(),
+                                    color: const Color.fromRGBO(71, 169, 218, 1),
+                                    size: 18,
+                                  ),
+                                ]
                               ),
-                              "Registros pendentes",
-                            ),
-                          ],
-                        ),
+                            ],
+                          ),
+                        )
                       ],
                     ),
-                    Divider(
-                        height: 40, thickness: 1.2, color: Colors.grey[200]),
+                    Divider(height: 40, thickness: 1.2, color: Colors.grey[200]),
                     Text(
                       style: TextStyle(
                         fontSize: 20,
@@ -274,23 +341,39 @@ class _RegisterPannelState extends State<RegisterPannel> {
                       "Buscar dados por animal",
                     ),
                     Divider(height: 20),
-                    SearchInputField(text: "Busca por espécie", controller: speciesController, items: speciesList, focusNode: focusNode, onChanged: _handleSpeciesSearch,),
-                     Visibility(
-                       visible: showSpeciesRegisters && speciesRegisters.isNotEmpty,
-                       child: SizedBox(
-                          height: 300,
-                           child: ListView.builder(
+                    Padding(
+                      padding: const EdgeInsets.only(left: 20, right: 20),
+                      child: SearchInputField(
+                        text: "Busca por espécie",
+                        controller: speciesController,
+                        items: speciesList,
+                        focusNode: focusNode,
+                        onChanged: _handleSpeciesSearch,
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    Visibility(
+                      visible: showSpeciesRegisters && speciesRegisters.isNotEmpty,
+                      child: SizedBox(
+                        height: MediaQuery.of(context).size.height - 500,
+                        child: Skeletonizer(
+                          enabled: isLoading,
+                          child: ListView.builder(
+                            padding: const EdgeInsets.only(top: 0, bottom: 10),
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            shrinkWrap: true,
                             itemCount: speciesRegisters.length,
                             itemBuilder: (context, index) {
-                              return ListTile(
-                                title: Text("${speciesRegisters[index].animal.scientificName} - ${speciesRegisters[index].date.toString().substring(0,10)}"),
-                                subtitle: Text(speciesRegisters[index].status),
+                              return RegisterItem(
+                                register: speciesRegisters[index],
+                                route: RegisterDetailPage.routeName,
+                                isLoading: isLoading,
                               );
                             },
+                          ),
                         ),
-                       ),
-                     ),
-
+                      )
+                    ),
                     Divider(height: 40, thickness: 1.2, color: Colors.grey[200]),
                     Text(
                       style: TextStyle(
@@ -304,90 +387,38 @@ class _RegisterPannelState extends State<RegisterPannel> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        Container(
+                        SizedBox(
                           width: 150,
-                            child: TextField(
-                            style: TextStyle(color: Colors.black, fontSize: 14),
-                            controller: initDateController,
-                            readOnly: true,
-                            decoration: InputDecoration(
-                              labelText: 'Data Inicial',
-                              border: OutlineInputBorder(),
-                              suffixIcon: IconButton(
-                              icon: Icon(Icons.calendar_today),
-                              onPressed: () async {
-                                final DateTime? picked = await showDatePicker(
-                                context: context,
-                                initialDate: initDate ?? DateTime.now(),
-                                firstDate: DateTime(2015, 8),
-                                lastDate: DateTime.now(),
-                                );
-                                if (picked != null && picked != initDate) {
-                                setState(() {
-                                  initDate = picked;
-                                  initDateController.text = dateFormat.format(picked);
-                                });
-                                }
-                              },
+                          child: InkWell(
+                            onTap: () => _selectDate(context, true),
+                            child: IgnorePointer(
+                              child: TextField(
+                                style: TextStyle(color: Colors.black, fontSize: 14),
+                                controller: initDateController,
+                                decoration: InputDecoration(
+                                  labelText: 'Data Inicial',
+                                  border: OutlineInputBorder(),
+                                  suffixIcon: Icon(Icons.calendar_today),
+                                ),
                               ),
                             ),
-                            onTap: () async {
-                              final DateTime? picked = await showDatePicker(
-                              context: context,
-                              initialDate: initDate ?? DateTime.now(),
-                              firstDate: DateTime(2015, 8),
-                              lastDate: DateTime.now(),
-                              );
-                              if (picked != null && picked != initDate) {
-                              setState(() {
-                                initDate = picked;
-                                initDateController.text = dateFormat.format(picked);
-                              });
-                              }
-                            },
-                            ),
-                        ),                        
-                        Container(
+                          ),
+                        ),
+                        SizedBox(
                           width: 150,
-                          child: TextField(
-                            style: TextStyle(color: Colors.black, fontSize: 14),
-                            controller: endDateController,
-                            readOnly: true,
-                            decoration: InputDecoration(
-                              labelText: 'Data Final',
-                              border: OutlineInputBorder(),
-                              suffixIcon: IconButton(
-                                icon: Icon(Icons.calendar_today),
-                                onPressed: () async {
-                                  final DateTime? picked = await showDatePicker(
-                                    context: context,
-                                    initialDate: endDate ?? DateTime.now(),
-                                    firstDate: DateTime(2015, 8),
-                                    lastDate: DateTime.now(),
-                                  );
-                                  if (picked != null && picked != endDate) {
-                                    setState(() {
-                                      endDate = picked;
-                                      endDateController.text = dateFormat.format(picked);
-                                    });
-                                  }
-                                },
+                          child: InkWell(
+                            onTap: () => _selectDate(context, false),
+                            child: IgnorePointer(
+                              child: TextField(
+                                style: TextStyle(color: Colors.black, fontSize: 14),
+                                controller: endDateController,
+                                decoration: InputDecoration(
+                                  labelText: 'Data Final',
+                                  border: OutlineInputBorder(),
+                                  suffixIcon: Icon(Icons.calendar_today),
+                                ),
                               ),
                             ),
-                            onTap: () async {
-                              final DateTime? picked = await showDatePicker(
-                              context: context,
-                              initialDate: initDate ?? DateTime.now(),
-                              firstDate: DateTime(2015, 8),
-                              lastDate: DateTime.now(),
-                              );
-                              if (picked != null && picked != initDate) {
-                              setState(() {
-                                initDate = picked;
-                                initDateController.text = dateFormat.format(picked);
-                              });
-                              }
-                            },
                           ),
                         ),
                       ],
@@ -399,7 +430,10 @@ class _RegisterPannelState extends State<RegisterPannel> {
                         width: 350,
                         height: 300,
                         child: FutureBuilder<List<RegisterResponse>>(
-                          future: _fetchChartData(),
+                          future: (initDate != null && endDate != null)
+                              ? (_registerDataFuture ??
+                                  Future.value([]))
+                              : Future.value([]),
                           builder: (context, snapshot) {
                             if (snapshot.connectionState == ConnectionState.waiting) {
                               return const Center(child: CircularProgressIndicator());
@@ -425,7 +459,7 @@ class _RegisterPannelState extends State<RegisterPannel> {
                                 },
                                 marks: [
                                   IntervalMark(
-                                    color: ColorEncode(value: Color(0xFF4c88ff)),  // Customize bar color
+                                    color: ColorEncode(value: Color(0xFF4c88ff)),
                                   )
                                 ],
                                 coord: RectCoord(color: Colors.white),
@@ -487,13 +521,13 @@ class _RegisterPannelState extends State<RegisterPannel> {
                                   },
                                 );
                               },
-                              child: Text('Exportar dados', style: TextStyle(color: Colors.white)),            
+                              child: Text('Exportar dados', style: TextStyle(color: Colors.white)),
                               ),
                             ),
                           Positioned(
                             top: 10,
                             right: 10,
-                            child: 
+                            child:
                               Icon(
                                 PhosphorIcons.export(),
                                 size: 30, color: Colors.white
@@ -514,49 +548,98 @@ class _RegisterPannelState extends State<RegisterPannel> {
     );
   }
 
-  Future<List<RegisterResponse>> _fetchChartData() async{
-    if (initDate != null && endDate != null) {
-      List<RegisterResponse> registers =  await _registerController.getRegisterByDate(initDate!, endDate!);
-      print(registers);
-      return  registers;
+  Future<List<RegisterResponse>> _fetchChartData() async {
+    if (initDate == null || endDate == null) {
+      return [];
     }
-      return  [];
+
+    if (isDateRangeLoading) {
+        return _registerDataFuture ?? Future.value([]);
+    }
+
+    setState(() {
+      isDateRangeLoading = true;
+    });
+    try {
+      DateTime initialDateTime = DateTime(initDate!.year, initDate!.month, initDate!.day, 0, 0, 0);
+      DateTime endDateTime = DateTime(endDate!.year, endDate!.month, endDate!.day, 23, 59, 59);
+      List<RegisterResponse> registers = await _registerController.getRegisterByDate(initialDateTime, endDateTime);
+      return registers;
+    } finally {
+      setState(() {
+        isDateRangeLoading = false;
+      });
+    }
   }
 
+
   void _handleSpeciesSearch(String species) async {
-    if (species.isEmpty) {
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      if (species.isEmpty) {
         setState(() {
-            showSpeciesRegisters = false;
-             speciesRegisters = [];
-          });
-         return;
-    }
-     List<RegisterResponse> registers = await _registerController.getRegisterBySpecies(species);
+          showSpeciesRegisters = false;
+          speciesRegisters = [];
+          displayRegisters = [];
+        });
+        return;
+      }
+      List<RegisterResponse> registers = await _registerController.getRegisterBySpecies(species);
       setState(() {
         speciesRegisters = registers;
-          showSpeciesRegisters = true;
-    });
+        displayRegisters = registers;
+        showSpeciesRegisters = true;
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   List<RegisterSeriesQuantity> _generateChartData(List<RegisterResponse> registersData) {
-    
     Map<DateTime, int> registerCountsByDate = {};
     for (var register in registersData) {
-       DateTime dateOnly = DateTime(register.date.year, register.date.month, register.date.day);
-        registerCountsByDate[dateOnly] = (registerCountsByDate[dateOnly] ?? 0) + 1;
+      DateTime dateOnly = DateTime(register.date.year, register.date.month, register.date.day);
+      registerCountsByDate[dateOnly] = (registerCountsByDate[dateOnly] ?? 0) + 1;
     }
-     List<RegisterSeriesQuantity> chartData = registerCountsByDate.entries.map((entry) {
-        return RegisterSeriesQuantity(entry.key, entry.value);
-      }).toList();
+    List<RegisterSeriesQuantity> chartData = registerCountsByDate.entries.map((entry) {
+      return RegisterSeriesQuantity(entry.key, entry.value);
+    }).toList();
 
-    if(chartData.isEmpty){
-        return  [
-          RegisterSeriesQuantity(DateTime.now(), 0),
-        ];
+    if (chartData.isEmpty) {
+      return [
+        RegisterSeriesQuantity(DateTime.now(), 0),
+      ];
     }
-    
     chartData.sort((a, b) => a.date.compareTo(b.date));
     return chartData;
+  }
+
+   Future<void> _selectDate(BuildContext context, bool isInitDate) async {
+    _unfocusTextField();
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: isInitDate ? (initDate ?? DateTime.now()) : (endDate ?? DateTime.now()),
+      firstDate: DateTime(2015, 8),
+      lastDate: DateTime.now(),
+    );
+    if (picked != null) {
+      setState(() {
+        if (isInitDate) {
+          initDate = picked;
+          initDateController.text = dateFormat.format(picked);
+        } else {
+          endDate = picked;
+          endDateController.text = dateFormat.format(picked);
+        }
+        if (initDate != null && endDate != null) {
+           _registerDataFuture = _fetchChartData();
+        }
+      });
+    }
   }
 }
 
@@ -566,4 +649,3 @@ class RegisterSeriesQuantity {
 
   RegisterSeriesQuantity(this.date, this.quantity);
 }
-
