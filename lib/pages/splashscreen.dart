@@ -24,6 +24,7 @@ class SplashScreenState extends State<SplashScreen> {
   Future<void> _initializeFirebase() async {
     await Firebase.initializeApp();
     User? user = FirebaseAuth.instance.currentUser;
+    await Future.delayed(const Duration(seconds: 2));
 
     if (user != null) {
       Navigator.of(context).pushReplacementNamed(BasePage.routeName);

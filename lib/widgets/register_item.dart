@@ -1,15 +1,20 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:intl/intl.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import '../models/register_response.dart';
 
 class RegisterItem extends StatelessWidget {
   final RegisterResponse register;
   final String route;
+  final bool isLoading;
 
   const RegisterItem({
-    super.key, 
-    required this.register, 
-    required this.route
+    super.key,
+    required this.register,
+    required this.route,
+    required this.isLoading,
   });
 
   @override
@@ -20,11 +25,11 @@ class RegisterItem extends StatelessWidget {
           padding: const EdgeInsets.all(4),
           child: GestureDetector(
             onTap: () {
-                Navigator.pushNamed(
+              Navigator.pushNamed(
                 context,
                 route,
                 arguments: register,
-                );
+              );
             },
             child: Card(
               elevation: 0,
@@ -32,65 +37,90 @@ class RegisterItem extends StatelessWidget {
                 borderRadius: BorderRadius.circular(15),
                 side: const BorderSide(color: Colors.transparent),
               ),
-              child: ListTile(
-              leading: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                  color: Colors.grey[200],
-                ),
-                width: 70,
-                height: 60,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(16),
-                  child: Image(
-                    image: register.registerImage.image,
-                    fit: BoxFit.cover,
+              child: Skeletonizer(
+                enabled: isLoading,
+                child: ListTile(
+                  leading: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16),
+                      color: Colors.grey[200],
+                    ),
+                    width: 70,
+                    height: 60,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: register.registerImageUrl.isNotEmpty
+                          ? CachedNetworkImage(
+                              imageUrl: register.registerImageUrl,
+                              fit: BoxFit.cover,
+                              errorWidget: (context, url, error) => const Icon(Icons.broken_image, size: 40, color: Colors.grey),
+                            )
+                          : const Icon(Icons.image_not_supported, size: 40, color: Colors.grey),
+                    ),
                   ),
-                ),
-              ),
-                title: Row(
-                  children: [
-                    Text(
-                      register.animal.popularName,
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    SizedBox(width: 8),
-                    Baseline(
-                      baseline: 14,
-                      baselineType: TextBaseline.alphabetic,
-                      child: Container(
-                        width: 10,
-                        height: 10,
-                        decoration: BoxDecoration(
-                          color: register.status == "Validado" ? Color.fromARGB(255, 178, 227, 170) : Colors.grey[200],
-                          shape: BoxShape.circle,
-                        ),
+                  title: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Flexible(
+                            child: Text(
+                              register.animal.popularName!,
+                              style: const TextStyle(fontWeight: FontWeight.bold),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Baseline(
+                            baseline: 14,
+                            baselineType: TextBaseline.alphabetic,
+                            child: Container(
+                              width: 10,
+                              height: 10,
+                              decoration: BoxDecoration(
+                                color: register.status == "Validado"
+                                    ? const Color.fromARGB(255, 178, 227, 170)
+                                    : register.status == "Enviado"
+                                      ? const Color.fromARGB(255, 255, 242, 124)
+                                      : Colors.grey[200],
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                  ],
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Icon(PhosphorIcons.mapPin(), color: Colors.black, size: 20),
+                          const SizedBox(width: 6),
+                            SizedBox(
+                                width: MediaQuery.of(context).size.width * 0.4,
+                                child: Text(register.city.isEmpty ? "Cidade não informada" : register.city,
+                                   maxLines: 1,
+                                   overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(fontSize: 14),
+                                ),
+                              ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Icon(PhosphorIcons.calendarBlank(), color: Colors.black, size: 20),
+                          const SizedBox(width: 6),
+                          Text(
+                            DateFormat('dd/MM/yyyy').format(register.date),
+                            style: const TextStyle(fontSize: 14),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  trailing: const Icon(Icons.arrow_forward_ios, color: Colors.grey),
                 ),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Icon(PhosphorIcons.mapPin(), color: Colors.black, size: 20),
-                        SizedBox(width: 6),
-                        Text(register.city),
-                      ],
-                    ), 
-                    const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        Icon(PhosphorIcons.calendarBlank(), color: Colors.black, size: 20),
-                        SizedBox(width: 6),
-                        Text(register.date),
-                      ],
-                    ), 
-                  ],
-                ),
-                trailing: const Icon(Icons.arrow_forward_ios),
               ),
             ),
           ),

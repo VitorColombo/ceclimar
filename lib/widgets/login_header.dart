@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import 'package:tcc_ceclimar/widgets/page_header.dart';
 import 'circular_image_widget.dart';
 
 class LoginHeaderWidget extends StatelessWidget {
   final Future<ImageProvider?> imageFuture;
   final PageHeader? pageHeader;
+  final ImageProvider? defaultImage;
 
   const LoginHeaderWidget({
     super.key,
     required this.imageFuture,
     this.pageHeader,
+    this.defaultImage,
   });
 
   @override
@@ -26,7 +29,7 @@ class LoginHeaderWidget extends StatelessWidget {
             fit: BoxFit.fitWidth,
           ),
         ),
-        Container(
+        SizedBox(
           height: 250,
           child: Align(
             alignment: Alignment.topLeft,
@@ -41,26 +44,50 @@ class LoginHeaderWidget extends StatelessWidget {
               future: imageFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Skeletonizer(
+                    enabled: true,
+                    child: Container(
+                      height: 148,
+                      width: 170,
+                      decoration: BoxDecoration(
+                        border: Border.all(width: 4, color: Colors.white),
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                  );
+                } else if (snapshot.hasError) {
                   return Container(
                     height: 148,
                     width: 170,
                     decoration: BoxDecoration(
                       border: Border.all(width: 4, color: Colors.white),
                       color: Colors.white,
-                      shape: BoxShape.circle, 
+                      shape: BoxShape.circle,
                     ),
-                    child: const Center(child: CircularProgressIndicator())
-                );
-                } else if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
-                } else if (snapshot.hasData) {
-                  return CircularImageWidget(
-                    imageProvider: snapshot.data!,
-                    width: 148,
-                    heigth: 170,
+                    child: const Center(
+                      child: Icon(Icons.error, color: Colors.red),
+                    ),
+                  );
+                } else if (snapshot.hasData && snapshot.data != null) {
+                    return CircularImageWidget(
+                      imageProvider: snapshot.data!,
+                      width: 148,
+                      heigth: 170,
                   );
                 } else {
-                  return const Center(child: CircularProgressIndicator());
+                  return Container(
+                      height: 148,
+                      width: 170,
+                      decoration: BoxDecoration(
+                        border: Border.all(width: 4, color: Colors.white),
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                      ),
+                      child: defaultImage != null ? 
+                      CircularImageWidget(imageProvider: defaultImage!, width: 148, heigth: 170) :
+                       Container(),
+                    );
                 }
               },
             ),

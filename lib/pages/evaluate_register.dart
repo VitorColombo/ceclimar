@@ -5,20 +5,17 @@ import 'package:tcc_ceclimar/widgets/circular_image_widget.dart';
 import 'package:tcc_ceclimar/widgets/evaluate_register_form.dart';
 import 'package:tcc_ceclimar/widgets/view_register_image.dart';
 import '../widgets/page_header.dart';
+import 'package:intl/intl.dart';
+
 
 class EvaluateRegister extends StatefulWidget {
   static const String routeName = '/evaluateRegister';
-  final Function(int) updateIndex;
   final RegisterResponse register;
 
   const EvaluateRegister({
     super.key,
-    this.updateIndex = _defaultUpdateIndex,
     required this.register,
   });
-
-  static void _defaultUpdateIndex(int index) {
-  }
 
   @override
   _EvaluateRegisterState createState() => _EvaluateRegisterState();
@@ -55,31 +52,31 @@ class _EvaluateRegisterState extends State<EvaluateRegister> {
                                     context: context,
                                     builder: (context) {
                                       return ViewRegisterImage(
-                                        imageProvider: widget.register.registerImage,
+                                        imageUrl: widget.register.registerImageUrl,
                                       );
                                     },
                                   );
                                 },
                                 child: CircularImageWidget(
-                                  imageProvider: widget.register.registerImage.image,
+                                  imageProvider: NetworkImage(widget.register.registerImageUrl),
                                   width: 148,
                                   heigth: 170,
                                 ),
                               ),
-                              if(widget.register.registerImage2 != null)
+                              if(widget.register.registerImageUrl2 != null)
                                 GestureDetector(
                                   onTap: () {
                                     showModalBottomSheet(
                                       context: context,
                                       builder: (context) {
                                         return ViewRegisterImage(
-                                          imageProvider: widget.register.registerImage2!,
+                                        imageUrl: widget.register.registerImageUrl2!,
                                         );
                                       },
                                     );
                                   },
                                   child: CircularImageWidget(
-                                    imageProvider: widget.register.registerImage2!.image,
+                                    imageProvider: NetworkImage(widget.register.registerImageUrl2!),
                                     width: 148,
                                     heigth: 170,
                                   ),
@@ -93,7 +90,7 @@ class _EvaluateRegisterState extends State<EvaluateRegister> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'Registro Nº ${widget.register.uid}',
+                                    'Registro Nº ${widget.register.registerNumber}',
                                     style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                                   ),
                                   const SizedBox(height: 8),
@@ -113,7 +110,7 @@ class _EvaluateRegisterState extends State<EvaluateRegister> {
                                       Icon(PhosphorIcons.mapPin(PhosphorIconsStyle.regular), size: 20),
                                       const SizedBox(width: 8),
                                       Text(
-                                        widget.register.city,
+                                        widget.register.city.isEmpty ? "Cidade não informada" : widget.register.city,
                                         style: const TextStyle(fontSize: 16),
                                       ),
                                     ],
@@ -123,22 +120,22 @@ class _EvaluateRegisterState extends State<EvaluateRegister> {
                                     children: [
                                       Icon(PhosphorIcons.calendarBlank(PhosphorIconsStyle.regular), size: 20),
                                       const SizedBox(width: 8),
-                                      Text(
-                                        widget.register.date,
-                                        style: const TextStyle(fontSize: 16),
+                                      Text(DateFormat('dd/MM/yyyy').format(widget.register.date),
+                                        style: const TextStyle(fontSize: 16)
                                       ),
                                     ],
                                   ),
                                   const SizedBox(height: 8),
                                   Row(children: [
-                                    if(widget.register.hour != null)
+                                    if(widget.register.hour!.isNotEmpty)
                                       Text("Encalhe presenciado às ${widget.register.hour}")
                                     else
                                       Text("Encalhe não presenciado")
                                   ]),
                                   const SizedBox(height: 8),
                                   Row(children: [
-                                    Text("Próximo a guarita ${widget.register.beachSpot}")
+                                    if(widget.register.beachSpot.isNotEmpty)
+                                      Text("Próximo a guarita ${widget.register.beachSpot}")
                                   ]),
                                 ],
                               ),
@@ -147,7 +144,7 @@ class _EvaluateRegisterState extends State<EvaluateRegister> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Container(
-                                    width: 90,
+                                    width: 110,
                                       decoration: BoxDecoration(
                                       color: const Color.fromARGB(255, 71, 169, 218),
                                       border: Border.all(
@@ -164,7 +161,7 @@ class _EvaluateRegisterState extends State<EvaluateRegister> {
                                           style: const TextStyle(fontSize: 14, color: Colors.white),
                                         ),
                                         Text(
-                                          '${widget.register.location.latitude}',
+                                          widget.register.latitude,
                                           style: const TextStyle(fontSize: 14, color: Colors.white),
                                         )
                                       ],
@@ -172,7 +169,7 @@ class _EvaluateRegisterState extends State<EvaluateRegister> {
                                   ),
                                   const SizedBox(height: 8),
                                   Container(
-                                    width: 90,
+                                    width: 110,
                                       decoration: BoxDecoration(
                                       color: const Color.fromARGB(255, 71, 169, 218),
                                       border: Border.all(
@@ -186,9 +183,10 @@ class _EvaluateRegisterState extends State<EvaluateRegister> {
                                       children: [
                                         Text(
                                           'Longitude',
-                                          style: const TextStyle(fontSize: 14, color: Colors.white),                                        ),
+                                          style: const TextStyle(fontSize: 14, color: Colors.white),                                        
+                                        ),
                                         Text(
-                                          '${widget.register.location.longitude}',
+                                          widget.register.longitude,
                                           style: const TextStyle(fontSize: 14, color: Colors.white),
                                         )
                                       ],

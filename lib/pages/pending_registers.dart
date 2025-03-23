@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tcc_ceclimar/controller/pending_registers_controller.dart';
 import 'package:tcc_ceclimar/models/register_response.dart';
 import 'package:tcc_ceclimar/pages/evaluate_register.dart';
+import 'package:tcc_ceclimar/utils/placeholder_registers.dart';
 import 'package:tcc_ceclimar/widgets/register_item.dart';
 import '../widgets/page_header.dart';
 
@@ -27,56 +28,105 @@ class _PendingRegistersState extends State<PendingRegisters> {
   @override
   void initState() {
     super.initState();
-    fetchMockedRegisters();
+    fetchRegisters();
   }
 
-  Future<void> fetchMockedRegisters() async { //todo remover mocks
-    await Future.delayed(const Duration(milliseconds: 500)); 
-    if (!mounted) return;
+  Future<void> fetchRegisters() async {
     setState(() {
-      registers = _pendingRegistersController.getRegisters();
-      isLoading = false;
-      registers = registers.where((element) => element.status == "Enviado").toList(); //todo enviar o filtro pela controller para o backend
+      isLoading = true;
     });
+    try {
+      List<RegisterResponse> fetchedRegisters = await _pendingRegistersController.getAllPendingRegisters();
+      setState(() {
+        registers = fetchedRegisters;
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Erro ao carregar registros: $e')),
+      );
+    }
   }
 
-  @override
+@override
   Widget build(BuildContext context) {
+    final placeholderRegisters = generatePlaceholderRegisters(6);
+    final displayRegisters = isLoading ? placeholderRegisters : registers;
+
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            PageHeader(
-              text: "Registros pendentes",
-              icon: const Icon(Icons.arrow_back), 
-              onTap: () => widget.updateIndex(0)
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            automaticallyImplyLeading: false,
+            pinned: true,
+            collapsedHeight: 80,
+            expandedHeight: 80,
+            backgroundColor: Colors.white,
+            shadowColor: Color.fromARGB(0, 173, 145, 145),
+            flexibleSpace: FlexibleSpaceBar(
+              background: Container(
+                color: Colors.white,
+                child: Stack(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(top: 5.0),
+                      child: PageHeader(
+                        text: "Registros pendentes",
+                        icon: const Icon(Icons.arrow_back),
+                        onTap: () => widget.updateIndex(0),
+                      ),
+                    )
+                  ],
+                ),
+              ),
             ),
-            isLoading
-                ? Container(
-                  padding: const EdgeInsets.only(top: 250),
-                  alignment: Alignment.center,
-                  child: const Center(
-                      child: CircularProgressIndicator()
-                    ),
-                )
-                : SizedBox(
-                    height: MediaQuery.of(context).size.height - kToolbarHeight,
-                    child: ListView.builder(
-                      padding: EdgeInsets.only(top: 0, bottom: 180),
-                      physics: AlwaysScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: registers.length,
-                      itemBuilder: (context, index) {
-                        return RegisterItem(
-                          register: registers[index],
-                          route: EvaluateRegister.routeName
-                          );
-                      },
-                    ),
+          ),
+          SliverList(
+            delegate: SliverChildListDelegate(
+              [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    children: [
+                      if (!isLoading && registers.isEmpty)
+                        Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Text(
+                              "Nenhum registro pendente para avaliação no momento.",
+                              style: TextStyle(fontSize: 18),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        )
+                      else
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height - 180,
+                          child: ListView.builder(
+                            padding: EdgeInsets.only(top: 0, bottom: 100),
+                            physics: AlwaysScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            itemCount: displayRegisters.length,
+                            itemBuilder: (context, index) {
+                              return RegisterItem(
+                                isLoading: isLoading,
+                                register: displayRegisters[index],
+                                route: EvaluateRegister.routeName,
+                              );
+                            },
+                          ),
+                        ),
+                    ],
                   ),
-          ],
-        ),
-      ),
+                ),
+              ]
+            )
+          )
+        ],
+      )
     );
   }
 }

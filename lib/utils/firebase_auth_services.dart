@@ -6,7 +6,7 @@ class FirebaseAuthService {
   Future<void> sendPasswordResetEmail(String email, context) async {
     try {
       await _auth.sendPasswordResetEmail(email: email);
-    } on FirebaseAuthException catch (e) {
+    } on FirebaseAuthException {
       rethrow;
     } catch (e) {
       throw Exception('Erro ao enviar email de recuperação de senha. Por favor, tente novamente.');
@@ -20,7 +20,7 @@ class FirebaseAuthService {
         password: password,
       );
       return userCredential.user;
-    } on FirebaseAuthException catch (e) {
+    } on FirebaseAuthException {
       rethrow;
     } catch (e) {
       throw Exception('Erro ao criar usuário. Por favor, tente novamente.');
@@ -34,7 +34,7 @@ class FirebaseAuthService {
         password: password,
       );
       return userCredential.user;
-    } on FirebaseAuthException catch (e) {
+    } on FirebaseAuthException {
       rethrow;
     } catch (e) {
       throw Exception('Erro ao fazer login. Por favor, tente novamente.');

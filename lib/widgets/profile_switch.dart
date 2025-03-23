@@ -18,6 +18,8 @@ class _ProfileSwitchState extends State<ProfileSwitch> {
 
   @override
   Widget build(BuildContext context) {
+      double textSize = getResponsiveTextSize(context, 16.0);
+
     return
         ValueListenableBuilder<bool>(
           valueListenable: widget.isUltimosRegistrosNotifier,
@@ -26,7 +28,8 @@ class _ProfileSwitchState extends State<ProfileSwitch> {
               width: 360,
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(30),
-                  color: Color.fromARGB(255, 232, 232, 232)),
+                  color: Color.fromARGB(255, 232, 232, 232)
+                ),
               child: Padding(
                 padding: const EdgeInsets.only(top: 2, bottom: 2, left: 2, right: 2),
                 child: Row(
@@ -49,16 +52,22 @@ class _ProfileSwitchState extends State<ProfileSwitch> {
                                 BorderRadius.circular(30),
                             color: foundAnimalsChecked
                                 ? Colors.white
-                                : Color.fromARGB(255, 232, 232, 232)),
+                                : Color.fromARGB(255, 232, 232, 232)
+                              ),
                         child: Center(
-                            child: Text(
-                          'Últimos registros',
-                          style: TextStyle(
+                          child: RichText(
+                            text: TextSpan(
+                              text: 'Últimos registros',
+                              style: TextStyle(
+                              fontSize: textSize,
                               fontWeight: FontWeight.bold,
                               color: foundAnimalsChecked
-                                  ? Color.fromARGB(255, 0, 111, 130)
-                                  : Colors.white),
-                        )),
+                                ? Color.fromARGB(255, 0, 111, 130)
+                                : Color.fromARGB(255, 189, 189, 189),
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
                     ),
                     GestureDetector(
@@ -77,16 +86,22 @@ class _ProfileSwitchState extends State<ProfileSwitch> {
                                 BorderRadius.circular(30),
                             color: lastRegistersChecked
                                 ? Colors.white
-                                : Color.fromARGB(255, 232, 232, 232)),
+                                : Color.fromARGB(255, 232, 232, 232)
+                        ),
                         child: Center(
-                            child: Text(
-                          'Animais encontrados',
-                          style: TextStyle(
+                          child: RichText(
+                            text: TextSpan(
+                              text: 'Animais encontrados',
+                              style: TextStyle(
+                              fontSize: textSize,
                               fontWeight: FontWeight.bold,
                               color: lastRegistersChecked
-                                  ? Color.fromARGB(255, 0, 111, 130)
-                                  : Color.fromARGB(255, 189, 189, 189)),
-                        )),
+                                ? Color.fromARGB(255, 0, 111, 130)
+                                : Color.fromARGB(255, 189, 189, 189),
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
                     ),
                   ],
@@ -96,4 +111,8 @@ class _ProfileSwitchState extends State<ProfileSwitch> {
       },
    );
   }
+}
+double getResponsiveTextSize(BuildContext context, double baseSize) {
+  double screenWidth = MediaQuery.of(context).size.width;
+  return baseSize * (screenWidth / 375.0);
 }

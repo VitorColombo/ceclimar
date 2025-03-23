@@ -1,44 +1,64 @@
 class SimpleRegisterRequest {
-  final String name;
+  final String userId;
+  final String registerNumber;
+  final String authorName;
+  final Map<String, dynamic> animal;
   final String? hour;
   final bool witnessed;
-  final String latitude;
-  final String longitude;
-  final String? image;
-  final String? image2;
+  final Map<String, dynamic> location;
+  final String registerImageUrl;
+  final String? registerImageUrl2;
   final DateTime date;
+  final String status;
+  final String city;
+  final String beachSpot;
 
   SimpleRegisterRequest({
-    required this.name,
+    required this.userId,
+    required this.registerNumber,
+    required this.authorName,
+    required this.animal,
     required this.witnessed,
-    required this.latitude,
-    required this.longitude,
+    required this.location,
     required this.date,
+    required this.status,
     this.hour,
-    this.image,
-    this.image2,
+    required this.registerImageUrl,
+    this.registerImageUrl2,
+    required this.city,
+    required this.beachSpot
   });
 
   Map<String, dynamic> toJson() {
     return {
-      'name': name,
+      'userId': userId,
+      'registerNumber': registerNumber,
+      'authorName': authorName,
+      'animal': animal,
       'hour': hour,
       'witnessed': witnessed,
-      'latitude': latitude,
-      'longitude': longitude,
-      'date': date,
-      'image': image,
-      'image2': image2,
+      'location': location,
+      'registerImageUrl': registerImageUrl,
+      'registerImageUrl2': registerImageUrl2,
+      'date': date.toIso8601String(),
+      'status': status,
+      'city': city,
+      'beachSpot': beachSpot
     };
   }
 
   SimpleRegisterRequest.fromJson(Map<String, dynamic> json)
-    : name = json['name'],
-      hour = json['hour'],
-      witnessed = json['witnessed'],
-      image = json['image'],
-      latitude = json['latitude'],
-      longitude = json['longitude'],
-      date = json['date'],
-      image2 = json['image2'];
+      : userId = json['userId'],
+        registerNumber = json['registerNumber'],
+        authorName = json['authorName'],
+        animal = json['animal'],
+        hour = json['hour'],
+        witnessed = json['witnessed'],
+        location = json['location'],
+        registerImageUrl = json['registerImageUrl'],
+        registerImageUrl2 = json['registerImageUrl2'],
+        date = DateTime.parse(json['date']),
+        status = json['status'],
+        city = json['city'], 
+        beachSpot = json['beachSpot'];
 }

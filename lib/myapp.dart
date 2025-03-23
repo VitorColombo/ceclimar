@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:tcc_ceclimar/controller/new_register_form_controller.dart';
 import 'package:tcc_ceclimar/models/register_response.dart';
 import 'package:tcc_ceclimar/pages/about_us.dart';
 import 'package:tcc_ceclimar/pages/base_page.dart';
 import 'package:tcc_ceclimar/pages/edit_profile.dart';
 import 'package:tcc_ceclimar/pages/evaluate_register.dart';
+import 'package:tcc_ceclimar/pages/evaluated_registers.dart';
 import 'package:tcc_ceclimar/pages/pending_registers.dart';
 import 'package:tcc_ceclimar/pages/forgot_pass.dart';
 import 'package:tcc_ceclimar/pages/home.dart';
@@ -20,8 +22,20 @@ import 'package:tcc_ceclimar/pages/login.dart';
 import 'package:tcc_ceclimar/pages/new_researcher_user.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  NewRegisterFormController controller = NewRegisterFormController();
+  @override
+  void initState() {
+    super.initState();
+    controller.initConnectivityListener(context);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -81,6 +95,7 @@ class MyApp extends StatelessWidget {
                 register: ModalRoute.of(context)!.settings.arguments as RegisterResponse,
               ),
         EditProfile.routeName:(context) => const EditProfile(),
+        EvaluatedRegisters.routeName:(context) => const EvaluatedRegisters(),
       },
     );
   }

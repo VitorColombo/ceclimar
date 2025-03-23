@@ -21,10 +21,7 @@ class BadgeItem extends StatelessWidget {
                 height: 110,
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(10),
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: register.animal.badge,
-                    ),
+                  child: Image.asset("assets/images/gaivotaBadge.png"),
                 ),
               ),
             ],

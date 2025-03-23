@@ -5,18 +5,22 @@ class SearchInputField extends StatefulWidget {
   final String text;
   final TextEditingController controller;
   final String? Function(String?)? validator;
-  final Function? onChanged;
+  final Function(String)? onChanged;
   final int? maxLines;
   final List<String> items;
+  final FocusNode focusNode;
+  final Function? onFocusUpdate;
 
   const SearchInputField({
     super.key,
     required this.text,
     required this.controller,
     required this.items,
+    required this.focusNode,
     this.validator,
     this.onChanged,
     this.maxLines = 1,
+    this.onFocusUpdate,
   });
 
   @override
@@ -26,14 +30,22 @@ class SearchInputField extends StatefulWidget {
 class _SearchInputFieldState extends State<SearchInputField> {
   List<String> _filteredItems = [];
   bool _isDropdownOpen = false;
-  final FocusNode _focusNode = FocusNode();
+  bool _isFocused = false;
+  int _clearButtonPressCount = 0;
 
   @override
   void initState() {
     super.initState();
     _filteredItems = widget.items;
-    _focusNode.addListener(() {
-      if (_focusNode.hasFocus) {
+    widget.focusNode.addListener(() {
+      setState(() {
+        _isFocused = widget.focusNode.hasFocus;
+      });
+      if (widget.focusNode.hasFocus) {
+        if (widget.onFocusUpdate != null) {
+          widget.onFocusUpdate!();
+        }
+        _filterItems(widget.controller.text);
         setState(() {
           _isDropdownOpen = true;
         });
@@ -45,26 +57,21 @@ class _SearchInputFieldState extends State<SearchInputField> {
     });
   }
 
-  @override
-  void dispose() {
-    _focusNode.dispose();
-    super.dispose();
-  }
-
   void _filterItems(String query) {
     setState(() {
       _isDropdownOpen = true;
       _filteredItems = widget.items
-        .where((item) =>
-            _formatString(item).toLowerCase().contains(_formatString(query)) && item.isNotEmpty)
-        .toList();
-      if(_filteredItems.isEmpty){
-        _filteredItems.add("Nenhum item encontrado");
+          .where((item) =>
+              _formatString(item).toLowerCase().contains(_formatString(query)) &&
+              item.isNotEmpty)
+          .toList();
+      if (_filteredItems.isEmpty) {
+        _filteredItems.add("Outro");
       }
     });
   }
 
-  String _formatString(String input){
+  String _formatString(String input) {
     return removeDiacritics(input).toLowerCase();
   }
 
@@ -77,12 +84,29 @@ class _SearchInputFieldState extends State<SearchInputField> {
   Future<bool> _onWillPop() async {
     if (_isDropdownOpen) {
       _closeDropdown();
-      _focusNode.unfocus();
-      return false; 
+      widget.focusNode.unfocus();
+      return false;
     }
     return true;
   }
 
+  void _clearInput() {
+    _clearButtonPressCount++;
+
+    widget.controller.clear();
+    _filterItems("");
+    if (widget.onChanged != null) {
+      widget.onChanged!("");
+    }
+    setState(() {
+      _isDropdownOpen = false;
+    });
+
+    if (_clearButtonPressCount >= 2) {
+      widget.focusNode.unfocus();
+      _clearButtonPressCount = 0; 
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -93,7 +117,7 @@ class _SearchInputFieldState extends State<SearchInputField> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             TextFormField(
-              focusNode: _focusNode,
+              focusNode: widget.focusNode,
               controller: widget.controller,
               validator: widget.validator,
               keyboardType: TextInputType.text,
@@ -146,6 +170,12 @@ class _SearchInputFieldState extends State<SearchInputField> {
                 ),
                 contentPadding:
                     const EdgeInsets.symmetric(vertical: 16.0, horizontal: 10.0),
+                suffixIcon: _isFocused
+                    ? IconButton(
+                        icon: const Icon(Icons.clear, color: Colors.grey),
+                        onPressed: _clearInput,
+                      )
+                    : null,
               ),
               onChanged: (value) {
                 _filterItems(value.trim());
@@ -154,10 +184,15 @@ class _SearchInputFieldState extends State<SearchInputField> {
                 }
               },
             ),
+            Visibility(
+              visible: widget.validator != null &&
+                  widget.validator!(widget.controller.text) != null,
+              child: const SizedBox(height: 5),
+            ),
             if (_isDropdownOpen && _filteredItems.isNotEmpty)
               Container(
-                constraints: BoxConstraints(
-                  maxHeight: 300, 
+                constraints: const BoxConstraints(
+                  maxHeight: 300,
                 ),
                 decoration: BoxDecoration(
                   color: const Color(0xF6F6F6F6),
@@ -165,22 +200,25 @@ class _SearchInputFieldState extends State<SearchInputField> {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: ListView.builder(
-                  padding: EdgeInsets.only(top: 0),
-                  physics: AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.only(top: 0),
+                  physics: const AlwaysScrollableScrollPhysics(),
                   shrinkWrap: true,
                   itemCount: _filteredItems.length,
                   itemBuilder: (context, index) {
                     return ListTile(
                       title: Text(_filteredItems[index]),
                       onTap: () {
+                        widget.focusNode.requestFocus();
                         widget.controller.text = _filteredItems[index];
-                        _filterItems(_filteredItems[index]);
-                        _focusNode.requestFocus();
-                          setState(() {
+                        widget.focusNode.unfocus();
+                        setState(() {
                           _isDropdownOpen = false;
                         });
                         if (widget.onChanged != null) {
                           widget.onChanged!(widget.controller.text);
+                        }
+                        if (widget.onFocusUpdate != null) {
+                          widget.onFocusUpdate!();
                         }
                       },
                     );

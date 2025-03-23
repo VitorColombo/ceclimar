@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:tcc_ceclimar/controller/auth_user_controller.dart';
+import 'package:tcc_ceclimar/utils/user_role.dart';
 import 'package:tcc_ceclimar/widgets/header_banner_widget.dart';
 import 'package:tcc_ceclimar/widgets/input_field.dart';
-import 'package:tcc_ceclimar/widgets/password_input.dart';
 import 'package:tcc_ceclimar/widgets/send_btn.dart';
 import '../widgets/modal_bottomsheet.dart';
 
@@ -23,6 +24,8 @@ class NewResearcherPage extends StatefulWidget {
 class NewResearcherPageState extends State<NewResearcherPage> {
   final AuthenticationController _controller = AuthenticationController();
   final _formKey = GlobalKey<FormState>();
+  bool _showPassword = false;
+  String _generatedPassword = "";
 
   @override
   void dispose() {
@@ -33,13 +36,22 @@ class NewResearcherPageState extends State<NewResearcherPage> {
 
   bool _validateForm() {
     setState(() {
-      _controller.validateSignIn();
+      _controller.validateNewResearcher();
     });
     return _formKey.currentState?.validate() ?? false;
   }
 
+  Future<void> _copyToClipboard(String text) async {
+    await Clipboard.setData(ClipboardData(text: text));
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Senha copiada!')),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       body: CustomScrollView( 
         slivers: [
@@ -95,18 +107,45 @@ class NewResearcherPageState extends State<NewResearcherPage> {
                           controller: _controller.emailController,
                           validator: (value) => _controller.emailError
                         ),
-                        const SizedBox(height: 16),
-                        PasswordInput(
-                          text: "Senha",
-                          controller: _controller.passController, 
-                          validator: (value) => _controller.passError
-                        ),
-                        const SizedBox(height: 16),
-                        PasswordInput(
-                          text: "Confirme sua senha", 
-                          controller: _controller.passConfController, 
-                          validator: (value) => _controller.passConfError
-                        ),
+                        if (_showPassword)
+                          Column(
+                            children: [
+                              const SizedBox(height: 24),
+                              Text("Senha temporária gerada:"),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 8.0),
+                                child: Container(
+                                  width: 200,
+                                  height: 50,
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[200],
+                                    borderRadius: BorderRadius.circular(8.0),
+                                  ),
+                                  child: Stack(
+                                    children: [
+                                      Center(
+                                        child: Text(
+                                          _generatedPassword,
+                                          style: const TextStyle(
+                                            color: Colors.black,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ),
+                                      Positioned(
+                                        right: 0,
+                                        child: IconButton(
+                                          onPressed: () => _copyToClipboard(_generatedPassword),
+                                          icon: const Icon(Icons.copy, color: Colors.grey),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
                         const SizedBox(height: 24),
                         SizedBox(
                           width: double.infinity,
@@ -114,8 +153,16 @@ class NewResearcherPageState extends State<NewResearcherPage> {
                           child: SendBtn(
                             text: "Cadastrar",
                             onValidate: _validateForm,
-                            onSend: () => {
-                              _showModalBottomSheet(context),
+                              onSend: () async {
+                                final response = await _controller.addNewResearcher(context);
+                                if (response == "email_already_exists") {
+                                  _showModalBottomSheet(context);
+                                }else if (response != "falha") {
+                                  setState(() {
+                                    _generatedPassword = response;
+                                    _showPassword = true;
+                                  });
+                              }
                             }
                           ),
                         ),
@@ -143,7 +190,7 @@ class NewResearcherPageState extends State<NewResearcherPage> {
           buttons: [
             TextButton(
               onPressed: () {
-                Navigator.pop(context);
+                _controller.setRole(UserRole.admin, context);
               },
               style: TextButton.styleFrom(
                 shape: RoundedRectangleBorder(

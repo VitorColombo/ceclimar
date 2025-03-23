@@ -25,7 +25,7 @@ class HeaderBannerWidget extends StatelessWidget {
             fit: BoxFit.fitWidth,
           ),
         ),
-        Container(
+        SizedBox(
           height: 250,
           child: Align(
             alignment: Alignment.topLeft,

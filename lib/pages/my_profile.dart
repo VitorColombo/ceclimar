@@ -1,13 +1,14 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import 'package:tcc_ceclimar/controller/auth_user_controller.dart';
 import 'package:tcc_ceclimar/controller/my_profile_controller.dart';
 import 'package:tcc_ceclimar/models/animal_response.dart';
 import 'package:tcc_ceclimar/models/register_response.dart';
 import 'package:tcc_ceclimar/pages/edit_profile.dart';
 import 'package:tcc_ceclimar/pages/register_view.dart';
+import 'package:tcc_ceclimar/utils/placeholder_registers.dart';
 import 'package:tcc_ceclimar/widgets/badge_item.dart';
 import 'package:tcc_ceclimar/widgets/login_header.dart';
 import 'package:tcc_ceclimar/widgets/modal_bottomsheet.dart';
@@ -36,6 +37,7 @@ class _MyProfileState extends State<MyProfile> {
   bool isLoading = true;
   List<RegisterResponse> registers = [];
   List<AnimalResponse> animals = [];
+  ImageProvider image = AssetImage('assets/images/imageProfile.png');
 
   Future<void> _logout(BuildContext context) async {
     try {
@@ -51,19 +53,15 @@ class _MyProfileState extends State<MyProfile> {
     _checkUserStatus();
   }
 
-  Future<ImageProvider?> _loadUserImage() async {
+  Future<void> _loadUserImage() async {
     User? user = _controller.getCurrentUser();
-    if (user == null) return AssetImage('assets/images/imageProfile.png');
-
-    String? profileImageUrl = await _controller.getProfileImageUrl(user.uid);
-    if (profileImageUrl == null || profileImageUrl.isEmpty) {
-      return AssetImage('assets/images/imageProfile.png');
-    }
-
-    try {
-      return CachedNetworkImageProvider(profileImageUrl);
-    } catch (e) {
-      return AssetImage('assets/images/imageProfile.png');
+    if (user != null) {
+      String? profileImageUrl = await _controller.getProfileImageUrl(user.uid);
+      if (profileImageUrl != null && profileImageUrl.isNotEmpty && mounted) {
+        setState(() {
+          image = NetworkImage(profileImageUrl);
+        });
+      }
     }
   }
 
@@ -83,13 +81,16 @@ class _MyProfileState extends State<MyProfile> {
     _checkUserStatus();
   }
   
-  Future<void> fetchMockedRegisters() async { //todo remover mocks
-    await Future.delayed(const Duration(milliseconds: 200)); 
+  Future<void> fetchMockedRegisters() async {
+    await Future.delayed(const Duration(milliseconds: 200));
     if (!mounted) return;
-    setState(() {
-      registers = _myProfileController.getRegisters();
-      isLoading = false;
-    });
+    List<RegisterResponse> fetchedRegisters = await _myProfileController.getRegisters();
+    if (mounted){ 
+      setState(() {
+        registers = fetchedRegisters;
+        isLoading = false;
+      });
+    }    
   }
 
   @override
@@ -101,30 +102,34 @@ class _MyProfileState extends State<MyProfile> {
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
+            automaticallyImplyLeading: false,
             pinned: true,
             collapsedHeight: 250,
             expandedHeight: 250,
             backgroundColor: Colors.white,
             shadowColor: Color.fromARGB(0, 173, 145, 145),
             flexibleSpace: FlexibleSpaceBar(
-              background: Stack(
-                children: [
-                  LoginHeaderWidget(imageFuture: _loadUserImage()),
-                  PageHeader(
-                    text: "Meu perfil",
-                    icon: const Icon(Icons.arrow_back, color: Colors.white,),
-                    onTap: () => widget.updateIndex(0),
-                    color: Colors.white,
-                  ),
-                  Positioned(
-                    top: 55,
-                    right: 16,
-                    child: TextButton(
-                      onPressed: () => _logout(context),
-                      child: const Text("Logout", style: TextStyle(color: Colors.white),),
+              background: Container(
+                  color: Colors.white,
+                  child: Stack(
+                  children: [
+                    LoginHeaderWidget(imageFuture: Future.value(image)),
+                    PageHeader(
+                      text: "Meu perfil",
+                      icon: const Icon(Icons.arrow_back, color: Colors.white,),
+                      onTap: () => widget.updateIndex(0),
+                      color: Colors.white,
                     ),
-                  ),
-                ],
+                    Positioned(
+                      top: 55,
+                      right: 16,
+                      child: TextButton(
+                        onPressed: () => _logout(context),
+                        child: const Text("Logout", style: TextStyle(color: Colors.white),),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -140,9 +145,14 @@ class _MyProfileState extends State<MyProfile> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(
-                            '${userData?.name}',
-                            style: Theme.of(context).textTheme.titleLarge,
+                          Visibility(
+                            visible: userData?.name != null,
+                            child: RichText(
+                              text: TextSpan(
+                              text: '${userData?.name}',
+                              style: Theme.of(context).textTheme.titleLarge,
+                              ),
+                            ),
                           ),
                           SizedBox(width: 8),
                           Icon(PhosphorIcons.pencilSimple(PhosphorIconsStyle.regular), size: 20),
@@ -150,35 +160,42 @@ class _MyProfileState extends State<MyProfile> {
                       ),
                     ),
                     SizedBox(height: 9),
-                    Text(
-                      "Registros realizados: ${registers.length}", //todo integração
-                      style: Theme.of(context).textTheme.bodyLarge,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [                    
+                        RichText(
+                          text: TextSpan(
+                          text: "Registros realizados: ",
+                          style: Theme.of(context).textTheme.bodyLarge,
+                          ),
+                        ),
+                        isLoading
+                          ? const Skeletonizer(
+                            enabled: true, 
+                            child: Text("XX", style: TextStyle(fontSize: 16)),
+                          ) 
+                          : RichText(
+                            text: TextSpan(
+                            text: "${registers.length}",
+                            style: Theme.of(context).textTheme.bodyLarge,
+                            ),
+                          ),
+                      ],
                     ),
                     SizedBox(height: 20),
                     ProfileSwitch(
                         size: 600,
-                        isUltimosRegistrosNotifier: isUltimosRegistrosNotifier),
+                        isUltimosRegistrosNotifier: isUltimosRegistrosNotifier
+                    ),
                     SizedBox(height: 10),
                   ],
                 ),
                 ValueListenableBuilder<bool>(
                   valueListenable: isUltimosRegistrosNotifier,
                   builder: (context, isUltimosRegistros, child) {
-                    return isLoading
-                        ? Padding(
-                          padding: const EdgeInsets.all(40.0),
-                          child: Align(
-                            alignment: Alignment.center,
-                            child: const LinearProgressIndicator(
-                                color: Color.fromRGBO(71, 169, 218, 1), 
-                                backgroundColor: Color.fromARGB(255, 31, 73, 95),
-                                minHeight: 4,
-                              ),
-                          ),
-                        )
-                        : !isUltimosRegistros
-                            ? UltimosRegistrosContent(registers: registers)
-                            : AnimaisEncontradosContent(registers: registers);
+                    return !isUltimosRegistros
+                            ? UltimosRegistrosContent(registers: registers, isLoading: isLoading)
+                            : AnimaisEncontradosContent(registers: registers, isLoading: isLoading);
                   },
                 ),
               ]
@@ -198,32 +215,35 @@ class _MyProfileState extends State<MyProfile> {
         return ModalBottomSheet(
           text: "Escolha uma opção",
           buttons: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-                    Navigator.pushNamed(context, EditProfile.routeName).then((_) {
-                      _loadUserImage();
-                    });
-              },
-              style: TextButton.styleFrom(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
+            Visibility(
+              visible: !_controller.isUserLogedWithGoogle(),
+              child: TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                      Navigator.pushNamed(context, EditProfile.routeName).then((_) {
+                        _loadUserImage();
+                      });
+                },
+                style: TextButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  backgroundColor: const Color.fromARGB(255, 31, 73, 95),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 40,
+                    vertical: 16,
+                  ),
+                  textStyle: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: "Inter"
+                  ),
+                  overlayColor: Colors.white,
                 ),
-                backgroundColor: const Color.fromARGB(255, 31, 73, 95),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 40,
-                  vertical: 16,
+                child: const Text(
+                  "Editar perfil",
+                  style: TextStyle(color: Colors.white), 
                 ),
-                textStyle: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: "Inter"
-                ),
-                overlayColor: Colors.white,
-              ),
-              child: const Text(
-                "Editar perfil",
-                style: TextStyle(color: Colors.white), 
               ),
             ),
             const SizedBox(height: 15),
@@ -306,25 +326,42 @@ class _MyProfileState extends State<MyProfile> {
 
 class UltimosRegistrosContent extends StatelessWidget {
   final List<RegisterResponse> registers;
-
-  const UltimosRegistrosContent({super.key, required this.registers});
+  final bool isLoading;
+  const UltimosRegistrosContent({super.key, required this.registers, required this.isLoading});
   @override
   Widget build(BuildContext context) {
+    if (!isLoading && registers.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 20),
+          child: Text(
+            "Nenhum registro encontrado",
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
+        ),
+      );
+    }
     final limitedRegisters = registers.take(10).toList();
+    final placeholderRegisters = generatePlaceholderRegisters(6);
+    final displayRegisters = isLoading ? placeholderRegisters : limitedRegisters;
 
     return SizedBox(
       height: 400,
-      child: ListView.builder(
-        padding: EdgeInsets.only(top: 0, bottom: 70),
-        physics: AlwaysScrollableScrollPhysics(),
-        shrinkWrap: true,
-        itemCount: limitedRegisters.length,
-        itemBuilder: (context, index) {
-          return RegisterItem(
-            register: limitedRegisters[index],
-            route: RegisterDetailPage.routeName  
-          );
-        },
+      child: Skeletonizer(
+        enabled: isLoading,
+        child: ListView.builder(
+          padding: EdgeInsets.only(top: 0, bottom: 70),
+          physics: AlwaysScrollableScrollPhysics(),
+          shrinkWrap: true,
+          itemCount: displayRegisters.length,
+          itemBuilder: (context, index) {
+            return RegisterItem(
+              isLoading: isLoading,
+              register: displayRegisters[index],
+              route: RegisterDetailPage.routeName  
+            );
+          },
+        ),
       ),
     );
   }
@@ -332,24 +369,41 @@ class UltimosRegistrosContent extends StatelessWidget {
 
 class AnimaisEncontradosContent extends StatelessWidget {
   final List<dynamic> registers;
-
-  const AnimaisEncontradosContent({super.key, required this.registers});
+  final bool isLoading;
+  const AnimaisEncontradosContent({super.key, required this.registers, required this.isLoading});
 
   @override
   Widget build(BuildContext context) {
+    if (!isLoading && registers.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 20),
+          child: Text(
+            "Nenhum registro encontrado",
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
+        ),
+      );
+    }
+    final placeholderRegisters = generatePlaceholderRegisters(6);
+    final displayRegisters = isLoading ? placeholderRegisters : registers;
+
     return SizedBox(
       height: 400,
-      child: GridView.builder(
-        padding: EdgeInsets.only(top: 0, bottom: 70, left: 1, right: 1),
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3,
-          crossAxisSpacing: 9,
-          mainAxisSpacing: 1,
+      child: Skeletonizer(
+        enabled: isLoading,
+        child: GridView.builder(
+          padding: EdgeInsets.only(top: 0, bottom: 70, left: 1, right: 1),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3,
+            crossAxisSpacing: 9,
+            mainAxisSpacing: 1,
+          ),
+          itemCount: displayRegisters.length,
+          itemBuilder: (context, index) {
+            return BadgeItem(register: displayRegisters[index]);
+          },
         ),
-        itemCount: registers.length,
-        itemBuilder: (context, index) {
-          return BadgeItem(register: registers[index]);
-        },
       ),
     );
   }

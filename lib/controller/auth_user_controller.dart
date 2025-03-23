@@ -4,6 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:tcc_ceclimar/utils/pass_generator.dart';
+import 'package:tcc_ceclimar/utils/user_role.dart';
 import '../utils/firebase_auth_services.dart';
 import 'package:tcc_ceclimar/models/user_data.dart';
 
@@ -145,15 +147,27 @@ class AuthenticationController {
     String password = passController.text;
     try {
       User? user = await _auth.createUserWithEmailAndPassword(email, password);
-      if (user != null) {
-        await user.updateDisplayName(name);
-        await user.reload();
-        user = FirebaseAuth.instance.currentUser;
-        Navigator.pushReplacementNamed(context, '/login');
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Usuário cadastrado com sucesso!'), backgroundColor: Colors.green),
-        );
-      }
+    if (user != null) {
+      await user.updateDisplayName(name);
+      await user.reload();
+      user = FirebaseAuth.instance.currentUser;
+
+      await FirebaseFirestore.instance.collection('users').doc(user?.uid).set({
+        'name': name,
+        'email': email,
+        'createdAt': FieldValue.serverTimestamp(),
+        'profileImageUrl': '',
+        'role': 'user',
+      });
+
+      Navigator.pushReplacementNamed(context, '/basePage');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Usuário cadastrado com sucesso!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    }
     } on FirebaseAuthException catch (e) {
       String message;
       switch (e.code) {
@@ -265,6 +279,20 @@ class AuthenticationController {
       UserCredential userCredential = await auth.signInWithCredential(credential);
       User? user = userCredential.user;
       if (user != null) {
+        DocumentSnapshot doc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get();
+        if (!doc.exists) {
+          await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+            'name': user.displayName,
+            'email': user.email,
+            'createdAt': FieldValue.serverTimestamp(),
+            'profileImageUrl': user.photoURL,
+            'role': 'user',
+          });
+        }
+
         Navigator.pushReplacementNamed(context, '/basePage');
         String name = user.displayName!;
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Bem vindo, $name'), backgroundColor: Colors.green,));
@@ -282,9 +310,9 @@ class AuthenticationController {
 
   Future<void> signOut(BuildContext context) async {
     try {
-      Navigator.pushNamedAndRemoveUntil(context, '/login', (Route<dynamic> route) => false);
       await _auth.signOut();
       await googleSignIn.signOut();
+      Navigator.pushNamedAndRemoveUntil(context, '/login', (Route<dynamic> route) => false);
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Logout realizado com sucesso!'), backgroundColor: Colors.green,));
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -336,6 +364,7 @@ class AuthenticationController {
         name: user.displayName,
         email: user.email,
         photoURL: user.photoURL,
+        role: '',
       );
     }
     return null;
@@ -357,12 +386,19 @@ class AuthenticationController {
           );
           await user.reauthenticateWithCredential(credential);
           await googleSignIn.signOut();
+          await FirebaseFirestore.instance.collection('users').doc(user.uid).delete();
           await user.delete();
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Conta deletada com sucesso'), backgroundColor: Colors.green,));
           return true;
         } else{
+          DocumentSnapshot userDoc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+          if (userDoc.exists) {
+            String imageUrl = userDoc['profileImageUrl'] ?? '';
+            await deleteUserImage(imageUrl);
+          }
           await reauthenticateUser(user.email!, password, context);
-          await user.delete();
+          await FirebaseFirestore.instance.collection('users').doc(user.uid).delete();
+          await user.delete();          
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Conta deletada com sucesso'), backgroundColor: Colors.green,));
           return true;
         }
@@ -395,13 +431,24 @@ class AuthenticationController {
     return false;
   }
 
+  Future<void> deleteUserImage(String imageUrl) async {
+    try {
+      if (imageUrl.isNotEmpty) {
+        Reference storageReference = FirebaseStorage.instance.refFromURL(imageUrl);
+        await storageReference.delete();
+      }
+    } catch (e) {
+      throw Exception('Erro ao deletar a imagem do usuário: $e');
+    }
+  }
+
   Future<void> reauthenticateUser(String email, String password, BuildContext context) async {
     User? user = getCurrentUser();
     if (user != null) {
       try{
         AuthCredential credential = EmailAuthProvider.credential(email: email, password: password);
         await user.reauthenticateWithCredential(credential);
-      } on FirebaseAuthException catch (e) {
+      } on FirebaseAuthException {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text('Senha inválida'),
           backgroundColor: Colors.red));
@@ -447,6 +494,11 @@ class AuthenticationController {
       if (_image != null) {
           await _saveImageURLToFirestore(imageUrl, user.uid);
       }
+      await _updateUserInFirestore(user.uid, {
+        'name': nameController.text.isNotEmpty ? nameController.text : user.displayName,
+        'email': emailController.text.isNotEmpty ? emailController.text : user.email,
+      });
+
       await user.reload();
       if (emailChanged && emailController.text.isNotEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -465,7 +517,7 @@ class AuthenticationController {
         );
         return false;
       }
-    } on FirebaseAuthException catch (e) {
+    } on FirebaseAuthException {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text('Erro na operação'),
           backgroundColor: Colors.red));
@@ -475,6 +527,17 @@ class AuthenticationController {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text('Erro inesperado'), backgroundColor: Colors.red));
       return false;
+    }
+  }
+
+  Future<void> _updateUserInFirestore(String userId, Map<String, dynamic> userData) async {
+    try {
+      await FirebaseFirestore.instance.collection('users').doc(userId).set(
+        userData,
+        SetOptions(merge: true),
+      );
+    } catch (e) {
+      throw Exception('Erro ao atualizar o Firestore: $e');
     }
   }
 
@@ -575,15 +638,185 @@ class AuthenticationController {
   }
 
   String? validateConfirmPasswordEdit(String? value) {
+    if (value != passController.text) {
+      return 'As senhas precisam ser iguais';
+    }
     if (value == null) {
       return null;
     }
     if (value.isEmpty){
       return null;
     }
-    if (value != passController.text) {
-      return 'As senhas precisam ser iguais';
+    return null;
+  }
+
+  Future<UserRole?> getUserRole() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+      String role = userDoc['role'];
+      if (role == UserRole.admin.roleString) {
+        return UserRole.admin;
+      } else {
+        return UserRole.user;
+      }
     }
     return null;
+  }
+
+  Future<void> setRole(UserRole role, context) async {
+    try {
+      await checkIfUserIsAdmin(emailController.text);
+
+      QuerySnapshot userSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .where('email', isEqualTo: emailController.text)
+          .get();
+
+      if (userSnapshot.docs.length > 1) {
+        throw Exception('Mais de um usuário encontrado com esse email.');
+      }
+
+      DocumentSnapshot userDoc = userSnapshot.docs.first;
+
+      await FirebaseFirestore.instance.collection('users').doc(userDoc.id).update({
+        'role': role.roleString,
+      });
+
+      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Função de pesquisador concedida!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } catch (e) {
+      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erro ao definir o papel do usuário: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  Future<void> checkIfUserIsAdmin(String email) async {
+    QuerySnapshot userSnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .where('email', isEqualTo: email)
+        .get();
+
+    if (userSnapshot.docs.isNotEmpty) {
+      var userData = userSnapshot.docs.first.data() as Map<String, dynamic>;
+      UserRole userRole = roleFromString(userData['role']);
+
+      if (userRole == UserRole.admin) {
+        throw Exception('O usuário já é um pesquisador.');
+      }
+    }
+  }
+
+  Future<UserResponse> getLoggedUserData() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if(user == null) {
+      throw Exception('Usuário não logado');
+    }
+    DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .get();
+
+    UserResponse userData = UserResponse.fromJson({
+      ...userSnapshot.data() as Map<String, dynamic>,
+      'uid': user.uid,
+    });
+
+    return userData;
+  }
+
+  Future<bool> isEmailRegistered() async {
+    QuerySnapshot usersSnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .get();
+
+    List<UserResponse> users = usersSnapshot.docs.map((doc) {
+      return UserResponse.fromJson({
+        ...doc.data() as Map<String, dynamic>, 
+        'id': doc.id,
+      });
+    }).toList();
+    for (UserResponse user in users) {
+      if (user.email == emailController.text) {
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  Future<bool> validateNewResearcher() async {
+    nameController.text = nameController.text.trim();
+    emailController.text = emailController.text.trim();
+
+    nameError = validateName(nameController.text);
+    emailError = validateEmail(emailController.text);
+    return nameError == null && emailError == null && await isEmailRegistered();
+  }
+
+  Future<String> addNewResearcher(BuildContext context) async {
+    String name = nameController.text;
+    String email = emailController.text;
+    String password = PassGenerator.generate();    
+    try {
+      User? user = await _auth.createUserWithEmailAndPassword(email, password);
+      if (user != null) {
+        await user.updateDisplayName(name);
+        await user.reload();
+        user = FirebaseAuth.instance.currentUser;
+
+        await FirebaseFirestore.instance.collection('users').doc(user?.uid).set({
+          'name': name,
+          'email': email,
+          'createdAt': FieldValue.serverTimestamp(),
+          'profileImageUrl': '',
+          'role': 'admin',
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Pesquisador cadastrado com sucesso!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        return password;
+      }
+      return "falha";
+    } on FirebaseAuthException catch (e) {
+      String message;
+      switch (e.code) {
+        case 'email-already-in-use':
+          message = 'E-mail já cadastrado.';
+          return "email_already_exists";
+        case 'invalid-email':
+          message = 'E-mail inválido.';
+          break;
+        case 'weak-password':
+          message = 'A senha é muito fraca.';
+          break;
+        default:
+          message = 'Ocorreu um erro. Por favor, tente novamente.';
+      }
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(message), backgroundColor: Colors.red),
+      );
+      return "falha";
+    } catch (e) {
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString()), backgroundColor: Colors.red),
+      );
+      return "falha";
+    }
   }
 }
