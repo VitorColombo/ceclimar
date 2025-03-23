@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:tcc_ceclimar/models/register_response.dart';
+import 'package:tcc_ceclimar/widgets/modal_bottomsheet.dart';
 
 class MapScreen extends StatelessWidget {
   final List<RegisterResponse> registers;
@@ -10,13 +11,11 @@ class MapScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Debugging: Print the first register's latitude and longitude
     if (registers.isNotEmpty) {
       print('First register latitude: ${registers.first.latitude}');
       print('First register longitude: ${registers.first.longitude}');
     }
 
-    // Check if the registers list is empty
     if (registers.isEmpty) {
       return Scaffold(
         appBar: AppBar(
@@ -28,7 +27,6 @@ class MapScreen extends StatelessWidget {
       );
     }
 
-    // Parse latitude and longitude from the first register
     final initialCenter = LatLng(
       double.parse(registers.first.latitude),
       double.parse(registers.first.longitude),
@@ -54,14 +52,25 @@ class MapScreen extends StatelessWidget {
               ),
               child: GestureDetector(
                 onTap: () {
-                  // Show details when a marker is tapped
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('${register.animal.species} - ${register.date}'),
-                    ),
+                  showModalBottomSheet(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return ModalBottomSheet(
+                        text: 'Animal: ${register.animal.species}\nDate: ${register.date}\nStatus: ${register.status}',
+                        buttons: [
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.pop(context); // Close the modal
+                            },
+                            child: const Text('Close'),
+                          ),
+                          // Add more buttons as needed
+                        ],
+                      );
+                    },
                   );
                 },
-                child: Icon(
+                child: const Icon(
                   Icons.location_on,
                   color: Colors.red,
                   size: 40.0,

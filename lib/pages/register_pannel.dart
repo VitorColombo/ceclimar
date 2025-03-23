@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:graphic/graphic.dart';
 import 'package:intl/intl.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:pie_chart/pie_chart.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -10,13 +11,14 @@ import 'package:tcc_ceclimar/pages/evaluated_registers.dart';
 import 'package:tcc_ceclimar/pages/pending_registers.dart';
 import 'package:tcc_ceclimar/pages/register_view.dart';
 import 'package:tcc_ceclimar/utils/animals_service.dart';
-import 'package:tcc_ceclimar/utils/map_screen.dart';
 import 'package:tcc_ceclimar/widgets/page_header.dart';
 import 'package:tcc_ceclimar/widgets/register_item.dart';
+import 'package:tcc_ceclimar/widgets/register_modal_bottomsheet.dart';
 import 'package:tcc_ceclimar/widgets/search_input_field.dart';
 import '../models/animal_response.dart';
 import '../utils/table_manipulation.dart';
 import '../models/register_response.dart';
+import 'package:flutter_map/flutter_map.dart';
 
 class RegisterPannel extends StatefulWidget {
   final Function(int) updateIndex;
@@ -30,11 +32,13 @@ class RegisterPannel extends StatefulWidget {
 }
 
 class _RegisterPannelState extends State<RegisterPannel> {
+  final TextEditingController initDateController = TextEditingController();
+  final TextEditingController endDateController = TextEditingController();
+  final TextEditingController speciesController = TextEditingController();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final AnimalService _animalService = AnimalService();
   final RegisterPannelController _registerController = RegisterPannelController();
   late Future<List<AnimalResponse>> animalData;
-  late List<String> speciesList = [];
   late Map<String, double> dataMap = {};
   int totalRegisters = 0;
   int evaluatedRegisters = 0;
@@ -42,19 +46,17 @@ class _RegisterPannelState extends State<RegisterPannel> {
   DateTime? initDate;
   DateTime? endDate;
   final _monthDayFormat = DateFormat('dd-MM-yyyy');
-  final TextEditingController initDateController = TextEditingController();
-  final TextEditingController endDateController = TextEditingController();
-  final TextEditingController speciesController = TextEditingController();
   final DateFormat dateFormat = DateFormat('dd-MM-yyyy');
-  List<RegisterResponse> registerData = [];
   final FocusNode focusNode = FocusNode();
-  List<RegisterResponse> speciesRegisters = [];
   bool showSpeciesRegisters = false;
   bool isDateRangeLoading = false;
   bool isLoading = false;
   List<RegisterResponse> displayRegisters = [];
+  List<RegisterResponse> allRegisters = [];
+  List<RegisterResponse> registerData = [];
+  late List<String> speciesList = [];
+  List<RegisterResponse> speciesRegisters = [];
   Future<List<RegisterResponse>>? _registerDataFuture;
-
 
   @override
   void initState() {
@@ -94,13 +96,12 @@ class _RegisterPannelState extends State<RegisterPannel> {
     }
   }
 
-
   Future<void> _updateRegisterCount() async {
     setState(() {
-        isLoading = true;
-      });
+      isLoading = true;
+    });
     try {
-      List<RegisterResponse> allRegisters = await _registerController.getAllRegisters();
+      allRegisters = await _registerController.getAllRegisters();
       setState(() {
         registerData = allRegisters;
         evaluatedRegisters = allRegisters.where((reg) => reg.status == "Validado").length;
@@ -116,17 +117,19 @@ class _RegisterPannelState extends State<RegisterPannel> {
 
   @override
   void dispose() {
-    focusNode.dispose();
     super.dispose();
   }
 
-  void _unfocusTextField() {
-    focusNode.unfocus();
+  List<RegisterResponse> _getRegistersForMap() {
+    return allRegisters;
   }
 
   @override
   Widget build(BuildContext context) {
     double chartSize = MediaQuery.of(context).size.width * 0.8;
+    LatLng? initialCenter;
+    initialCenter = LatLng(-29.9743, -50.1373);
+
     return Scaffold(
       key: _scaffoldKey,
       body: CustomScrollView(
@@ -160,7 +163,7 @@ class _RegisterPannelState extends State<RegisterPannel> {
           SliverList(
             delegate: SliverChildListDelegate([
               Padding(
-                padding: const EdgeInsets.all(10.0),
+                padding: const EdgeInsets.only(top: 10.0, left: 10, right: 10, bottom: 20.0),
                 child: Column(
                   children: [
                     Skeletonizer(
@@ -266,6 +269,75 @@ class _RegisterPannelState extends State<RegisterPannel> {
                           ),
                         )
                       ],
+                    ),
+                    Divider(height: 40, thickness: 1.2, color: Colors.grey[200]),
+                    Text(
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: const Color.fromARGB(255, 31, 73, 95),
+                      ),
+                      "Mapa de registros",
+                    ),
+                    Divider(height: 20),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+                      child: Container(
+                        height: 300,
+                        width: double.infinity,
+                        child: FlutterMap(
+                                options: MapOptions(
+                                  initialCenter: initialCenter,
+                                  initialZoom: 13.0,
+                                ),
+                                children: [
+                                  TileLayer(
+                                    urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                                  ),
+                                  MarkerLayer(
+                                    markers: _getRegistersForMap().map((register) {
+                                      return Marker(
+                                        width: 80.0,
+                                        height: 80.0,
+                                        point: LatLng(
+                                          double.parse(register.latitude),
+                                          double.parse(register.longitude),
+                                        ),
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            showModalBottomSheet(
+                                              context: context,
+                                              builder: (BuildContext context) {
+                                                return RegisterModalBottomSheet(
+                                                      text: 'Status: ${register.status}',
+                                                      imageUrl: register.registerImageUrl,
+                                                      animalSpecies: register.animal.species!,
+                                                      date: register.date.toString(), 
+                                                      userName: register.authorName,
+                                                      buttons: [
+                                                        ElevatedButton(
+                                                          onPressed: () {
+                                                            Navigator.pop(context);
+                                                          },
+                                                          child: const Text('Fechar'),
+                                                        ),
+                                                      ],
+                                                );
+                                              },
+                                            );
+                                          },
+                                          child: Icon(
+                                            Icons.location_on,
+                                            color: register.status == "Validado" ? Colors.green : Colors.red,
+                                            size: 40.0,
+                                          ),
+                                        ),
+                                      );
+                                    }).toList(),
+                                  ),
+                                ],
+                              )
+                      ),
                     ),
                     Divider(height: 40, thickness: 1.2, color: Colors.grey[200]),
                     Text(
@@ -535,9 +607,6 @@ class _RegisterPannelState extends State<RegisterPannel> {
                           ),
                         ]
                     ),
-                    Divider(height: 20),
-                    Text("Ainda to trabalhando nessa tela!", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.red)),
-                    Divider(height: 20),
                   ],
                 ),
               )
@@ -559,11 +628,16 @@ class _RegisterPannelState extends State<RegisterPannel> {
 
     setState(() {
       isDateRangeLoading = true;
+      showSpeciesRegisters = false;
+      speciesController.clear();
+      speciesRegisters = [];
+
     });
     try {
       DateTime initialDateTime = DateTime(initDate!.year, initDate!.month, initDate!.day, 0, 0, 0);
       DateTime endDateTime = DateTime(endDate!.year, endDate!.month, endDate!.day, 23, 59, 59);
       List<RegisterResponse> registers = await _registerController.getRegisterByDate(initialDateTime, endDateTime);
+      displayRegisters = registers;
       return registers;
     } finally {
       setState(() {
@@ -574,6 +648,15 @@ class _RegisterPannelState extends State<RegisterPannel> {
 
 
   void _handleSpeciesSearch(String species) async {
+     setState(() {
+          initDate = null;
+          endDate = null;
+          initDateController.clear();
+          endDateController.clear();
+          _registerDataFuture = null;
+    });
+
+
     setState(() {
       isLoading = true;
     });
@@ -619,7 +702,7 @@ class _RegisterPannelState extends State<RegisterPannel> {
   }
 
    Future<void> _selectDate(BuildContext context, bool isInitDate) async {
-    _unfocusTextField();
+    focusNode.unfocus();
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: isInitDate ? (initDate ?? DateTime.now()) : (endDate ?? DateTime.now()),
