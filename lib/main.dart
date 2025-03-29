@@ -12,7 +12,7 @@ void main() async {
       statusBarColor: Colors.transparent,
       statusBarIconBrightness: Brightness.dark, 
     ));
-    
+
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   final appDocumentDir = await getApplicationDocumentsDirectory();

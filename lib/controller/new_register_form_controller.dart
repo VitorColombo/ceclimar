@@ -441,7 +441,7 @@ class NewRegisterFormController {
                longitude,
              );
              if (response != null) {
-               _showSuccessMessage(context, 'Registro enviado com sucesso!');
+              _showSuccessMessage(context, 'Registro enviado com sucesso!');
               Navigator.pushNamedAndRemoveUntil(context, BasePage.routeName, (Route<dynamic> route) => false, arguments: 0);
              } else {
                 _handleError(context, 'Falha ao enviar o registro.');
