@@ -9,12 +9,14 @@ import 'package:skeletonizer/skeletonizer.dart';
 import 'package:tcc_ceclimar/controller/register_pannel_controller.dart';
 import 'package:tcc_ceclimar/pages/evaluated_registers.dart';
 import 'package:tcc_ceclimar/pages/pending_registers.dart';
+import 'package:tcc_ceclimar/pages/pending_registers_view.dart';
 import 'package:tcc_ceclimar/pages/register_view.dart';
 import 'package:tcc_ceclimar/utils/animals_service.dart';
 import 'package:tcc_ceclimar/widgets/page_header.dart';
 import 'package:tcc_ceclimar/widgets/register_item.dart';
 import 'package:tcc_ceclimar/widgets/register_modal_bottomsheet.dart';
 import 'package:tcc_ceclimar/widgets/search_input_field.dart';
+import 'package:tcc_ceclimar/widgets/send_btn.dart';
 import '../models/animal_response.dart';
 import '../utils/table_manipulation.dart';
 import '../models/register_response.dart';
@@ -229,7 +231,7 @@ class _RegisterPannelState extends State<RegisterPannel> {
                         ),
                         InkWell(
                           onTap: () {
-                            Navigator.pushNamed(context, PendingRegisters.routeName);
+                            Navigator.pushNamed(context, PendingRegistersView.routeName);
                           },
                           splashColor: Colors.blue.withOpacity(0.2),
                           highlightColor: Colors.blue.withOpacity(0.2),
@@ -315,11 +317,12 @@ class _RegisterPannelState extends State<RegisterPannel> {
                                                       date: register.date.toString(), 
                                                       userName: register.authorName,
                                                       buttons: [
-                                                        ElevatedButton(
-                                                          onPressed: () {
-                                                            Navigator.pop(context);
-                                                          },
-                                                          child: const Text('Fechar'),
+                                                        SendBtn(
+                                                          text: 'Fechar',
+                                                          onSend: Navigator.of(context).pop,
+                                                          onValidate: () {
+                                                            return true;
+                                                          } 
                                                         ),
                                                       ],
                                                 );
@@ -351,7 +354,7 @@ class _RegisterPannelState extends State<RegisterPannel> {
                     Container(
                       padding: const EdgeInsets.all(10),
                       width: 300,
-                      height: 560,
+                        height: MediaQuery.of(context).size.height * 0.65,
                       child: FutureBuilder<List<AnimalResponse>>(
                         future: animalData,
                         builder: (context, snapshot) {
@@ -359,7 +362,7 @@ class _RegisterPannelState extends State<RegisterPannel> {
                             return Text('Error: ${snapshot.error}');
                           } else if (!snapshot.hasData ||
                               snapshot.data!.isEmpty) {
-                            return const Text('No data available');
+                            return const Text('Sem dados disponiveis');
                           } else {
                             return LayoutBuilder(
                               builder: (context, constraints) {

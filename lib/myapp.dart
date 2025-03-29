@@ -14,6 +14,7 @@ import 'package:tcc_ceclimar/pages/my_profile.dart';
 import 'package:tcc_ceclimar/pages/my_registers.dart';
 import 'package:tcc_ceclimar/pages/new_simple_register.dart';
 import 'package:tcc_ceclimar/pages/new_technical_register.dart';
+import 'package:tcc_ceclimar/pages/pending_registers_view.dart';
 import 'package:tcc_ceclimar/pages/register_pannel.dart';
 import 'package:tcc_ceclimar/pages/register_view.dart';
 import 'package:tcc_ceclimar/pages/splashscreen.dart';
@@ -83,6 +84,7 @@ class _MyAppState extends State<MyApp> {
                 register: ModalRoute.of(context)!.settings.arguments as RegisterResponse,
               ),
         PendingRegisters.routeName: (context) => const PendingRegisters(),
+        PendingRegistersView.routeName: (context) => const PendingRegistersView(),
         LocalAnimals.routeName: (context) => const LocalAnimals(),
         MyProfile.routeName: (context) => MyProfile(),
         MyRegisters.routeName: (context) => const MyRegisters(),

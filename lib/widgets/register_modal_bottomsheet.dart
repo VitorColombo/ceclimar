@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import 'package:tcc_ceclimar/widgets/modal_bottomsheet.dart';
 
 class RegisterModalBottomSheet extends ModalBottomSheet {
@@ -22,7 +23,19 @@ class RegisterModalBottomSheet extends ModalBottomSheet {
 }
 
 class _RegisterModalBottomSheetState extends State<RegisterModalBottomSheet> {
-  Object? get imageUrl => null;
+  bool _isLoading = true;
+
+  void _onImageLoaded() {
+    if (mounted) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,14 +59,64 @@ class _RegisterModalBottomSheetState extends State<RegisterModalBottomSheet> {
                 padding: const EdgeInsets.only(bottom: 10.0),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(10),
-                  child: Image.network(
-                    widget.imageUrl,
-                    height: 200,
-                    width: 200,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return const Icon(Icons.error_outline, size: 50, color: Colors.grey,);
-                    },
+                  child: Skeletonizer(
+                    enabled: _isLoading,
+                    child: Image.network(
+                      widget.imageUrl,
+                      height: 200,
+                      width: 200,
+                      fit: BoxFit.cover,
+                      frameBuilder: (BuildContext context, Widget child, int? frame, bool wasSynchronouslyLoaded) {
+                        if (wasSynchronouslyLoaded) {
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            if (mounted) {
+                              _onImageLoaded();
+                            }
+                          });
+                          return child;
+                        }
+                        return AnimatedOpacity(
+                          opacity: frame == null ? 0 : 1,
+                          duration: const Duration(seconds: 1),
+                          curve: Curves.easeOut,
+                          child: child,
+                        );
+                      },
+                      loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                        if (loadingProgress == null) {
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            if (mounted && _isLoading) {
+                              _onImageLoaded();
+                            }
+                          });
+                          return child;
+                        } else {
+                          return SizedBox(
+                            height: 200,
+                            width: 200,
+                            child: Center(
+                              child: CircularProgressIndicator(
+                                value: loadingProgress.expectedTotalBytes != null
+                                    ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                                    : null,
+                              ),
+                            ),
+                          );
+                        }
+                      },
+                      errorBuilder: (context, error, stackTrace) {
+                        _onImageLoaded();
+                        return SizedBox(
+                          height: 200,
+                          width: 200,
+                          child: const Icon(
+                            Icons.error_outline,
+                            size: 50,
+                            color: Colors.grey,
+                          ),
+                        );
+                      },
+                    ),
                   ),
                 ),
               ),
