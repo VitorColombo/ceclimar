@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:tcc_ceclimar/models/register_response.dart';
 import 'package:tcc_ceclimar/widgets/register_status_label.dart';
+// ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart';
 
 class RegisterDetailPage extends StatefulWidget {
@@ -11,10 +12,10 @@ class RegisterDetailPage extends StatefulWidget {
   const RegisterDetailPage({super.key, required this.register});
 
   @override
-  _RegisterDetailPageState createState() => _RegisterDetailPageState();
+  RegisterDetailPageState createState() => RegisterDetailPageState();
 }
 
-class _RegisterDetailPageState extends State<RegisterDetailPage> {
+class RegisterDetailPageState extends State<RegisterDetailPage> {
   late PageController _pageController;
   int _currentPage = 0;
 

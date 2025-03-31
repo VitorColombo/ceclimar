@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:graphic/graphic.dart';
+// ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -8,7 +9,6 @@ import 'package:pie_chart/pie_chart.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:tcc_ceclimar/controller/register_pannel_controller.dart';
 import 'package:tcc_ceclimar/pages/evaluated_registers.dart';
-import 'package:tcc_ceclimar/pages/pending_registers.dart';
 import 'package:tcc_ceclimar/pages/pending_registers_view.dart';
 import 'package:tcc_ceclimar/pages/register_view.dart';
 import 'package:tcc_ceclimar/utils/animals_service.dart';
@@ -30,10 +30,10 @@ class RegisterPannel extends StatefulWidget {
   const RegisterPannel({super.key, this.updateIndex = _defaultUpdateIndex});
 
   @override
-  _RegisterPannelState createState() => _RegisterPannelState();
+  RegisterPannelState createState() => RegisterPannelState();
 }
 
-class _RegisterPannelState extends State<RegisterPannel> {
+class RegisterPannelState extends State<RegisterPannel> {
   final TextEditingController initDateController = TextEditingController();
   final TextEditingController endDateController = TextEditingController();
   final TextEditingController speciesController = TextEditingController();

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tcc_ceclimar/controller/pending_registers_controller.dart';
 import 'package:tcc_ceclimar/models/register_response.dart';
-import 'package:tcc_ceclimar/pages/evaluate_register.dart';
 import 'package:tcc_ceclimar/pages/register_view.dart';
 import 'package:tcc_ceclimar/utils/placeholder_registers.dart';
 import 'package:tcc_ceclimar/widgets/register_item.dart';

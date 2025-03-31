@@ -1,7 +1,9 @@
+// ignore: depend_on_referenced_packages
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+
 import 'package:tcc_ceclimar/models/animal_response.dart';
-import 'package:collection/collection.dart';
 import 'package:tcc_ceclimar/utils/animals_service.dart';
 import 'package:tcc_ceclimar/utils/guarita_data.dart';
 import 'package:tcc_ceclimar/widgets/custom_switch.dart';
@@ -9,10 +11,9 @@ import 'package:tcc_ceclimar/widgets/input_field.dart';
 import 'package:tcc_ceclimar/widgets/search_input_field.dart';
 import 'package:tcc_ceclimar/widgets/send_btn.dart';
 import 'package:tcc_ceclimar/widgets/send_btn_disabled.dart';
-
-import '../controller/new_register_form_controller.dart';
-import 'image_selector.dart';
-import 'modal_help_register_image_btnsheet.dart';
+import 'package:tcc_ceclimar/controller/new_register_form_controller.dart';
+import 'package:tcc_ceclimar/widgets/image_selector.dart';
+import 'package:tcc_ceclimar/widgets/modal_help_register_image_btnsheet.dart';
 
 class TechnicalRegisterForm extends StatefulWidget {
   const 

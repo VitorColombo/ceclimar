@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import '../widgets/page_header.dart';
-import '../widgets/simple_register_form.dart';
+
+import 'package:tcc_ceclimar/widgets/simple_register_form.dart';
+import 'package:tcc_ceclimar/widgets/page_header.dart';
 
 class NewSimpleRegister extends StatefulWidget {
   static const String routeName = '/newRegister';
@@ -15,10 +16,10 @@ class NewSimpleRegister extends StatefulWidget {
   }
 
   @override
-  _NewSimpleRegisterState createState() => _NewSimpleRegisterState();
+  NewSimpleRegisterState createState() => NewSimpleRegisterState();
 }
 
-class _NewSimpleRegisterState extends State<NewSimpleRegister> {
+class NewSimpleRegisterState extends State<NewSimpleRegister> {
 
   @override
   Widget build(BuildContext context) {

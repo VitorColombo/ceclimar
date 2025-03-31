@@ -1,4 +1,7 @@
+// ignore: depend_on_referenced_packages
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+
 import 'package:tcc_ceclimar/controller/evaluate_register_controller.dart';
 import 'package:tcc_ceclimar/models/animal_response.dart';
 import 'package:tcc_ceclimar/models/register_response.dart';
@@ -7,7 +10,6 @@ import 'package:tcc_ceclimar/widgets/input_field.dart';
 import 'package:tcc_ceclimar/widgets/radio_btn_animal_state.dart';
 import 'package:tcc_ceclimar/widgets/search_input_field.dart';
 import 'package:tcc_ceclimar/widgets/send_btn.dart';
-import 'package:collection/collection.dart';
 
 class EvaluateRegisterForm extends StatefulWidget {
   final RegisterResponse register;

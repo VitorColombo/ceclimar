@@ -3,9 +3,9 @@ import 'dart:math';
 
 class PassGenerator {
   static String generate() {
-    var _random = Random.secure();
-    var random = List<int>.generate(32, (i) => _random.nextInt(256));
-    var randomPass = base64Url.encode(random);
+    var random = Random.secure();
+    var number = List<int>.generate(32, (i) => random.nextInt(256));
+    var randomPass = base64Url.encode(number);
     randomPass = randomPass.replaceAll('+', '')
       .replaceAll('/', '')
       .replaceAll('=', '')

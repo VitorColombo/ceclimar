@@ -15,10 +15,10 @@ class NewTechnicalRegister extends StatefulWidget {
   }
 
   @override
-  _NewTechnicalRegisterState createState() => _NewTechnicalRegisterState();
+  NewTechnicalRegisterState createState() => NewTechnicalRegisterState();
 }
 
-class _NewTechnicalRegisterState extends State<NewTechnicalRegister> {
+class NewTechnicalRegisterState extends State<NewTechnicalRegister> {
 
   @override
   Widget build(BuildContext context) {

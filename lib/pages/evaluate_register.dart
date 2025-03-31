@@ -5,8 +5,8 @@ import 'package:tcc_ceclimar/widgets/circular_image_widget.dart';
 import 'package:tcc_ceclimar/widgets/evaluate_register_form.dart';
 import 'package:tcc_ceclimar/widgets/view_register_image.dart';
 import '../widgets/page_header.dart';
+// ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart';
-
 
 class EvaluateRegister extends StatefulWidget {
   static const String routeName = '/evaluateRegister';
@@ -18,10 +18,10 @@ class EvaluateRegister extends StatefulWidget {
   });
 
   @override
-  _EvaluateRegisterState createState() => _EvaluateRegisterState();
+  EvaluateRegisterState createState() => EvaluateRegisterState();
 }
 
-class _EvaluateRegisterState extends State<EvaluateRegister> {
+class EvaluateRegisterState extends State<EvaluateRegister> {
 
   @override
   Widget build(BuildContext context) {

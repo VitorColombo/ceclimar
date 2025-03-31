@@ -29,14 +29,12 @@ class _BasePageState extends State<BasePage> {
   int selectedIndex = 0;
   int _currentRegisterCount = 0;
   int _lastSeenRegisterCount = 0;
-  MyRegistersController _controller = MyRegistersController();
-  AuthenticationController _authController = AuthenticationController();
+  final MyRegistersController _controller = MyRegistersController();
+  final AuthenticationController _authController = AuthenticationController();
   bool _initialized = false;
   late String _currentUserId;
   late Box<int> _registerCountBox;
   late Stream<int> _registerCountStream;
-
-  bool get _hasNewRegister => _currentRegisterCount > _lastSeenRegisterCount;
 
   void updateIndex(int index) {
     setState(() {
