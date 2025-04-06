@@ -18,6 +18,7 @@ class AuthenticationController {
   final TextEditingController profileImageController = TextEditingController();
   final FirebaseAuthService _auth = FirebaseAuthService();
   final GoogleSignIn googleSignIn = GoogleSignIn();
+  String? userRole;
   File? _image;
   
   String? nameError;
@@ -650,18 +651,18 @@ class AuthenticationController {
     return null;
   }
 
-  Future<UserRole?> getUserRole() async {
+  Future<String> getUserRole() async {
     User? user = FirebaseAuth.instance.currentUser;
     if (user != null) {
-      DocumentSnapshot userDoc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
       String role = userDoc['role'];
-      if (role == UserRole.admin.roleString) {
-        return UserRole.admin;
-      } else {
-        return UserRole.user;
-      }
+      userRole = role;
+      return role;
     }
-    return null;
+    return 'user';
   }
 
   Future<void> setRole(UserRole role, context) async {

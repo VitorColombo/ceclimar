@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:tcc_ceclimar/controller/auth_user_controller.dart';
 import 'package:tcc_ceclimar/models/register_response.dart';
+import 'package:tcc_ceclimar/utils/user_role.dart';
 import 'package:tcc_ceclimar/widgets/register_status_label.dart';
 // ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart';
@@ -17,12 +19,23 @@ class RegisterDetailPage extends StatefulWidget {
 
 class RegisterDetailPageState extends State<RegisterDetailPage> {
   late PageController _pageController;
+  final AuthenticationController authController = AuthenticationController();
+  String _userRole = "user";
   int _currentPage = 0;
 
   @override
   void initState() {
     super.initState();
+    getUserRole();
     _pageController = PageController(initialPage: 0);
+  }
+
+  void getUserRole() async{
+    await authController.getUserRole().then((role) {
+      setState(() {
+        _userRole = role;
+      });
+    });
   }
 
   @override
@@ -108,33 +121,33 @@ class RegisterDetailPageState extends State<RegisterDetailPage> {
               background: Stack(
                 alignment: Alignment.bottomCenter,
                   children: [
-                     PageView.builder(
+                    PageView.builder(
                       controller: _pageController,
                       itemCount: images.length,
                       onPageChanged: (index) {
-                      setState(() {
-                      _currentPage = index;
-                     });
-                     },
-                     itemBuilder: (context, index) {
-                     return GestureDetector(
-                      onTap: () => _openImageDialog(images[index]),
-                       child: Image.network(
-                        images[index],
-                        fit: BoxFit.cover,
-                         errorBuilder: (context, error, stackTrace) {
-                           return const Center(
-                             child: Icon(Icons.image_not_supported, size: 50, color: Colors.grey),
-                           );
-                         },
-                         loadingBuilder: (context, child, loadingProgress) {
-                           if (loadingProgress == null) return child;
-                            return const Center(
-                            child: CircularProgressIndicator(),
+                        setState(() {
+                          _currentPage = index;
+                        });
+                      },
+                      itemBuilder: (context, index) {
+                        return GestureDetector(
+                          onTap: () => _openImageDialog(images[index]),
+                          child: Image.network(
+                            images[index],
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return const Center(
+                                child: Icon(Icons.image_not_supported, size: 50, color: Colors.grey),
                               );
-                          },
-                        ),
-                     );
+                            },
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                                return const Center(
+                                  child: CircularProgressIndicator(),
+                                );
+                              },
+                            ),
+                        );
                       },
                     ),
                     if(images.length == 1)
@@ -200,11 +213,65 @@ class RegisterDetailPageState extends State<RegisterDetailPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            widget.register!.animal.popularName!,
-                            style: const TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
+                          Container(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              widget.register!.animal.popularName!,
+                              style: const TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Visibility(
+                            visible: _userRole == "admin",
+                            child: Row(
+                              children: [
+                                InkWell(
+                                  onTap: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) => AlertDialog(
+                                        title: const Text('Confirmar Exclusão'),
+                                        content: const Text('Tem certeza que deseja excluir este registro? Esta ação não pode ser desfeita.'),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () => Navigator.pop(context),
+                                            child: const Text('Cancelar'),
+                                          ),
+                                          TextButton(
+                                            onPressed: () {
+                                                Navigator.pop(context); 
+                                                ScaffoldMessenger.of(context).showSnackBar(
+                                                  const SnackBar(content: Text('Funcionalidade Excluir não implementada.')),
+                                                );
+                                            },
+                                            child: const Text('Excluir', style: TextStyle(color: Colors.red)),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                  splashColor: Colors.lightBlueAccent,
+                                  highlightColor: Colors.lightBlueAccent,
+                                  borderRadius: BorderRadius.circular(50),
+                                  child: Container(
+                                    alignment: Alignment.centerRight,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      border: Border.all(color: Color.fromARGB(255, 121, 121, 121), width: 1),
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(4.0),
+                                      child: Icon(
+                                        PhosphorIcons.trash(PhosphorIconsStyle.light),
+                                        size: 35,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                           const SizedBox(height: 6),
@@ -217,7 +284,7 @@ class RegisterDetailPageState extends State<RegisterDetailPage> {
                                     'Registro Nº ${widget.register!.registerNumber}',
                                     style: const TextStyle(fontSize: 16),
                                   ),
-                                  const SizedBox(height: 8),
+                                  const SizedBox(height: 8), 
                                   StatusLabel(status: '${widget.register?.status}', borderColor: Colors.transparent),
                                   const SizedBox(height: 8),
                                   Row(
