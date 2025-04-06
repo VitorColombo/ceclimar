@@ -34,11 +34,11 @@ class _SimpleRegisterFormState extends State<SimpleRegisterForm> {
     super.dispose();
   }
 
-bool _validateForm() {
-  final bool isControllerValid = _formController.validateForm();
-  setState(() {});
-  return isControllerValid;
-}
+  bool _validateForm() {
+    final bool isControllerValid = _formController.validateForm();
+    setState(() {});
+    return isControllerValid;
+  }
 
   void _onSwitchChanged(bool valueHour) {
     if (_isFormSubmitted) return;
@@ -217,7 +217,7 @@ bool _validateForm() {
                   _formController.nameError = null;
                 });
               },
-              maxLength: 50,
+              maxLength: 40,
             ),
             Padding(
               padding: const EdgeInsets.only(left: 8),
@@ -419,9 +419,10 @@ bool _validateForm() {
                       initialTime: TimeOfDay.now(),
                       );
                       if (pickedTime != null) {
-                      setState(() {
-                        _formController.hourController.text = pickedTime.format(context);
-                      });
+                        setState(() {
+                          _formController.hourController.text = pickedTime.format(context);
+                          _formController.hourError = null;
+                        });
                       }
                     },
                     child: AbsorbPointer(

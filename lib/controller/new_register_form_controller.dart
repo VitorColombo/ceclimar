@@ -103,7 +103,6 @@ class NewRegisterFormController {
     if (isHourSwitchOn) {
       hourError = validateHour(hourController.text);
     }
-
     if (isLocalSwitchOn) {
       cityController.text = cityController.text.trim();
       beachSpotController.text = beachSpotController.text.trim();
@@ -117,14 +116,14 @@ class NewRegisterFormController {
         locationSwitchError = RegisterError.switchError.message;
       } else {
         if (!isCityEmpty) {
-           cityError = validateCitySwitch(cityController.text);
+          cityError = validateCitySwitch(cityController.text);
         }
         if (!isBeachSpotEmpty) {
           beachSpotError = validateBeachSpotSwitch(beachSpotController.text);
         }
-         if (!isReferencePointEmpty) {
-           referencePointError = validateReferencePoint(referencePointController.text);
-         }
+        if (!isReferencePointEmpty) {
+          referencePointError = validateReferencePoint(referencePointController.text);
+        }
       }
     }
     final isValid = nameError == null &&
@@ -170,7 +169,7 @@ class NewRegisterFormController {
     if (speciesController.text.isNotEmpty) {
       speciesError = validateSpecies(speciesController.text);
     }
-     if (obsController.text.isNotEmpty) {
+    if (obsController.text.isNotEmpty) {
       obsError = validateObs(obsController.text);
     }
     if (familyController.text.isNotEmpty) {
@@ -182,7 +181,6 @@ class NewRegisterFormController {
     if (orderController.text.isNotEmpty) {
        orderError = validateOrder(orderController.text);
     }
-
     if (isHourSwitchOn) {
        hourError = validateHour(hourController.text);
     }
@@ -204,7 +202,6 @@ class NewRegisterFormController {
          if (!isReferencePointEmpty) {
            referencePointError = validateReferencePoint(referencePointController.text);
          }
-
       }
     }
 
@@ -422,7 +419,7 @@ class NewRegisterFormController {
         ),
       );
     } catch (e) {
-      print('Erro desconhecido: $e');
+      debugPrint('Erro desconhecido: $e');
     }
   }
 
@@ -494,6 +491,7 @@ class NewRegisterFormController {
       bool witnessed = isHourSwitchOn;
       String species = speciesController.text;
       String beachSpot = beachSpotController.text;
+      String referencePoint = referencePointController.text;
       String obs = obsController.text;
       String family = familyController.text;
       String genu = genuController.text;
@@ -527,11 +525,12 @@ class NewRegisterFormController {
               "order": order,
               "classe": classe,
               "latitude": latitude,
-              "longitude": longitude
+              "longitude": longitude,
+              "referencePoint": referencePoint
           };
         if (connectivityResult == ConnectivityResult.none) {
           _queueRegister(registerData, 'technical', _image, _image2, context);
-          _showSuccessMessage(context, 'Registro salvo localmente. Será enviado quando a internet voltar.');
+          _showSuccessMessage(context, 'Registro técnico salvo localmente. Será enviado quando a internet voltar.');
           } else {
            try {
              final response = await sendTechnicalRegisterToApi(
@@ -548,6 +547,7 @@ class NewRegisterFormController {
                classe,
                latitude,
                longitude,
+               referencePoint,
              );
              if (response != null) {
               _showSuccessMessage(context, 'Registro enviado com sucesso!');
@@ -604,7 +604,7 @@ class NewRegisterFormController {
 
       return newRegister;
     } catch(e){
-      debugPrint("error when sending simple register $e");
+      debugPrint("Error sending simple register $e");
       rethrow;
     }
   }
@@ -612,7 +612,7 @@ class NewRegisterFormController {
   Future<TechnicalRegisterRequest?> sendTechnicalRegisterToApi(
       String name, String hour, bool witnessed, String species, String city,
       String beachSpot, String obs, String family, String genu, String order,
-      String classe, double latitude, double longitude) async {     
+      String classe, double latitude, double longitude, String referencePoint) async {     
     User user = FirebaseAuth.instance.currentUser!;
     try{
       if(_image == null){
@@ -643,6 +643,7 @@ class NewRegisterFormController {
         },
         city: city,
         beachSpot: beachSpot,
+        referencePoint: referencePoint,
         obs: obs,
         registerImageUrl: imageUrl,
         registerImageUrl2: imageUrl2,
@@ -655,7 +656,7 @@ class NewRegisterFormController {
       );
       return newRegister;
     } catch(e){
-      debugPrint("error when sending technical register $e");
+      debugPrint("Error sending technical register $e");
       rethrow;
     }
   }
@@ -707,7 +708,7 @@ class NewRegisterFormController {
       await registerCounter.update({'count': FieldValue.increment(1)});
       return newCount;
     } catch (e) {
-      print('Erro ao incrementar contador: $e');
+      debugPrint('Erro ao incrementar contador: $e');
       throw Exception('Erro ao obter próximo ID');
     }
   }
@@ -804,6 +805,7 @@ class NewRegisterFormController {
                   register.data['classe'],
                   register.data['latitude'],
                   register.data['longitude'],
+                  register.data['referencePoint'],
                 );
               }
               _updateRegisterStatus(register, RegisterStatus.sent);
@@ -838,11 +840,11 @@ class NewRegisterFormController {
   }
 
   void _checkHiveData() {
-      final registerBox = Hive.box<LocalRegister>('registers');
-        print('------- Hive Data -------');
-        for (var register in registerBox.values) {
-          print(register.toJson());
-      }
-        print('------- End of Hive Data -------');
+    final registerBox = Hive.box<LocalRegister>('registers');
+    debugPrint('------- Hive Data -------');
+    for (var register in registerBox.values) {
+      debugPrint(register.toJson().toString());
+    }
+    debugPrint('------- End of Hive Data -------');
   }
 }

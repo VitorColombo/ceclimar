@@ -218,6 +218,8 @@ class RegisterDetailPageState extends State<RegisterDetailPage> {
                                     style: const TextStyle(fontSize: 16),
                                   ),
                                   const SizedBox(height: 8),
+                                  StatusLabel(status: '${widget.register?.status}', borderColor: Colors.transparent),
+                                  const SizedBox(height: 8),
                                   Row(
                                     children: [
                                       Icon(PhosphorIcons.user(PhosphorIconsStyle.regular), size: 20),
@@ -306,26 +308,44 @@ class RegisterDetailPageState extends State<RegisterDetailPage> {
                             ],
                           ),
                           const SizedBox(height: 8),
-                          StatusLabel(status: '${widget.register?.status}', borderColor: Colors.transparent),
-                          const SizedBox(height: 8),
                           Text(
                             'Nome Popular: ${widget.register!.animal.popularName}',
                             style: const TextStyle(fontSize: 16),
                           ),
-                          const SizedBox(height: 8),
                           Visibility(
                             visible: widget.register!.animal.species != null && widget.register!.animal.species!.isNotEmpty,
-                            child: Text(
-                              'Espécie: ${widget.register!.animal.species}',
-                              style: const TextStyle(fontSize: 16),
+                            child: Column(
+                              children: [
+                                const SizedBox(height: 8),
+                                Text(
+                                  'Espécie: ${widget.register!.animal.species}',
+                                  style: const TextStyle(fontSize: 16),
+                                ),
+                              ],
                             ),
                           ),
-                          const SizedBox(height: 8),
                           Visibility(
                             visible: widget.register!.beachSpot.isNotEmpty,
-                            child: Text(
-                              'Encontrado próximo a guarita ${widget.register!.beachSpot}',
-                              style: const TextStyle(fontSize: 16),
+                            child: Column(
+                              children: [
+                                const SizedBox(height: 8),
+                                Text(
+                                  'Encontrado próximo a guarita ${widget.register!.beachSpot}',
+                                  style: const TextStyle(fontSize: 16),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Visibility(
+                            visible: widget.register!.referencePoint!.isNotEmpty,
+                            child: Column(
+                              children: [
+                                const SizedBox(height: 8),
+                                Text(
+                                  'Ponto de referência: ${widget.register!.referencePoint}',
+                                  style: const TextStyle(fontSize: 16),
+                                ),
+                              ],
                             ),
                           ),
                           const SizedBox(height: 8),
