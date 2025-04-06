@@ -423,148 +423,178 @@ class NewRegisterFormController {
     }
   }
 
-  Future<void> sendSimpleRegister(BuildContext context, Function getPosition) async {
-      final connectivityResult = await (Connectivity().checkConnectivity());
-      String name = nameController.text;
-      String hour = hourController.text;
-      bool witnessed = isHourSwitchOn;
-      String? city = cityController.text;
-      String? beachSpot = beachSpotController.text;
-      String? referencePoint = referencePointController.text;
+  Future<Location> _getCityLatLong(String city) async {
+    try {
+      List<Location> locations = await locationFromAddress(city);
+      return locations.first;
+    } catch (e) {
+      debugPrint('Erro ao obter coordenadas da cidade: $e');
+      throw Exception('Falha ao obter coordenadas para a cidade: $city');
+    }
+  }
 
-      await getPosition();
-      if (context.mounted) {
-        await getAddressFromLatLng(currentPosition!, context);
+  Future<void> sendSimpleRegister(BuildContext context, Function getPosition) async {
+    final connectivityResult = await (Connectivity().checkConnectivity());
+    String name = nameController.text;
+    String hour = hourController.text;
+    bool witnessed = isHourSwitchOn;
+    String? city = cityController.text;
+    String? beachSpot = beachSpotController.text;
+    String? referencePoint = referencePointController.text;
+
+    await getPosition();
+    if (context.mounted) {
+      await getAddressFromLatLng(currentPosition!, context);
+    }
+    if (currentPosition != null && currentAddress != null) {
+      double latitude = currentPosition!.latitude;
+      double longitude = currentPosition!.longitude;
+      if(!isLocalSwitchOn && cityController.text.isEmpty && beachSpotController.text.isEmpty){
+        city = currentAddress!.split(",")[0];
       }
-      if (currentPosition != null && currentAddress != null) {
-        double latitude = currentPosition!.latitude;
-        double longitude = currentPosition!.longitude;
-        if(!isLocalSwitchOn && cityController.text.isEmpty && beachSpotController.text.isEmpty){
-          city = currentAddress!.split(",")[0];
+      if(isLocalSwitchOn && beachSpotController.text.isNotEmpty && currentGuarita != null){
+        latitude = currentGuarita!.latitude ?? 0.0;
+        longitude = currentGuarita!.longitude ?? 0.0;
+      }
+      if (isLocalSwitchOn && cityController.text.isNotEmpty && beachSpotController.text.isEmpty) {
+        final Location cityLocation = await _getCityLatLong(cityController.text);
+        latitude = cityLocation.latitude;
+        longitude = cityLocation.longitude;
+      }
+      if(isLocalSwitchOn && beachSpotController.text.isEmpty && cityController.text.isEmpty){
+        latitude = 0.0;
+        longitude = 0.0;
+      }
+      final registerData = {
+        "name": name,
+        "hour": hour,
+        "witnessed": witnessed,
+        "latitude": latitude,
+        "longitude": longitude,
+        "city": city,
+        "beachSpot": beachSpot,
+        "referencePoint": referencePoint
+      };
+      if (connectivityResult == ConnectivityResult.none) {
+        _queueRegister(registerData, 'simple', _image, _image2, context);
+        _showSuccessMessage(context, 'Registro salvo localmente. Será enviado quando a internet voltar.');
+      } else {
+        try {
+          final response = await sendSimpleRegisterToApi(
+            name,
+            hour,
+            witnessed,
+            latitude,
+            longitude,
+            city,
+            beachSpot,
+            referencePoint,
+          );
+          if (response != null) {
+            _showSuccessMessage(context, 'Registro enviado com sucesso!');
+            Navigator.pushNamedAndRemoveUntil(context, BasePage.routeName, (Route<dynamic> route) => false, arguments: 0);
+          } else {
+            _handleError(context, 'Falha ao enviar o registro.');
+          }
+        } catch (e) {
+            _handleError(context, 'Falha ao enviar registro: $e');
         }
-        if(isLocalSwitchOn && beachSpotController.text.isNotEmpty && currentGuarita != null){
-          latitude = currentGuarita!.latitude ?? 0.0;
-          longitude = currentGuarita!.longitude ?? 0.0;
-        }
-        final registerData = {
-          "name": name,
-          "hour": hour,
-          "witnessed": witnessed,
-          "latitude": latitude,
-          "longitude": longitude,
-          "city": city,
-          "beachSpot": beachSpot,
-          "referencePoint": referencePoint
-        };
-        if (connectivityResult == ConnectivityResult.none) {
-          _queueRegister(registerData, 'simple', _image, _image2, context);
-          _showSuccessMessage(context, 'Registro salvo localmente. Será enviado quando a internet voltar.');
+      }
+    }
+  }
+
+  Future<void> sendTechnicalRegister(BuildContext context, Function getPosition) async {
+    final connectivityResult = await (Connectivity().checkConnectivity());
+    String name = nameController.text;
+    String hour = hourController.text;
+    bool witnessed = isHourSwitchOn;
+    String species = speciesController.text;
+    String beachSpot = beachSpotController.text;
+    String referencePoint = referencePointController.text;
+    String obs = obsController.text;
+    String family = familyController.text;
+    String genu = genuController.text;
+    String order = orderController.text;
+    String classe = classController.text;
+    String city = cityController.text;
+
+    await getPosition();
+    if (context.mounted) {
+      await getAddressFromLatLng(currentPosition!, context);
+    }
+    if (currentPosition != null && currentAddress != null) {
+      double latitude = currentPosition!.latitude;
+      double longitude = currentPosition!.longitude;
+      if(!isLocalSwitchOn && cityController.text.isEmpty && beachSpotController.text.isEmpty){
+        city = currentAddress!.split(",")[0];
+      }
+      if(isLocalSwitchOn && beachSpotController.text.isNotEmpty && currentGuarita != null){
+        latitude = currentGuarita!.latitude ?? 0.0;
+        longitude = currentGuarita!.longitude ?? 0.0;
+      }
+      if (isLocalSwitchOn && cityController.text.isNotEmpty && beachSpotController.text.isEmpty) {
+        final Location cityLocation = await _getCityLatLong(cityController.text);
+        latitude = cityLocation.latitude;
+        longitude = cityLocation.longitude;
+      }
+      if(isLocalSwitchOn && beachSpotController.text.isEmpty && cityController.text.isEmpty){
+        latitude = 0.0;
+        longitude = 0.0;
+      }
+      final registerData = {
+        "name": name,
+        "hour": hour,
+        "witnessed": witnessed,
+        "species": species,
+        "city": city,
+        "beachSpot": beachSpot,
+        "obs": obs,
+        "family": family,
+        "genu": genu,
+        "order": order,
+        "classe": classe,
+        "latitude": latitude,
+        "longitude": longitude,
+        "referencePoint": referencePoint
+      };
+      if (connectivityResult == ConnectivityResult.none) {
+        _queueRegister(registerData, 'technical', _image, _image2, context);
+        _showSuccessMessage(context, 'Registro técnico salvo localmente. Será enviado quando a internet voltar.');
         } else {
           try {
-            final response = await sendSimpleRegisterToApi(
+            final response = await sendTechnicalRegisterToApi(
               name,
               hour,
               witnessed,
-              latitude,
-              longitude,
+              species,
               city,
               beachSpot,
+              obs,
+              family,
+              genu,
+              order,
+              classe,
+              latitude,
+              longitude,
               referencePoint,
             );
             if (response != null) {
-              _showSuccessMessage(context, 'Registro enviado com sucesso!');
-              Navigator.pushNamedAndRemoveUntil(context, BasePage.routeName, (Route<dynamic> route) => false, arguments: 0);
+            _showSuccessMessage(context, 'Registro enviado com sucesso!');
+            Navigator.pushNamedAndRemoveUntil(context, BasePage.routeName, (Route<dynamic> route) => false, arguments: 0);
             } else {
               _handleError(context, 'Falha ao enviar o registro.');
             }
           } catch (e) {
-              _handleError(context, 'Falha ao enviar registro: $e');
+            _handleError(context, 'Falha ao enviar o registro: $e');
           }
         }
-      }
-  }
-
-  Future<void> sendTechnicalRegister(BuildContext context, Function getPosition) async {
-      final connectivityResult = await (Connectivity().checkConnectivity());
-      String name = nameController.text;
-      String hour = hourController.text;
-      bool witnessed = isHourSwitchOn;
-      String species = speciesController.text;
-      String beachSpot = beachSpotController.text;
-      String referencePoint = referencePointController.text;
-      String obs = obsController.text;
-      String family = familyController.text;
-      String genu = genuController.text;
-      String order = orderController.text;
-      String classe = classController.text;
-      String city = cityController.text;
-      await getPosition();
-      if (context.mounted) {
-        await getAddressFromLatLng(currentPosition!, context);
-      }
-      if (currentPosition != null && currentAddress != null) {
-        double latitude = currentPosition!.latitude;
-        double longitude = currentPosition!.longitude;
-        if(!isLocalSwitchOn && cityController.text.isEmpty){
-          city = currentAddress!.split(",")[0];
-        }
-        if(isLocalSwitchOn && beachSpotController.text.isNotEmpty && currentGuarita != null){
-          latitude = currentGuarita!.latitude ?? 0.0;
-          longitude = currentGuarita!.longitude ?? 0.0;
-        }
-          final registerData = {
-              "name": name,
-              "hour": hour,
-              "witnessed": witnessed,
-              "species": species,
-              "city": city,
-              "beachSpot": beachSpot,
-              "obs": obs,
-              "family": family,
-              "genu": genu,
-              "order": order,
-              "classe": classe,
-              "latitude": latitude,
-              "longitude": longitude,
-              "referencePoint": referencePoint
-          };
-        if (connectivityResult == ConnectivityResult.none) {
-          _queueRegister(registerData, 'technical', _image, _image2, context);
-          _showSuccessMessage(context, 'Registro técnico salvo localmente. Será enviado quando a internet voltar.');
-          } else {
-           try {
-             final response = await sendTechnicalRegisterToApi(
-               name,
-               hour,
-               witnessed,
-               species,
-               city,
-               beachSpot,
-               obs,
-               family,
-               genu,
-               order,
-               classe,
-               latitude,
-               longitude,
-               referencePoint,
-             );
-             if (response != null) {
-              _showSuccessMessage(context, 'Registro enviado com sucesso!');
-              Navigator.pushNamedAndRemoveUntil(context, BasePage.routeName, (Route<dynamic> route) => false, arguments: 0);
-             } else {
-                _handleError(context, 'Falha ao enviar o registro.');
-              }
-           } catch (e) {
-              _handleError(context, 'Falha ao enviar o registro: $e');
-           }
-          }
-      }
+    }
   }
 
   Future<SimpleRegisterRequest?> sendSimpleRegisterToApi(
       String name, String hour, bool witnessed,
-      double latitude, double longitude, String city, String beachSpot, String referencePoint) async {
+      double latitude, double longitude, String city,
+      String beachSpot, String referencePoint) async {
     User user = FirebaseAuth.instance.currentUser!;
     try{
       if(_image == null){

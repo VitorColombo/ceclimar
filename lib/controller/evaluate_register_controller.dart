@@ -240,8 +240,8 @@ class EvaluateRegisterFormController {
       sampleState: int.tryParse(animalStateController.text) ?? 0,
       specialistReturn: obsController.text,
       location: {
-        "latitude": latitude.toString(),
-        "longitude": longitude.toString(),
+        "latitude": latitude.toString().substring(0, 10),
+        "longitude": longitude.toString().substring(0, 10),
       },
       city:cityController.text,
       beachSpot: beachSpotController.text,

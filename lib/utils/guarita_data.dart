@@ -263,3 +263,11 @@ const List<GuaritaData> guaritas = [
   GuaritaData(number: "BeTo01", latitude: -29.102217, longitude: -49.351566, place: "Bela Torres", city: "Santa Catarina"),
   GuaritaData(number: "MarGro01", latitude: -32.317780, longitude: -51.593568, place: "Praia do Mar Grosso", city: "São José do Norte"),
 ];
+
+GuaritaData getGuaritaDataByNumber(String number) {
+  return guaritas.firstWhere((guarita) => guarita.number == number, orElse: () => GuaritaData(number: "0", place: "Não encontrado", city: "Não encontrado"));
+}
+
+GuaritaData getGuaritaDataByCity(String city) {
+  return guaritas.firstWhere((guarita) => guarita.city == city, orElse: () => GuaritaData(number: "0", place: "Não encontrado", city: "Não encontrado"));
+}
