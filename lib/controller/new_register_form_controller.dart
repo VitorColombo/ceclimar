@@ -752,6 +752,7 @@ class NewRegisterFormController {
         registerImagePath2: image2?.path
       );
       _registerBox.add(newRegister);
+      trimRegisterBox();
       _showSuccessMessage(context, 'Registro salvo localmente. Será enviado quando a internet voltar.');
       Navigator.pushNamedAndRemoveUntil(context, BasePage.routeName, (Route<dynamic> route) => false, arguments: 0);
   }
@@ -876,5 +877,21 @@ class NewRegisterFormController {
       debugPrint(register.toJson().toString());
     }
     debugPrint('------- End of Hive Data -------');
+  }
+
+  void trimRegisterBox() {
+    final allRegisters = _registerBox.values.toList();
+    for (var register in allRegisters) {
+      debugPrint(register.toJson().toString());
+    }    debugPrint('Total de registros: ${allRegisters.length}');
+    if (allRegisters.length > 40) {
+      allRegisters.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      final latest40 = allRegisters.take(40).toList();
+      _registerBox.clear();
+      for (var register in latest40) {
+        _registerBox.add(register);
+        debugPrint('Registro mantido: ${register.toJson()}');
+      }
+    }
   }
 }

@@ -22,13 +22,14 @@ class LocalRegisterAdapter extends TypeAdapter<LocalRegister> {
       status: fields[2] as RegisterStatus,
       registerImagePath: fields[3] as String?,
       registerImagePath2: fields[4] as String?,
+      createdAt: fields[5] as DateTime?,
     );
   }
 
   @override
   void write(BinaryWriter writer, LocalRegister obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.registerType)
       ..writeByte(1)
@@ -38,7 +39,9 @@ class LocalRegisterAdapter extends TypeAdapter<LocalRegister> {
       ..writeByte(3)
       ..write(obj.registerImagePath)
       ..writeByte(4)
-      ..write(obj.registerImagePath2);
+      ..write(obj.registerImagePath2)
+      ..writeByte(5)
+      ..write(obj.createdAt);
   }
 
   @override
