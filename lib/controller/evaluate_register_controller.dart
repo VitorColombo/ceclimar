@@ -6,6 +6,7 @@ import 'package:tcc_ceclimar/models/register_response.dart';
 import 'package:tcc_ceclimar/models/update_register_request.dart';
 import 'package:tcc_ceclimar/pages/base_page.dart';
 import 'package:tcc_ceclimar/utils/animals_service.dart';
+import 'package:tcc_ceclimar/utils/guarita_data.dart';
 
 class EvaluateRegisterFormController {
   final TextEditingController nameController = TextEditingController();
@@ -20,8 +21,8 @@ class EvaluateRegisterFormController {
   final TextEditingController classController = TextEditingController();
   final TextEditingController animalStateController = TextEditingController();
 
-  final String updateRegisterEndpoint = '';
-  
+  GuaritaData? currentGuarita;
+
   String? nameError;
   String? speciesError;
   String? cityError;
@@ -170,56 +171,62 @@ class EvaluateRegisterFormController {
 
   Future<void> sendEvaluation(BuildContext context, RegisterResponse register) async {
     if (validateForm()) {
-        try {
-          sendTechnicalEvaluation(register);
-          ScaffoldMessenger.of(context).hideCurrentSnackBar();
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Avaliação enviada com sucesso!',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontFamily: "Inter"
-                ),
-              ),
-              backgroundColor: Colors.green,
-            )
-          );
-            Navigator.pushReplacementNamed(context, BasePage.routeName);
-        } catch (e) {
-            ScaffoldMessenger.of(context).hideCurrentSnackBar();
-            ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                'Falha ao enviar avaliação: ${e.toString()}',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontFamily: "Inter",
-                ),
-              ),
-              backgroundColor: Colors.red,
-            ),
-          );
-        }
-      } else {
+      try {
+        sendTechnicalEvaluation(register);
         ScaffoldMessenger.of(context).hideCurrentSnackBar();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Por favor, preencha todos os campos obrigatórios.',
+            content: Text('Avaliação enviada com sucesso!',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 16,
                 fontFamily: "Inter"
               ),
             ),
-            backgroundColor: Colors.red,
+            backgroundColor: Colors.green,
           )
         );
+        Navigator.pushReplacementNamed(context, BasePage.routeName);
+      } catch (e) {
+          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+          ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Falha ao enviar avaliação: ${e.toString()}',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontFamily: "Inter",
+              ),
+            ),
+            backgroundColor: Colors.red,
+          ),
+        );
       }
+    } else {
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Por favor, preencha todos os campos obrigatórios.',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+              fontFamily: "Inter"
+            ),
+          ),
+          backgroundColor: Colors.red,
+        )
+      );
+    }
   }
 
   void sendTechnicalEvaluation(RegisterResponse register) async {
+    double? latitude;
+    double? longitude;
+    if(beachSpotController.text.isNotEmpty && currentGuarita != null){
+      latitude = currentGuarita!.latitude;
+      longitude = currentGuarita!.longitude;
+    }
     final updatedRegister = UpdateRegisterRequest(
         animal: AnimalUpdateRequest(
         popularName: nameController.text,
@@ -232,6 +239,12 @@ class EvaluateRegisterFormController {
       status: "Validado",
       sampleState: int.tryParse(animalStateController.text) ?? 0,
       specialistReturn: obsController.text,
+      location: {
+        "latitude": latitude.toString(),
+        "longitude": longitude.toString(),
+      },
+      city:cityController.text,
+      beachSpot: beachSpotController.text,
     );
 
     try {

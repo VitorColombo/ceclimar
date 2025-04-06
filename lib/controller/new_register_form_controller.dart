@@ -21,8 +21,9 @@ enum RegisterError {
   invalidCharacter('Caractere inválido'),
   minimumCharacter('Caracteres mínimos: '),
   maximumCharacter('Caracteres máximos: '),
-  imageError('É obrigatório o envio de, no mínimo, uma imagem'),
-  onlyNumber('Apenas n°');
+  imageError('É obrigatório o envio de uma foto'),
+  onlyNumber('Apenas n°'),
+  switchError('É necessario preencher no mínimo um dos campos abaixo');
 
    final String message;
    const RegisterError(this.message);
@@ -39,6 +40,8 @@ class NewRegisterFormController {
   final TextEditingController genuController = TextEditingController();
   final TextEditingController orderController = TextEditingController();
   final TextEditingController classController = TextEditingController();
+  final TextEditingController referencePointController = TextEditingController();
+
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   File? _image;
   File? _image2;
@@ -62,18 +65,9 @@ class NewRegisterFormController {
   String? classError;
   String? imageError;
   String? image2Error;
+  String? referencePointError;
+  String? locationSwitchError;
   
-  final List<SimpleRegisterRequest> _simpleMockData = [];
-  final List<TechnicalRegisterRequest> _technicalMockData = [];
-
-  List<TechnicalRegisterRequest> get technicalMockData{
-    return [..._technicalMockData];
-  }
-
-  List<SimpleRegisterRequest> get simpleMockData{
-    return [..._simpleMockData];
-  }
-
   void dispose() {
       nameController.dispose();
       hourController.dispose();
@@ -85,6 +79,7 @@ class NewRegisterFormController {
       familyController.dispose();
       genuController.dispose();
       obsController.dispose();
+      referencePointController.dispose();
   }
 
   void clear() {
@@ -93,17 +88,71 @@ class NewRegisterFormController {
   }
 
   bool validateForm() {
+    nameError = null;
+    hourError = null;
+    cityError = null;
+    beachSpotError = null;
+    referencePointError = null;
+    imageError = null;
+    locationSwitchError = null;
+
     nameController.text = nameController.text.trim();
     nameError = validateName(nameController.text);
-    hourError = validateHour(hourController.text, isHourSwitchOn);
-    cityError = validateCitySwitch(cityController.text, isLocalSwitchOn);
-    beachSpotError = validateBeachSpotSwitch(beachSpotController.text, isLocalSwitchOn);
     imageError = validateImages();
 
-    return nameError == null && hourError == null && validateImages() == null;
+    if (isHourSwitchOn) {
+      hourError = validateHour(hourController.text);
+    }
+
+    if (isLocalSwitchOn) {
+      cityController.text = cityController.text.trim();
+      beachSpotController.text = beachSpotController.text.trim();
+      referencePointController.text = referencePointController.text.trim();
+
+      final isCityEmpty = cityController.text.isEmpty;
+      final isBeachSpotEmpty = beachSpotController.text.isEmpty;
+      final isReferencePointEmpty = referencePointController.text.isEmpty;
+
+      if (isCityEmpty && isBeachSpotEmpty && isReferencePointEmpty) {
+        locationSwitchError = RegisterError.switchError.message;
+      } else {
+        if (!isCityEmpty) {
+           cityError = validateCitySwitch(cityController.text);
+        }
+        if (!isBeachSpotEmpty) {
+          beachSpotError = validateBeachSpotSwitch(beachSpotController.text);
+        }
+         if (!isReferencePointEmpty) {
+           referencePointError = validateReferencePoint(referencePointController.text);
+         }
+      }
+    }
+    final isValid = nameError == null &&
+        hourError == null &&
+        imageError == null &&
+        cityError == null &&
+        beachSpotError == null &&
+        referencePointError == null &&
+        locationSwitchError == null;
+
+    return isValid;
   }
 
   bool validateTechnicalForm() {
+    nameError = null;
+    hourError = null;
+    speciesError = null;
+    cityError = null;
+    beachSpotError = null;
+    obsError = null;
+    familyError = null;
+    genuError = null;
+    orderError = null;
+    classError = null;
+    imageError = null;
+    referencePointError = null;
+    locationSwitchError = null;
+
     nameController.text = nameController.text.trim();
     speciesController.text = speciesController.text.trim();
     cityController.text = cityController.text.trim();
@@ -112,19 +161,67 @@ class NewRegisterFormController {
     familyController.text = familyController.text.trim();
     genuController.text = genuController.text.trim();
     orderController.text = orderController.text.trim();
+    classController.text = classController.text.trim();
+    referencePointController.text = referencePointController.text.trim();
 
     nameError = validateName(nameController.text);
-    hourError = validateHour(hourController.text, isHourSwitchOn);
-    speciesError = validateSpecies(speciesController.text);
-    cityError = validateCitySwitch(cityController.text, isLocalSwitchOn);
-    beachSpotError = validateBeachSpotSwitch(beachSpotController.text, isLocalSwitchOn);
-    obsError = validateObs(obsController.text);
-    familyError = validateFamily(familyController.text);
-    genuError = validateGenu(genuController.text);
-    orderError = validateOrder(orderController.text);
     imageError = validateImages();
 
-    return nameError == null && hourError == null && validateImages() == null; 
+    if (speciesController.text.isNotEmpty) {
+      speciesError = validateSpecies(speciesController.text);
+    }
+     if (obsController.text.isNotEmpty) {
+      obsError = validateObs(obsController.text);
+    }
+    if (familyController.text.isNotEmpty) {
+       familyError = validateFamily(familyController.text);
+    }
+    if (genuController.text.isNotEmpty) {
+       genuError = validateGenu(genuController.text);
+    }
+    if (orderController.text.isNotEmpty) {
+       orderError = validateOrder(orderController.text);
+    }
+
+    if (isHourSwitchOn) {
+       hourError = validateHour(hourController.text);
+    }
+
+    if (isLocalSwitchOn) {
+      final isCityEmpty = cityController.text.isEmpty;
+      final isBeachSpotEmpty = beachSpotController.text.isEmpty;
+      final isReferencePointEmpty = referencePointController.text.isEmpty;
+
+      if (isCityEmpty && isBeachSpotEmpty && isReferencePointEmpty) {
+        locationSwitchError = RegisterError.switchError.message;
+      } else {
+         if (!isCityEmpty) {
+           cityError = validateCitySwitch(cityController.text);
+         }
+         if (!isBeachSpotEmpty) {
+           beachSpotError = validateBeachSpotSwitch(beachSpotController.text);
+         }
+         if (!isReferencePointEmpty) {
+           referencePointError = validateReferencePoint(referencePointController.text);
+         }
+
+      }
+    }
+
+     final isValid = nameError == null &&
+        hourError == null &&
+        speciesError == null &&
+        cityError == null &&
+        beachSpotError == null &&
+        obsError == null &&
+        familyError == null &&
+        genuError == null &&
+        orderError == null &&
+        classError == null &&
+        imageError == null &&
+        referencePointError == null &&
+        locationSwitchError == null;
+    return isValid;
   }
 
   String? validateImages() {
@@ -151,39 +248,74 @@ class NewRegisterFormController {
     return null;
   }
 
-  String? validateHour(String? value, bool isInputChecked) {
-    if(isInputChecked){
-      if (value == null || value.isEmpty) {
-        return RegisterError.requiredField.message;
-      }
+  String? validateHour(String? value) {
+    if (value == null || value.isEmpty) {
+      return RegisterError.requiredField.message;
     }
     return null;
   }
 
-  String? validateCitySwitch(String? value, bool isInputChecked) {
-    if(isInputChecked){
-      if (value == null || value.isEmpty) {
-        return RegisterError.requiredField.message;
-      }
+  String? validateCitySwitch(String? value) {
+     if (value == null || value.isEmpty) {
+       return null;
+     }
     final RegExp regex = RegExp(r'^[\p{L}\s\-]+$', unicode: true);
-      if (value.length < 3) {
-        return '${RegisterError.minimumCharacter.message} 3';
-      }
-      if (!regex.hasMatch(value)) {
-        return RegisterError.invalidCharacter.message;
-      }
+     if (value.length < 3) {
+       return '${RegisterError.minimumCharacter.message} 3';
+     }
+     if (value.length > 50) {
+        return '${RegisterError.maximumCharacter.message} 50';
+     }
+     if (!regex.hasMatch(value)) {
+       return RegisterError.invalidCharacter.message;
+     }
+    return null;
+  }
+
+
+  String? validateBeachSpotSwitch(String value) {
+    if (value.isEmpty) {
       return null;
     }
+    final RegExp regex = RegExp(r'^[\p{L}\s0-9]+$', unicode: true);
+     if (value.length > 10) {
+        return '${RegisterError.maximumCharacter.message} 10';
+     }
+    if (!regex.hasMatch(value)) {
+      return RegisterError.invalidCharacter.message;
+    }
     return null;
   }
 
-  String? validateBeachSpotSwitch(String value, bool isInputChecked) {
-    if(isInputChecked){
-    final RegExp regex = RegExp(r'^[\p{L}\s0-9]+$', unicode: true);
-      if (value.isNotEmpty) {
-        if (!regex.hasMatch(value)) {
-          return RegisterError.invalidCharacter.message;
-        }
+  String? validateReferencePoint(String referencePoint){
+    if (referencePoint.isEmpty) {
+      return null;
+    }
+    if (referencePoint.length < 5) {
+      return '${RegisterError.minimumCharacter.message} 5';
+    }
+     if (referencePoint.length > 50) {
+        return '${RegisterError.maximumCharacter.message} 50';
+     }
+    return null;
+  }
+
+  String? validateLocationSwitch(String beachSpot, String referencePoint, String city, bool isLocalSwitchOn) {
+    if(isLocalSwitchOn){
+      if (beachSpot.isEmpty && referencePoint.isEmpty && city.isEmpty) {
+        return RegisterError.switchError.message;
+      }
+      cityError = validateCitySwitch(city);
+      if(cityError != null){
+        return cityError;
+      }
+      beachSpotError = validateBeachSpotSwitch(beachSpot);
+      if(beachSpotError != null){
+        return beachSpotError;
+      }
+      referencePointError = validateReferencePoint(referencePoint);
+      if(referencePointError != null){
+        return referencePointError;
       }
       return null;
     }
@@ -252,10 +384,12 @@ class NewRegisterFormController {
   }
 
   void setImage(File? image) {
+    imageError = null;
     _image = image;
   }
 
   void setImage2(File? image) {
+    imageError = null;
     _image2 = image;
   }
 
@@ -265,22 +399,6 @@ class NewRegisterFormController {
 
   void changeLocalSwitch() {
     isLocalSwitchOn = !isLocalSwitchOn;
-  }
-
-  bool isBtnEnable() {
-    if (!isHourSwitchOn && !isLocalSwitchOn) {
-      if (nameController.text.isEmpty) {
-      return false;
-      }
-      return true;
-    }
-    if (isHourSwitchOn && hourController.text.isEmpty) {
-      return false;
-    }
-    if (isLocalSwitchOn && (cityController.text.isEmpty || beachSpotController.text.isEmpty)) {
-      return false;
-    }
-    return true;
   }
 
   Future<void> getAddressFromLatLng(Position position, BuildContext context) async {
@@ -309,13 +427,14 @@ class NewRegisterFormController {
   }
 
   Future<void> sendSimpleRegister(BuildContext context, Function getPosition) async {
-    if (validateForm()) {
       final connectivityResult = await (Connectivity().checkConnectivity());
       String name = nameController.text;
       String hour = hourController.text;
       bool witnessed = isHourSwitchOn;
-      String city = cityController.text;
-      String beachSpot = beachSpotController.text;
+      String? city = cityController.text;
+      String? beachSpot = beachSpotController.text;
+      String? referencePoint = referencePointController.text;
+
       await getPosition();
       if (context.mounted) {
         await getAddressFromLatLng(currentPosition!, context);
@@ -337,7 +456,8 @@ class NewRegisterFormController {
           "latitude": latitude,
           "longitude": longitude,
           "city": city,
-          "beachSpot": beachSpot
+          "beachSpot": beachSpot,
+          "referencePoint": referencePoint
         };
         if (connectivityResult == ConnectivityResult.none) {
           _queueRegister(registerData, 'simple', _image, _image2, context);
@@ -351,7 +471,8 @@ class NewRegisterFormController {
               latitude,
               longitude,
               city,
-              beachSpot
+              beachSpot,
+              referencePoint,
             );
             if (response != null) {
               _showSuccessMessage(context, 'Registro enviado com sucesso!');
@@ -364,21 +485,9 @@ class NewRegisterFormController {
           }
         }
       }
-    } else {
-        if (imageError != null) {
-          ScaffoldMessenger.of(context).hideCurrentSnackBar();
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(imageError!),
-              backgroundColor: Colors.red,
-              ),
-          );
-        }
-    }
   }
 
   Future<void> sendTechnicalRegister(BuildContext context, Function getPosition) async {
-    if (validateTechnicalForm()) {
       final connectivityResult = await (Connectivity().checkConnectivity());
       String name = nameController.text;
       String hour = hourController.text;
@@ -451,22 +560,11 @@ class NewRegisterFormController {
            }
           }
       }
-    } else {
-        if (imageError != null) {
-          ScaffoldMessenger.of(context).hideCurrentSnackBar();
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(imageError!),
-              backgroundColor: Colors.red,
-              ),
-          );
-        }
-    }
   }
 
   Future<SimpleRegisterRequest?> sendSimpleRegisterToApi(
       String name, String hour, bool witnessed,
-      double latitude, double longitude, String city, String beachSpot) async {
+      double latitude, double longitude, String city, String beachSpot, String referencePoint) async {
     User user = FirebaseAuth.instance.currentUser!;
     try{
       if(_image == null){
@@ -495,7 +593,8 @@ class NewRegisterFormController {
         date: DateTime.now(),
         status: 'Enviado',
         city: city,
-        beachSpot: beachSpot
+        beachSpot: beachSpot,
+        referencePoint: referencePoint,
       );
 
       await addRegisterToFirestore(
@@ -687,7 +786,8 @@ class NewRegisterFormController {
                   register.data['latitude'],
                   register.data['longitude'],
                   register.data['city'],
-                  register.data['beachSpot']
+                  register.data['beachSpot'],
+                  register.data['referencePoint'],
                 );
               } else if(register.registerType == 'technical') {
                   await sendTechnicalRegisterToApi(

@@ -1,21 +1,22 @@
+import 'package:badges/badges.dart' as badges;
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+
 import 'package:tcc_ceclimar/controller/auth_user_controller.dart';
 import 'package:tcc_ceclimar/controller/my_registers_controller.dart';
 import 'package:tcc_ceclimar/models/user_data.dart';
 import 'package:tcc_ceclimar/pages/about_us.dart';
+import 'package:tcc_ceclimar/pages/home.dart';
+import 'package:tcc_ceclimar/pages/local_animals.dart';
+import 'package:tcc_ceclimar/pages/my_profile.dart';
+import 'package:tcc_ceclimar/pages/my_registers.dart';
+import 'package:tcc_ceclimar/pages/new_researcher_user.dart';
+import 'package:tcc_ceclimar/pages/new_simple_register.dart';
 import 'package:tcc_ceclimar/pages/new_technical_register.dart';
-import '../widgets/new_register_floating_btn.dart';
-import 'home.dart';
-import 'my_registers.dart';
-import 'new_simple_register.dart';
-import 'my_profile.dart';
-import 'register_pannel.dart';
-import 'pending_registers.dart';
-import 'local_animals.dart';
-import 'new_researcher_user.dart';
-import 'package:badges/badges.dart' as badges;
-import 'package:hive/hive.dart';
+import 'package:tcc_ceclimar/pages/pending_registers.dart';
+import 'package:tcc_ceclimar/pages/register_pannel.dart';
+import 'package:tcc_ceclimar/widgets/new_register_floating_btn.dart';
 
 class BasePage extends StatefulWidget {
   static const String routeName = '/basePage';
@@ -181,10 +182,6 @@ class _BasePageState extends State<BasePage> {
                     int currentCount = snapshot.data ?? 0;
                     bool hasNewRegister =
                         currentCount > _lastSeenRegisterCount;
-                    print('curent user: $_currentUserId');
-                    print('hasNewRegister: $hasNewRegister');
-                    print('currentCount: $currentCount');
-                    print('_lastSeenRegisterCount: $_lastSeenRegisterCount');
                     return selectedIndex == 1
                         ? badges.Badge(
                             showBadge: hasNewRegister,

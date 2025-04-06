@@ -10,6 +10,7 @@ class RegisterResponse {
   final String? hour;
   final bool state;
   final String beachSpot;
+  final String? referencePoint;
   final int? sampleState;
   final String latitude;
   final String longitude;
@@ -32,6 +33,7 @@ class RegisterResponse {
     this.hour,
     required this.authorName,
     required this.beachSpot,
+    this.referencePoint,
     this.sampleState,
     required this.latitude,
     required this.longitude,
@@ -52,6 +54,7 @@ class RegisterResponse {
       hour: json['hour'],
       state: json['state'] ?? false,
       beachSpot: json['beachSpot'] ?? '',
+      referencePoint: json['referencePoint'] ?? '',
       sampleState: json['sampleState'],
       latitude: json['location']?['latitude'] ?? '',
       longitude: json['location']?['longitude'] ?? '',
@@ -74,6 +77,7 @@ class RegisterResponse {
       'hour': hour,
       'state': state,
       'beachSpot': beachSpot,
+      'referencePoint': referencePoint,
       'sampleState': sampleState,
       'latitude': latitude,
       'longitude': longitude,

@@ -54,11 +54,11 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
   @override
   void initState() {
     super.initState();
-    _formController.nameController.addListener(_updateBtnStatus);
-    _formController.hourController.addListener(_updateBtnStatus);
-    _formController.speciesController.addListener(_updateBtnStatus);
-    _formController.cityController.addListener(_updateBtnStatus);
-    _formController.beachSpotController.addListener(_updateBtnStatus);
+    // _formController.nameController.addListener(_updateBtnStatus);
+    // _formController.hourController.addListener(_updateBtnStatus);
+    // _formController.speciesController.addListener(_updateBtnStatus);
+    // _formController.cityController.addListener(_updateBtnStatus);
+    // _formController.beachSpotController.addListener(_updateBtnStatus);
     _loadAnimals();
     _initializeFilteredLists();
 
@@ -318,7 +318,7 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
       _formController.hourController.text = '';
       _formController.hourError = null;
       isSwitchOn = valueHour;
-      _updateBtnStatus();
+      // _updateBtnStatus();
     });
   }
 
@@ -332,15 +332,15 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
       _formController.beachSpotError = null;
       _formController.cityError = null;
       isOnLocal = valueLocal;
-      _updateBtnStatus();
+      // _updateBtnStatus();
     });
   }
 
-  void _updateBtnStatus() {
-    setState(() {
-      isBtnEnabled = _formController.isBtnEnable();
-    });
-  }
+  // void _updateBtnStatus() {
+  //   setState(() {
+  //     isBtnEnabled = _formController.isBtnEnable();
+  //   });
+  // }
 
   Future<bool> _handleLocationPermission() async {
     bool serviceEnabled;
@@ -464,7 +464,7 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
               text: "Nome Popular",
               controller: _formController.nameController,
               validator: (value) => _formController.nameError,
-              onChanged: (_) => _updateBtnStatus(),
+              // onChanged: (_) => _updateBtnStatus(),
               maxLength: 50,
             ),
             Padding(
@@ -531,7 +531,7 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
                         setState(() {
                           _formController.cityController.text = newValue ?? '';
                           _formController.beachSpotController.text = '';
-                          _updateBtnStatus();
+                          // _updateBtnStatus();
                         });
                       },
                       validator: (value) => _formController.cityError,
@@ -590,7 +590,7 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
                           if (_formController.cityController.text.isEmpty && _formController.currentGuarita != null && _formController.currentGuarita!.city != null) {
                             _formController.cityController.text = _formController.currentGuarita!.city!;
                           }
-                          _updateBtnStatus();
+                          // _updateBtnStatus();
                         });
                       },
                       validator: (value) => _formController.beachSpotError,
@@ -622,7 +622,7 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
                       if (pickedTime != null) {
                       setState(() {
                         _formController.hourController.text = pickedTime.format(context);
-                        _updateBtnStatus();
+                        // _updateBtnStatus();
                       });
                       }
                     },
@@ -632,7 +632,7 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
                       controller: _formController.hourController,
                       validator: (value) => _formController.hourError,
                       onChanged: (_) {
-                        _updateBtnStatus(); 
+                        // _updateBtnStatus(); 
                       },
                       ),
                     ),
@@ -646,7 +646,7 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
                 text: "Observações (Opcional)",
                 controller: _formController.obsController,
                 validator: (value) => _formController.obsError,
-                onChanged: (_) => _updateBtnStatus(),
+                // onChanged: (_) => _updateBtnStatus(),
                 maxLength: 600,
                 maxLines: 10,
               ),
@@ -657,7 +657,7 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
               controller: _formController.classController,
               validator: (value) => _formController.classError,
               onChanged: (_) {
-                _updateBtnStatus();
+                // _updateBtnStatus();
                 _updateDropdownOptions();
                 clearRelatedFields("class");
               },
@@ -673,7 +673,7 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
               controller: _formController.orderController,
               validator: (value) => _formController.orderError,
               onChanged: (_) {
-                _updateBtnStatus();
+                // _updateBtnStatus();
                 _updateDropdownOptions();
                 clearRelatedFields("order");
               },
@@ -689,7 +689,7 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
               controller: _formController.familyController,
               validator: (value) => _formController.familyError,
               onChanged: (_) {
-                _updateBtnStatus();
+                // _updateBtnStatus();
                 _updateDropdownOptions();
                 clearRelatedFields("family");
               },
@@ -705,7 +705,7 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
               controller: _formController.genuController,
               validator: (value) => _formController.genuError,
               onChanged: (_) {
-                _updateBtnStatus();
+                // _updateBtnStatus();
                 _updateDropdownOptions();
                 clearRelatedFields("genus");
               },
@@ -721,7 +721,7 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
               controller: _formController.speciesController,
               validator: (value) => _formController.speciesError,
               onChanged: (_) {
-                _updateBtnStatus();
+                // _updateBtnStatus();
                 _updateDropdownOptions();
                 clearRelatedFields("species");
               },
@@ -787,10 +787,10 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
       context: context,
       builder: (context) {
         return const ModalHelpRegisterImageBottomSheet(
-          text: "Marque esse campo se você está enviando o registro após ter saído do local onde encontrou o animal.",
-          height: 250,
+            text: "Marque esse campo se você está enviando o registro após ter saído do local onde encontrou o animal.\n\n Aqui você pode informar um ponto de referencia o município ou o número da guarita. Quanto mais informação melhor! 😊",
+          height: 350,
           );
       },
     );
-  }  
+  }   
 }
