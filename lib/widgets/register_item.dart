@@ -5,17 +5,21 @@ import 'package:intl/intl.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:tcc_ceclimar/models/register_response.dart';
+import 'package:tcc_ceclimar/pages/evaluate_register.dart';
+import 'package:tcc_ceclimar/pages/register_view.dart';
 
 class RegisterItem extends StatelessWidget {
   final RegisterResponse register;
   final String route;
   final bool isLoading;
+  final VoidCallback? onDeleted;
 
   const RegisterItem({
     super.key,
     required this.register,
     required this.route,
     required this.isLoading,
+    this.onDeleted,
   });
 
   @override
@@ -25,13 +29,26 @@ class RegisterItem extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.all(4),
           child: GestureDetector(
-            onTap: () {
-              Navigator.pushNamed(
-                context,
-                route,
-                arguments: register,
-              );
-            },
+            onTap: isLoading
+              ? null
+              : () async {
+                  final result = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => route == RegisterDetailPage.routeName
+                        ? RegisterDetailPage(
+                          register: register,
+                          onDelete: onDeleted,
+                        )
+                        : EvaluateRegister(
+                          register: register,
+                        ),
+                    ),
+                  );
+                  if (result == true && onDeleted != null) {
+                    onDeleted!();
+                  }
+                },
             child: Card(
               elevation: 0,
               shape: RoundedRectangleBorder(

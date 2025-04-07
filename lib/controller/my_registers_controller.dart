@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/material.dart';
 import 'package:tcc_ceclimar/models/register_response.dart';
 
 class MyRegistersController {
@@ -43,5 +45,46 @@ class MyRegistersController {
         .collection('registers')
         .snapshots()
         .map((snapshot) => snapshot.docs.length);
+  }
+
+  Future<bool> deleteRegister(String registerId, String userId) async {
+    User? user = _auth.currentUser;
+
+    if (user == null) {
+      throw Exception('Usuário não autenticado');
+    }
+
+    try {
+      QuerySnapshot snapshot = await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('registers')
+          .where('registerNumber', isEqualTo: registerId)
+          .get();
+
+      if (snapshot.docs.isNotEmpty) {
+        await _firestore
+            .collection('users')
+            .doc(userId)
+            .collection('registers')
+            .doc(snapshot.docs.first.id)
+            .delete();
+      } else {
+        return false;
+      }
+      
+      try {
+        final storageRef = FirebaseStorage.instance.ref();
+        await storageRef.child('registers/${registerId}_1').delete();
+        await storageRef.child('registers/${registerId}_2').delete();
+      } catch (e) {
+        debugPrint('Error deleting images: $e');
+      }
+      
+      return true;
+    } catch (e) {
+      debugPrint('Error deleting register: $e');
+      return false;
+    }
   }
 }

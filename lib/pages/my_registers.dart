@@ -46,8 +46,7 @@ class _MyRegistersState extends State<MyRegisters> {
           registers = fetchedRegisters;
           isLoading = false;
           if (status != "Todos") {
-            registers =
-                registers.where((element) => element.status == status).toList();
+            registers = registers.where((element) => element.status == status).toList();
           }
           selectedFilter = status;
         });
@@ -59,7 +58,11 @@ class _MyRegistersState extends State<MyRegisters> {
         });
       }
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erro ao carregar registros: $e')),
+        SnackBar(
+          content: Text('Erro ao carregar registros: $e'),
+          duration: Duration(seconds: 2),
+          backgroundColor: Colors.red,
+        ),
       );
     }
   }
@@ -174,11 +177,15 @@ class _MyRegistersState extends State<MyRegisters> {
                                   physics: const AlwaysScrollableScrollPhysics(),
                                   shrinkWrap: true,
                                   itemCount: displayRegisters.length,
+                                  itemExtent: 100,
                                   itemBuilder: (context, index) {
                                     return RegisterItem(
                                       register: displayRegisters[index],
                                       route: RegisterDetailPage.routeName,
                                       isLoading: isLoading,
+                                      onDeleted: () {
+                                        fetchRegisters(selectedFilter); 
+                                      },
                                     );
                                   },
                                 ),

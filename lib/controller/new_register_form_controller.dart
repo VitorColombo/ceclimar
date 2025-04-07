@@ -601,9 +601,9 @@ class NewRegisterFormController {
         _image = _image2;
         _image2 = null;
       }
-      final String imageUrl = await uploadImageToFirebaseStorage(_image!);
-      final String? imageUrl2 = _image2 != null ? await uploadImageToFirebaseStorage(_image2!) : null;
       final int registerId = await getNextRegisterId();
+      final String imageUrl = await uploadImageToFirebaseStorage(_image!, registerId, "1");
+      final String? imageUrl2 = _image2 != null ? await uploadImageToFirebaseStorage(_image2!, registerId, "2") : null;
 
       final newRegister = SimpleRegisterRequest(
         userId: user.uid,
@@ -649,9 +649,9 @@ class NewRegisterFormController {
         _image = _image2;
         _image2 = null;
       }
-      final String imageUrl = await uploadImageToFirebaseStorage(_image!);
-      final String? imageUrl2 = _image2 != null ? await uploadImageToFirebaseStorage(_image2!) : null;
       final int registerId = await getNextRegisterId();
+      final String imageUrl = await uploadImageToFirebaseStorage(_image!, registerId, "1");
+      final String? imageUrl2 = _image2 != null ? await uploadImageToFirebaseStorage(_image2!, registerId, "2") : null;
 
       final newRegister = TechnicalRegisterRequest(
         userId: user.uid,
@@ -704,10 +704,10 @@ class NewRegisterFormController {
     }
   }
 
-  Future<String> uploadImageToFirebaseStorage(File imageFile) async {
+  Future<String> uploadImageToFirebaseStorage(File imageFile, int id, String qtd) async {
     try {
       final storageRef = FirebaseStorage.instance.ref();
-      final fileName = DateTime.now().millisecondsSinceEpoch.toString();
+      final fileName = "${id}_$qtd";
       final uploadTask = storageRef.child('registers/$fileName.jpg').putFile(imageFile);
       final snapshot = await uploadTask.whenComplete(() => {});
       final imageUrl = await snapshot.ref.getDownloadURL();

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:tcc_ceclimar/controller/auth_user_controller.dart';
+import 'package:tcc_ceclimar/controller/my_registers_controller.dart';
 import 'package:tcc_ceclimar/models/register_response.dart';
-import 'package:tcc_ceclimar/utils/user_role.dart';
 import 'package:tcc_ceclimar/widgets/register_status_label.dart';
 // ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart';
@@ -10,8 +10,13 @@ import 'package:intl/intl.dart';
 class RegisterDetailPage extends StatefulWidget {
   final RegisterResponse? register;
   static const String routeName = '/registerDetail';
+  final VoidCallback? onDelete;
 
-  const RegisterDetailPage({super.key, required this.register});
+  const RegisterDetailPage({
+    super.key, 
+    required this.register,
+    this.onDelete,
+  });
 
   @override
   RegisterDetailPageState createState() => RegisterDetailPageState();
@@ -20,6 +25,7 @@ class RegisterDetailPage extends StatefulWidget {
 class RegisterDetailPageState extends State<RegisterDetailPage> {
   late PageController _pageController;
   final AuthenticationController authController = AuthenticationController();
+  final MyRegistersController myRegistersController = MyRegistersController();
   String _userRole = "user";
   int _currentPage = 0;
 
@@ -30,8 +36,9 @@ class RegisterDetailPageState extends State<RegisterDetailPage> {
     _pageController = PageController(initialPage: 0);
   }
 
-  void getUserRole() async{
+  void getUserRole() async {
     await authController.getUserRole().then((role) {
+      if (!mounted) return;
       setState(() {
         _userRole = role;
       });
@@ -223,41 +230,24 @@ class RegisterDetailPageState extends State<RegisterDetailPage> {
                               ),
                             ),
                           ),
-                          const SizedBox(height: 8),
-                          Visibility(
-                            visible: _userRole == "admin",
-                            child: Row(
-                              children: [
-                                InkWell(
+                          const SizedBox(height: 6),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'Registro Nº ${widget.register!.registerNumber}',
+                                style: const TextStyle(fontSize: 16),
+                              ),
+                              Visibility(
+                                visible: _userRole == "admin",
+                                child: InkWell(
                                   onTap: () {
-                                    showDialog(
-                                      context: context,
-                                      builder: (context) => AlertDialog(
-                                        title: const Text('Confirmar Exclusão'),
-                                        content: const Text('Tem certeza que deseja excluir este registro? Esta ação não pode ser desfeita.'),
-                                        actions: [
-                                          TextButton(
-                                            onPressed: () => Navigator.pop(context),
-                                            child: const Text('Cancelar'),
-                                          ),
-                                          TextButton(
-                                            onPressed: () {
-                                                Navigator.pop(context); 
-                                                ScaffoldMessenger.of(context).showSnackBar(
-                                                  const SnackBar(content: Text('Funcionalidade Excluir não implementada.')),
-                                                );
-                                            },
-                                            child: const Text('Excluir', style: TextStyle(color: Colors.red)),
-                                          ),
-                                        ],
-                                      ),
-                                    );
+                                    _deleteRegister();
                                   },
-                                  splashColor: Colors.lightBlueAccent,
-                                  highlightColor: Colors.lightBlueAccent,
+                                  splashColor: Colors.redAccent,
+                                  highlightColor: Colors.redAccent,
                                   borderRadius: BorderRadius.circular(50),
                                   child: Container(
-                                    alignment: Alignment.centerRight,
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
                                       border: Border.all(color: Color.fromARGB(255, 121, 121, 121), width: 1),
@@ -266,24 +256,19 @@ class RegisterDetailPageState extends State<RegisterDetailPage> {
                                       padding: const EdgeInsets.all(4.0),
                                       child: Icon(
                                         PhosphorIcons.trash(PhosphorIconsStyle.light),
-                                        size: 35,
+                                        size: 25,
                                       ),
                                     ),
                                   ),
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
-                          const SizedBox(height: 6),
                           Row(
                             children: [
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
-                                    'Registro Nº ${widget.register!.registerNumber}',
-                                    style: const TextStyle(fontSize: 16),
-                                  ),
                                   const SizedBox(height: 8), 
                                   StatusLabel(status: '${widget.register?.status}', borderColor: Colors.transparent),
                                   const SizedBox(height: 8),
@@ -522,6 +507,78 @@ class RegisterDetailPageState extends State<RegisterDetailPage> {
         return Colors.purple;
       default:
         return Colors.grey;
+    }
+  }
+
+  void _deleteRegister() async {
+    final shouldDelete = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Confirmar Exclusão'),
+        content: const Text('Tem certeza que deseja excluir este registro? Esta ação não pode ser desfeita.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Excluir', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+
+    if (shouldDelete != true) return;
+
+    try {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(child: CircularProgressIndicator()),
+      );
+
+      final result = await myRegistersController.deleteRegister(
+        widget.register!.registerNumber, 
+        widget.register!.userId
+      );
+
+      if (!mounted) return;
+
+      Navigator.of(context).pop();
+
+      if (result) {
+        Navigator.of(context).pop();
+        widget.onDelete?.call();
+        
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Registro excluído com sucesso!'), 
+            duration: Duration(seconds: 2),
+            backgroundColor: Colors.green,
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Erro ao excluir o registro.'),
+            duration: Duration(seconds: 2),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      
+      Navigator.of(context).pop();
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erro: $e'), 
+          duration: Duration(seconds: 2),
+          backgroundColor: Colors.red,
+        )
+      );
     }
   }
 }
