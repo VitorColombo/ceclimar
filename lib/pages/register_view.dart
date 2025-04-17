@@ -419,14 +419,14 @@ class RegisterDetailPageState extends State<RegisterDetailPage> {
                             ),
                           ),
                           const SizedBox(height: 16),
-                          Container(
-                            padding: const EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              color: Colors.grey[50],
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                            child: Visibility(
-                              visible: widget.register!.specialistReturn != null && widget.register!.status == "Validado" && widget.register!.animal.species != null && widget.register!.animal.order != null && widget.register!.animal.family != null && widget.register!.animal.genus != null,
+                          Visibility(
+                            visible: widget.register!.status == "Validado" && widget.register!.animal.species != null && widget.register!.animal.order != null && widget.register!.animal.family != null && widget.register!.animal.genus != null,
+                            child: Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: Colors.grey[50],
+                                borderRadius: BorderRadius.circular(15),
+                              ),
                               child: Column(
                                 children: [
                                   Text(
