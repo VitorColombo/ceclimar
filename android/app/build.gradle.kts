@@ -1,5 +1,6 @@
 plugins {
     id("com.android.application")
+    id("org.jetbrains.kotlin.android")
     id("kotlin-android")
     id("dev.flutter.flutter-gradle-plugin")
     id("com.google.gms.google-services")
@@ -15,21 +16,37 @@ android {
         targetCompatibility = JavaVersion.VERSION_11
     }
 
+    signingConfigs {
+        create("release") {
+            storeFile = file(project.property("MY_KEYSTORE_FILE") as String)
+            storePassword = project.property("MY_KEYSTORE_PASSWORD") as String
+            keyAlias = project.property("MY_KEY_ALIAS") as String
+            keyPassword = project.property("MY_KEY_PASSWORD") as String
+        }
+    }
+
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_11.toString()
+        freeCompilerArgs += "-Xlint:deprecation"
     }
 
     defaultConfig {
         applicationId = "com.example.tcc_ceclimar"
-        minSdk = 34
+        minSdk = 23
         targetSdk = 35
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
 
     buildTypes {
-        release {
-            // signingConfig = signingConfigs.getByName("debug")
+        getByName("release") {
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+            signingConfig = signingConfigs.getByName("release")
         }
     }
 }
@@ -39,6 +56,7 @@ flutter {
 }
 
 dependencies {
-  implementation(platform("com.google.firebase:firebase-bom:33.11.0"))
-  implementation("com.google.firebase:firebase-analytics")
+    implementation(platform("com.google.firebase:firebase-bom:33.11.0"))
+    implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-appcheck-playintegrity")
 }

@@ -240,8 +240,8 @@ class EvaluateRegisterFormController {
       sampleState: int.tryParse(animalStateController.text) ?? 0,
       specialistReturn: obsController.text,
       location: {
-        "latitude": latitude.toString().substring(0, 10),
-        "longitude": longitude.toString().substring(0, 10),
+        "latitude": latitude.toString(),
+        "longitude": longitude.toString(),
       },
       city:cityController.text,
       beachSpot: beachSpotController.text,
@@ -278,6 +278,29 @@ class EvaluateRegisterFormController {
         }
       } else {
         throw Exception('Registro não encontrado');
+      }
+
+      if(classController.text.toLowerCase() == "aves"){
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(register.userId)
+            .update({
+          'birdsFound': FieldValue.increment(1),
+        });
+      } else if(classController.text.toLowerCase() == "mammalia"){
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(register.userId)
+            .update({
+          'mammalsFound': FieldValue.increment(1),
+        });
+      } else if(classController.text.toLowerCase() == "reptilia"){
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(register.userId)
+            .update({
+          'reptilesFound': FieldValue.increment(1),
+        });
       }
     } catch (e) {
       rethrow;

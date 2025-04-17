@@ -36,7 +36,7 @@ class _MyProfileState extends State<MyProfile> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   bool isLoading = true;
   List<RegisterResponse> registers = [];
-  List<AnimalResponse> animals = [];
+  Map<dynamic, dynamic> animalCounters = {};
   ImageProvider image = AssetImage('assets/images/imageProfile.png');
 
   Future<void> _logout(BuildContext context) async {
@@ -71,7 +71,8 @@ class _MyProfileState extends State<MyProfile> {
       Navigator.pushNamedAndRemoveUntil(context, '/login', (Route<dynamic> route) => false);
     } else {
       _loadUserImage();
-      fetchMockedRegisters();
+      fetchRegisters();
+      fetchAnimalCounters();
     }
   }
 
@@ -81,13 +82,25 @@ class _MyProfileState extends State<MyProfile> {
     _checkUserStatus();
   }
   
-  Future<void> fetchMockedRegisters() async {
+  Future<void> fetchRegisters() async {
     await Future.delayed(const Duration(milliseconds: 200));
     if (!mounted) return;
     List<RegisterResponse> fetchedRegisters = await _myProfileController.getRegisters();
     if (mounted){ 
       setState(() {
         registers = fetchedRegisters;
+        isLoading = false;
+      });
+    }    
+  }
+
+  Future<void> fetchAnimalCounters() async {
+    await Future.delayed(const Duration(milliseconds: 200));
+    if (!mounted) return;
+    Map<dynamic, dynamic> fetchedAnimalCounters = await _myProfileController.getAnimalsCounters();
+    if (mounted){ 
+      setState(() {
+        animalCounters = fetchedAnimalCounters;
         isLoading = false;
       });
     }    
@@ -195,7 +208,7 @@ class _MyProfileState extends State<MyProfile> {
                   builder: (context, isUltimosRegistros, child) {
                     return !isUltimosRegistros
                             ? UltimosRegistrosContent(registers: registers, isLoading: isLoading)
-                            : AnimaisEncontradosContent(registers: registers, isLoading: isLoading);
+                            : AnimaisEncontradosContent(counters: animalCounters, isLoading: isLoading);
                   },
                 ),
               ]
@@ -346,7 +359,7 @@ class UltimosRegistrosContent extends StatelessWidget {
     final displayRegisters = isLoading ? placeholderRegisters : limitedRegisters;
 
     return SizedBox(
-      height: 400,
+      height: 340,
       child: Skeletonizer(
         enabled: isLoading,
         child: ListView.builder(
@@ -368,41 +381,68 @@ class UltimosRegistrosContent extends StatelessWidget {
 }
 
 class AnimaisEncontradosContent extends StatelessWidget {
-  final List<dynamic> registers;
+  final Map<dynamic, dynamic> counters;
   final bool isLoading;
-  const AnimaisEncontradosContent({super.key, required this.registers, required this.isLoading});
+  const AnimaisEncontradosContent({super.key, required this.counters, required this.isLoading});
 
   @override
   Widget build(BuildContext context) {
-    if (!isLoading && registers.isEmpty) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 20),
-          child: Text(
-            "Nenhum registro encontrado",
-            style: Theme.of(context).textTheme.bodyLarge,
-          ),
-        ),
-      );
-    }
-    final placeholderRegisters = generatePlaceholderRegisters(6);
-    final displayRegisters = isLoading ? placeholderRegisters : registers;
+    final placeholderCounters = generatePlaceholderRegisters(3);
 
     return SizedBox(
-      height: 400,
+      height: 200,
       child: Skeletonizer(
         enabled: isLoading,
-        child: GridView.builder(
-          padding: EdgeInsets.only(top: 0, bottom: 70, left: 1, right: 1),
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3,
-            crossAxisSpacing: 9,
-            mainAxisSpacing: 1,
-          ),
-          itemCount: displayRegisters.length,
-          itemBuilder: (context, index) {
-            return BadgeItem(register: displayRegisters[index]);
-          },
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Column(
+              children: [
+                SizedBox(height: 10),
+                BadgeItem(
+                  classe: "Aves",
+                  image: Image.asset("assets/images/gaivotaBadge.png"),
+                ),
+                SizedBox(height: 5),
+                Text(
+                  "Aves",
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+                Text(counters['birdsFound'] != null ? "${counters['birdsFound']}" : "0")
+              ],
+            ),
+            Column(
+              children: [
+                SizedBox(height: 10),
+                BadgeItem(
+                  classe: "Mamíferos",
+                  image: Image.asset("assets/images/gaivotaBadge.png"),
+                ),
+                SizedBox(height: 5),
+                Text(
+                  "Mamíferos",
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+                Text(counters['mammalsFound'] != null ? "${counters['mammalsFound']}" : "0")
+              ],
+            ),
+            Column(
+              children: [
+                SizedBox(height: 10),
+                BadgeItem(
+                  classe: "Répteis",
+                  image: Image.asset("assets/images/gaivotaBadge.png"),
+                ),
+                SizedBox(height: 5),
+                Text(
+                  "Répteis",
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+                Text(counters['reptilesFound'] != null ? "${counters['reptilesFound']}" : "0")
+              ],
+            ),
+          ],
         ),
       ),
     );

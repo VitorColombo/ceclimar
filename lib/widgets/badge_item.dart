@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import '../models/register_response.dart';
 
 class BadgeItem extends StatelessWidget {
-  final RegisterResponse register;
-
-  const BadgeItem({super.key, required this.register});
+  final String classe;
+  final Image image;
+  
+  BadgeItem({super.key, required this.classe, required this.image});
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +21,7 @@ class BadgeItem extends StatelessWidget {
                 height: 110,
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(10),
-                  child: Image.asset("assets/images/gaivotaBadge.png"),
+                  child: image,
                 ),
               ),
             ],
