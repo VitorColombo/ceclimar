@@ -390,56 +390,73 @@ class AnimaisEncontradosContent extends StatelessWidget {
     final placeholderCounters = generatePlaceholderRegisters(3);
 
     return SizedBox(
-      height: 200,
+      height: 340,
       child: Skeletonizer(
         enabled: isLoading,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Column(
-              children: [
-                SizedBox(height: 10),
-                BadgeItem(
-                  classe: "Aves",
-                  image: Image.asset("assets/images/gaivotaBadge.png"),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Center(
+                child: Text(
+                "Seja um cientista cidadão! Contribua e junte as medalhas com seus registro validados",
+                style: Theme.of(context).textTheme.bodyLarge,
+                textAlign: TextAlign.center,
                 ),
-                SizedBox(height: 5),
-                Text(
-                  "Aves",
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
-                Text(counters['birdsFound'] != null ? "${counters['birdsFound']}" : "0")
-              ],
+              ),
             ),
-            Column(
+            SizedBox(width: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height: 10),
-                BadgeItem(
-                  classe: "Mamíferos",
-                  image: Image.asset("assets/images/gaivotaBadge.png"),
+                Column(
+                  children: [
+                    SizedBox(height: 10),
+                    BadgeItem(
+                      classe: "Aves",
+                      image: Image.asset("assets/images/gaivotaBadge.png"),
+                    ),
+                    SizedBox(height: 5),
+                    Text(
+                      "Aves",
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
+                    Text(counters['birdsFound'] != null ? "${counters['birdsFound']}" : "0")
+                  ],
                 ),
-                SizedBox(height: 5),
-                Text(
-                  "Mamíferos",
-                  style: Theme.of(context).textTheme.bodyLarge,
+                Column(
+                  children: [
+                    SizedBox(height: 10),
+                    BadgeItem(
+                      classe: "Mamíferos",
+                      image: Image.asset("assets/images/gaivotaBadge.png"),
+                    ),
+                    SizedBox(height: 5),
+                    Text(
+                      "Mamíferos",
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
+                    Text(counters['mammalsFound'] != null ? "${counters['mammalsFound']}" : "0")
+                  ],
                 ),
-                Text(counters['mammalsFound'] != null ? "${counters['mammalsFound']}" : "0")
-              ],
-            ),
-            Column(
-              children: [
-                SizedBox(height: 10),
-                BadgeItem(
-                  classe: "Répteis",
-                  image: Image.asset("assets/images/gaivotaBadge.png"),
+                Column(
+                  children: [
+                    SizedBox(height: 10),
+                    BadgeItem(
+                      classe: "Répteis",
+                      image: Image.asset("assets/images/gaivotaBadge.png"),
+                    ),
+                    SizedBox(height: 5),
+                    Text(
+                      "Répteis",
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
+                    Text(counters['reptilesFound'] != null ? "${counters['reptilesFound']}" : "0")
+                  ],
                 ),
-                SizedBox(height: 5),
-                Text(
-                  "Répteis",
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
-                Text(counters['reptilesFound'] != null ? "${counters['reptilesFound']}" : "0")
               ],
             ),
           ],

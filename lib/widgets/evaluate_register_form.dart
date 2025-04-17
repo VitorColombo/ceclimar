@@ -86,6 +86,8 @@ class _EvaluateRegisterFormState extends State<EvaluateRegisterForm> {
         _populateFilterLists();
       });
     }
+    
+    _formController.animalStateController.text = "3";
   }
 
   void _populateFilterLists(){
