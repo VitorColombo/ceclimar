@@ -395,20 +395,16 @@ class RegisterPannelState extends State<RegisterPannel> {
                                         children: [
                                           PieChart(
                                             dataMap: dataMap,
-                                            animationDuration:
-                                                const Duration(milliseconds: 800),
+                                            animationDuration: const Duration(milliseconds: 800),
                                             chartLegendSpacing: 32,
                                             chartRadius: chartSize * 0.8,
-                                            chartValuesOptions:
-                                                const ChartValuesOptions(
+                                            chartValuesOptions: const ChartValuesOptions(
                                               decimalPlaces: 0,
                                               showChartValues: true,
                                             ),
                                             legendOptions: LegendOptions(
-                                              legendPosition:
-                                                  LegendPosition.bottom,
-                                              legendTextStyle:
-                                                  const TextStyle(
+                                              legendPosition: LegendPosition.bottom,
+                                              legendTextStyle: const TextStyle(
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 14,
                                               ),

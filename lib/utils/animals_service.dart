@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:tcc_ceclimar/models/animal_response.dart';
+import 'package:tcc_ceclimar/models/animal_update_request.dart';
 
 class AnimalService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -224,6 +225,43 @@ class AnimalService {
         print('Failed to filter animals: $e');
       }
       return null;
+    }
+  }
+
+  Future<void> insertNewAnimal(AnimalUpdateRequest animal) async {
+    final firestore = FirebaseFirestore.instance;
+
+    try {
+      await firestore.runTransaction((transaction) async {
+        final counterRef = firestore.collection('counters').doc('animalCounter');
+        final snapshot = await transaction.get(counterRef);
+
+        int currentId = snapshot.data()?['generalCounter'] ?? 0;
+        int newId = currentId + 1;
+
+        transaction.update(counterRef, {'generalCounter': newId});
+
+        final newAnimalRef = firestore.collection('animals').doc(newId.toString());
+        transaction.set(newAnimalRef, {
+          'id': newId,
+          'popularName': animal.popularName,
+          'scientificName': animal.species,
+          'classe': animal.classe,
+          'order': animal.order,
+          'family': animal.family,
+          'genus': animal.genus,
+          'quantity': 1,
+        });
+      });
+
+      if (kDebugMode) {
+        print('Animal adicionado com id.');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Erro ao inserir animal: $e');
+      }
+      rethrow;
     }
   }
 }

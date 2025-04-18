@@ -9,6 +9,7 @@ import 'package:tcc_ceclimar/utils/animals_service.dart';
 import 'package:tcc_ceclimar/utils/guarita_data.dart';
 
 class EvaluateRegisterFormController {
+  final AnimalService animalService = AnimalService();
   final TextEditingController nameController = TextEditingController();
   final TextEditingController hourController = TextEditingController();
   final TextEditingController speciesController = TextEditingController();
@@ -20,6 +21,7 @@ class EvaluateRegisterFormController {
   final TextEditingController orderController = TextEditingController();
   final TextEditingController classController = TextEditingController();
   final TextEditingController animalStateController = TextEditingController();
+  final ValueNotifier<bool> newAnimalSwitch = ValueNotifier<bool>(false);
 
   GuaritaData? currentGuarita;
 
@@ -34,16 +36,39 @@ class EvaluateRegisterFormController {
   String? classError;
   String? imageError;
   String? image2Error;
-  bool isSwitchOn = false;
-
+  
   void dispose() {
     nameController.dispose();
     hourController.dispose();
+    speciesController.dispose();
+    cityController.dispose();
+    beachSpotController.dispose();
+    obsController.dispose();
+    familyController.dispose();
+    genuController.dispose();
+    orderController.dispose();
+    classController.dispose();
+    animalStateController.dispose();
+    newAnimalSwitch.dispose();
+  }
+  
+  void toggleNewAnimalSwitch(bool value) {
+    newAnimalSwitch.value = value;
   }
 
   void clear() {
     nameController.clear();
     hourController.clear();
+    speciesController.clear();
+    cityController.clear();
+    beachSpotController.clear();
+    obsController.clear();
+    familyController.clear();
+    genuController.clear();
+    orderController.clear();
+    classController.clear();
+    animalStateController.clear();
+    newAnimalSwitch.value = false;
   }
 
   bool validateForm() {
@@ -220,22 +245,25 @@ class EvaluateRegisterFormController {
     }
   }
 
-  void sendTechnicalEvaluation(RegisterResponse register) async {
+  Future<void> sendTechnicalEvaluation(RegisterResponse register) async {
     double? latitude;
     double? longitude;
     if(beachSpotController.text.isNotEmpty && currentGuarita != null){
       latitude = currentGuarita!.latitude;
       longitude = currentGuarita!.longitude;
     }
+
+    final animalRequest = AnimalUpdateRequest(
+      popularName: nameController.text,
+      species: speciesController.text,
+      classe: classController.text,
+      order: orderController.text,
+      family: familyController.text,
+      genus: genuController.text,
+    );
+
     final updatedRegister = UpdateRegisterRequest(
-        animal: AnimalUpdateRequest(
-        popularName: nameController.text,
-        species: speciesController.text,
-        classe: classController.text,
-        order: orderController.text,
-        family: familyController.text,
-        genus: genuController.text,
-      ),
+      animal: animalRequest,
       status: "Validado",
       sampleState: int.tryParse(animalStateController.text) ?? 0,
       specialistReturn: obsController.text,
@@ -264,46 +292,53 @@ class EvaluateRegisterFormController {
             .doc(docId)
             .update(updatedRegister.toJson());
 
-        AnimalService animalService = AnimalService();
-        AnimalResponse? animal = await animalService.getAnimalFromSpecies(speciesController.text);
-        if(animal != null){
-          await FirebaseFirestore.instance
-              .collection('animals')
-              .doc(animal.id.toString())
-              .update({
-            'quantity': FieldValue.increment(1)
-          });
-        } else{
+        if (newAnimalSwitch.value) {
+          await animalService.insertNewAnimal(animalRequest);
+        } else {
+          final animal = await animalService.getAnimalFromSpecies(speciesController.text);
+          if (animal != null) {
+            await FirebaseFirestore.instance
+                .collection('animals')
+                .doc(animal.id.toString())
+                .update({
+              'quantity': FieldValue.increment(1),
+            });
+          } else {
             throw Exception('Falha ao atualizar quantidade de animais encontrados');
+          }
         }
       } else {
         throw Exception('Registro não encontrado');
       }
 
-      if(classController.text.toLowerCase() == "aves"){
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(register.userId)
-            .update({
-          'birdsFound': FieldValue.increment(1),
-        });
-      } else if(classController.text.toLowerCase() == "mammalia"){
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(register.userId)
-            .update({
-          'mammalsFound': FieldValue.increment(1),
-        });
-      } else if(classController.text.toLowerCase() == "reptilia"){
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(register.userId)
-            .update({
-          'reptilesFound': FieldValue.increment(1),
-        });
-      }
+      _incrementBadgeCounters(register.userId);
     } catch (e) {
       rethrow;
+    }
+  }
+
+  void _incrementBadgeCounters(String userId) async {
+    final userDoc = FirebaseFirestore.instance.collection('users').doc(userId);
+    final snapshot = await userDoc.get();
+
+    if (!snapshot.exists) {
+      debugPrint('User document not found. Skipping badge counter increment.');
+      return;
+    }
+
+    final userUpdate = <String, dynamic>{};
+
+    final classe = classController.text.toLowerCase();
+    if (classe == "aves") {
+      userUpdate['birdsFound'] = FieldValue.increment(1);
+    } else if (classe == "mammalia") {
+      userUpdate['mammalsFound'] = FieldValue.increment(1);
+    } else if (classe == "reptilia") {
+      userUpdate['reptilesFound'] = FieldValue.increment(1);
+    }
+
+    if (userUpdate.isNotEmpty) {
+      await userDoc.update(userUpdate);
     }
   }
 }
