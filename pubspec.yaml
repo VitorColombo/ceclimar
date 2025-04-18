@@ -70,6 +70,20 @@ flutter:
     - assets/images/loboMarinhoBadge.png
     - assets/images/gaivotaBadge.png
     - assets/images/pinguim.png
+    - assets/images/badges/gaivota1.png
+    - assets/images/badges/gaivota5.png
+    - assets/images/badges/gaivota10.png
+    - assets/images/badges/gaivota50.png
+    - assets/images/badges/lobo1.png
+    - assets/images/badges/lobo5.png
+    - assets/images/badges/lobo10.png
+    - assets/images/badges/lobo50.png
+    - assets/images/badges/tartaruga1.png
+    - assets/images/badges/tartaruga5.png
+    - assets/images/badges/tartaruga10.png
+    - assets/images/badges/tartaruga50.png
+    - assets/images/badges/secretBadge.png
+    - assets/images/badges/gaivotra.png
 
   fonts:
     - family: Inter

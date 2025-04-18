@@ -91,7 +91,7 @@ class _ProfileSwitchState extends State<ProfileSwitch> {
                         child: Center(
                           child: RichText(
                             text: TextSpan(
-                              text: 'Animais encontrados',
+                              text: 'Conquistas',
                               style: TextStyle(
                               fontSize: textSize,
                               fontWeight: FontWeight.bold,
