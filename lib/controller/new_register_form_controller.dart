@@ -663,7 +663,7 @@ class NewRegisterFormController {
           "family": family,
           "genus": genu,
           "order": order,
-          "class": classe,
+          "classe": classe,
         },
         hour: hour,
         witnessed: witnessed,

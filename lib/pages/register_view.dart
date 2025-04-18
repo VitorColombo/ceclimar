@@ -57,7 +57,7 @@ class RegisterDetailPageState extends State<RegisterDetailPage> {
         opaque: false,
         pageBuilder: (BuildContext context, _, __) {
           return Scaffold(
-            backgroundColor: Colors.black.withOpacity(0.9),
+            backgroundColor: Color.fromRGBO(0, 0, 0, 0.9),
             body: Stack(
               children: [
                 Center(

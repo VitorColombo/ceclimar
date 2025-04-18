@@ -14,7 +14,13 @@ import 'package:share_plus/share_plus.dart';
 import 'package:tcc_ceclimar/models/register_response.dart';
 
 class TableManipulationBottomSheet extends StatelessWidget {
-  const TableManipulationBottomSheet({super.key, required this.data});
+  final String userRole;
+
+  const TableManipulationBottomSheet({
+    super.key,
+    required this.data,
+    required this.userRole,
+  });
 
   final List<RegisterResponse> data;
 
@@ -23,9 +29,18 @@ class TableManipulationBottomSheet extends StatelessWidget {
     final filePath = '${directory.path}/dados_fauna_marinha.xlsx';
     final file = File(filePath);
 
-    var excelData = convertDataToExcel(data);
+    List<RegisterResponse> filteredData = data;
+
+    if (userRole != 'admin') {
+      filteredData = data
+        .where((e) => e.status.toLowerCase() == 'validado')
+        .map((e) => e.copyWith(authorName: ''))
+        .toList();
+    }
+
+    var excelData = convertDataToExcel(filteredData);
     List<int>? encodedData = excelData.encode();
-    
+
     if (encodedData != null) {
       await file.writeAsBytes(Uint8List.fromList(encodedData));
     }

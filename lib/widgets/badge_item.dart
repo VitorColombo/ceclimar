@@ -4,7 +4,7 @@ class BadgeItem extends StatelessWidget {
   final String classe;
   final Image image;
   
-  BadgeItem({super.key, required this.classe, required this.image});
+  const BadgeItem({super.key, required this.classe, required this.image});
 
   @override
   Widget build(BuildContext context) {

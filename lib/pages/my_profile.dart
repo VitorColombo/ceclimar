@@ -4,7 +4,6 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:tcc_ceclimar/controller/auth_user_controller.dart';
 import 'package:tcc_ceclimar/controller/my_profile_controller.dart';
-import 'package:tcc_ceclimar/models/animal_response.dart';
 import 'package:tcc_ceclimar/models/register_response.dart';
 import 'package:tcc_ceclimar/pages/edit_profile.dart';
 import 'package:tcc_ceclimar/pages/register_view.dart';
@@ -404,30 +403,30 @@ class AnimaisEncontradosContent extends StatelessWidget {
                   classe: "Aves",
                   count: counters['birdsFound'] ?? 0,
                   thresholds: [
-                    _BadgeThreshold(threshold: 1, assetPath: "assets/images/badges/gaivota1.png"),
-                    _BadgeThreshold(threshold: 1, assetPath: "assets/images/badges/gaivota5.png"),
-                    _BadgeThreshold(threshold: 1, assetPath: "assets/images/badges/gaivota10.png"),
-                    _BadgeThreshold(threshold: 1, assetPath: "assets/images/badges/gaivota50.png"),
+                    BadgeThreshold(threshold: 1, assetPath: "assets/images/badges/gaivota1.png"),
+                    BadgeThreshold(threshold: 1, assetPath: "assets/images/badges/gaivota5.png"),
+                    BadgeThreshold(threshold: 1, assetPath: "assets/images/badges/gaivota10.png"),
+                    BadgeThreshold(threshold: 1, assetPath: "assets/images/badges/gaivota50.png"),
                   ],
                 ),
                 BadgeColumn(
                   classe: "Mamíferos",
                   count: counters['mammalsFound'] ?? 0,
                   thresholds: [
-                    _BadgeThreshold(threshold: 1, assetPath: "assets/images/badges/lobo1.png"),
-                    _BadgeThreshold(threshold: 5, assetPath: "assets/images/badges/lobo5.png"),
-                    _BadgeThreshold(threshold: 20, assetPath: "assets/images/badges/lobo10.png"),
-                    _BadgeThreshold(threshold: 50, assetPath: "assets/images/badges/lobo50.png"),
+                    BadgeThreshold(threshold: 1, assetPath: "assets/images/badges/lobo1.png"),
+                    BadgeThreshold(threshold: 5, assetPath: "assets/images/badges/lobo5.png"),
+                    BadgeThreshold(threshold: 20, assetPath: "assets/images/badges/lobo10.png"),
+                    BadgeThreshold(threshold: 50, assetPath: "assets/images/badges/lobo50.png"),
                   ],
                 ),
                 BadgeColumn(
                   classe: "Répteis",
                   count: counters['reptilesFound'] ?? 0,
                   thresholds: [
-                    _BadgeThreshold(threshold: 1, assetPath: "assets/images/badges/tartaruga1.png"),
-                    _BadgeThreshold(threshold: 5, assetPath: "assets/images/badges/tartaruga5.png"),
-                    _BadgeThreshold(threshold: 20, assetPath: "assets/images/badges/tartaruga10.png"),
-                    _BadgeThreshold(threshold: 50, assetPath: "assets/images/badges/tartaruga50.png"),
+                    BadgeThreshold(threshold: 1, assetPath: "assets/images/badges/tartaruga1.png"),
+                    BadgeThreshold(threshold: 5, assetPath: "assets/images/badges/tartaruga5.png"),
+                    BadgeThreshold(threshold: 20, assetPath: "assets/images/badges/tartaruga10.png"),
+                    BadgeThreshold(threshold: 50, assetPath: "assets/images/badges/tartaruga50.png"),
                   ],
                 ),
               ],
@@ -436,7 +435,7 @@ class AnimaisEncontradosContent extends StatelessWidget {
               classe: "Cientista Cidadão",
               count: registerCount,
               thresholds: [
-                _BadgeThreshold(threshold: 100, assetPath: "assets/images/badges/secretBadge.png"),
+                BadgeThreshold(threshold: 100, assetPath: "assets/images/badges/secretBadge.png"),
               ],
             ),
             SizedBox(height: 10),
@@ -461,7 +460,7 @@ class AnimaisEncontradosContent extends StatelessWidget {
 class BadgeColumn extends StatelessWidget {
   final String classe;
   final int count;
-  final List<_BadgeThreshold> thresholds;
+  final List<BadgeThreshold> thresholds;
 
   const BadgeColumn({
     super.key,
@@ -503,9 +502,9 @@ class BadgeColumn extends StatelessWidget {
   }
 }
 
-class _BadgeThreshold {
+class BadgeThreshold {
   final int threshold;
   final String assetPath;
 
-  _BadgeThreshold({required this.threshold, required this.assetPath});
+  BadgeThreshold({required this.threshold, required this.assetPath});
 }

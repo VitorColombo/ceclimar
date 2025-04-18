@@ -53,7 +53,7 @@ class _HomePageState extends State<HomePage> {
     try {
       result = await Connectivity().checkConnectivity();
     } on PlatformException catch (e) {
-      print('Could not check connectivity status: $e');
+      debugPrint('Could not check connectivity status: $e');
       if (mounted) {
         setState(() {
            _connectionStatus = ConnectivityResult.none;
