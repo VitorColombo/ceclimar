@@ -28,6 +28,7 @@ class _HomePageState extends State<HomePage> {
 
   bool _showAdminCards = false;
   bool _adminAnimationTriggered = false;
+  // ignore: unused_field
   ConnectivityResult _connectionStatus = ConnectivityResult.none;
   late StreamSubscription<ConnectivityResult> _connectivitySubscription;
   bool _hasInternet = false;

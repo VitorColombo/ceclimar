@@ -36,7 +36,6 @@ class _SimpleRegisterFormState extends State<SimpleRegisterForm> {
 
   bool _validateForm() {
     final bool isControllerValid = _formController.validateForm();
-    setState(() {});
     return isControllerValid;
   }
 
@@ -79,6 +78,9 @@ class _SimpleRegisterFormState extends State<SimpleRegisterForm> {
           );
       await Future.delayed(const Duration(seconds: 3));
       await Geolocator.openLocationSettings();
+      setState(() {
+        _isFormSubmitted = false;
+      });
       return false;
     }
     permission = await Geolocator.checkPermission();
@@ -134,7 +136,6 @@ class _SimpleRegisterFormState extends State<SimpleRegisterForm> {
       setState(() {
         _isFormSubmitted = true;
       });
-
       await _formController.sendSimpleRegister(context, _getCurrentPosition);
     }
   }

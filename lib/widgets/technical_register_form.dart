@@ -341,6 +341,9 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
           );
       await Future.delayed(const Duration(seconds: 3));
       await Geolocator.openLocationSettings();
+      setState(() {
+        _isFormSubmitted = false;
+      });
       return false;
     }
     permission = await Geolocator.checkPermission();
