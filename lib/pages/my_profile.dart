@@ -388,8 +388,7 @@ class AnimaisEncontradosContent extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 750,
+    return Expanded(
       child: Skeletonizer(
         enabled: isLoading,
         child: Column(
@@ -406,9 +405,9 @@ class AnimaisEncontradosContent extends StatelessWidget {
                   count: counters['birdsFound'] ?? 0,
                   thresholds: [
                     _BadgeThreshold(threshold: 1, assetPath: "assets/images/badges/gaivota1.png"),
-                    _BadgeThreshold(threshold: 5, assetPath: "assets/images/badges/gaivota5.png"),
-                    _BadgeThreshold(threshold: 20, assetPath: "assets/images/badges/gaivota10.png"),
-                    _BadgeThreshold(threshold: 50, assetPath: "assets/images/badges/gaivota50.png"),
+                    _BadgeThreshold(threshold: 1, assetPath: "assets/images/badges/gaivota5.png"),
+                    _BadgeThreshold(threshold: 1, assetPath: "assets/images/badges/gaivota10.png"),
+                    _BadgeThreshold(threshold: 1, assetPath: "assets/images/badges/gaivota50.png"),
                   ],
                 ),
                 BadgeColumn(
@@ -451,6 +450,7 @@ class AnimaisEncontradosContent extends StatelessWidget {
                 ),
               ),
             ),
+            SizedBox(height: 20)
           ],
         ),
       ),
