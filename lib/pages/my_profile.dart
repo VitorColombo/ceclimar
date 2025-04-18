@@ -154,21 +154,29 @@ class _MyProfileState extends State<MyProfile> {
                     InkWell(
                       splashColor: Colors.transparent,
                       onTap: () => showMyProfileBottomSheet(context),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Visibility(
-                            visible: userData?.name != null,
-                            child: RichText(
-                              text: TextSpan(
-                              text: '${userData?.name}',
-                              style: Theme.of(context).textTheme.titleLarge,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Flexible(
+                              child: Visibility(
+                                visible: userData?.name != null,
+                                child: Text(
+                                  '${userData?.name}',
+                                  style: Theme.of(context).textTheme.titleLarge,
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                ),
                               ),
                             ),
-                          ),
-                          SizedBox(width: 8),
-                          Icon(PhosphorIcons.pencilSimple(PhosphorIconsStyle.regular), size: 20),
-                        ],
+                            SizedBox(width: 8),
+                            Icon(
+                              PhosphorIcons.pencilSimple(PhosphorIconsStyle.regular),
+                              size: 20,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                     SizedBox(height: 9),
@@ -404,9 +412,9 @@ class AnimaisEncontradosContent extends StatelessWidget {
                   count: counters['birdsFound'] ?? 0,
                   thresholds: [
                     BadgeThreshold(threshold: 1, assetPath: "assets/images/badges/gaivota1.png"),
-                    BadgeThreshold(threshold: 1, assetPath: "assets/images/badges/gaivota5.png"),
-                    BadgeThreshold(threshold: 1, assetPath: "assets/images/badges/gaivota10.png"),
-                    BadgeThreshold(threshold: 1, assetPath: "assets/images/badges/gaivota50.png"),
+                    BadgeThreshold(threshold: 5, assetPath: "assets/images/badges/gaivota5.png"),
+                    BadgeThreshold(threshold: 20, assetPath: "assets/images/badges/gaivota10.png"),
+                    BadgeThreshold(threshold: 50, assetPath: "assets/images/badges/gaivota50.png"),
                   ],
                 ),
                 BadgeColumn(

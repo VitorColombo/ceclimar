@@ -196,7 +196,7 @@ class EvaluateRegisterFormController {
   Future<void> sendEvaluation(BuildContext context, RegisterResponse register) async {
     if (validateForm()) {
       try {
-        sendTechnicalEvaluation(register);
+        await sendTechnicalEvaluation(register);
         ScaffoldMessenger.of(context).hideCurrentSnackBar();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

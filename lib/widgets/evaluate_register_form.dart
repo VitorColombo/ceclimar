@@ -317,7 +317,6 @@ class _EvaluateRegisterFormState extends State<EvaluateRegisterForm> {
       setState(() {
         _isFormSubmitted = true;
       });
-
       await _formController.sendEvaluation(context, widget.register);
     }
   }
