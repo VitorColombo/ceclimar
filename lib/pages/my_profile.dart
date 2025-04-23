@@ -412,9 +412,9 @@ class AnimaisEncontradosContent extends StatelessWidget {
                   count: counters['birdsFound'] ?? 0,
                   thresholds: [
                     BadgeThreshold(threshold: 1, assetPath: "assets/images/badges/gaivota1.png"),
-                    BadgeThreshold(threshold: 5, assetPath: "assets/images/badges/gaivota5.png"),
-                    BadgeThreshold(threshold: 20, assetPath: "assets/images/badges/gaivota10.png"),
-                    BadgeThreshold(threshold: 50, assetPath: "assets/images/badges/gaivota50.png"),
+                    BadgeThreshold(threshold: 5, assetPath: "assets/images/badges/gaivota5NOVO.png"),
+                    BadgeThreshold(threshold: 20, assetPath: "assets/images/badges/gaivota10NOVO.png"),
+                    BadgeThreshold(threshold: 50, assetPath: "assets/images/badges/gaivota50NOVO.png"),
                   ],
                 ),
                 BadgeColumn(
@@ -422,9 +422,9 @@ class AnimaisEncontradosContent extends StatelessWidget {
                   count: counters['mammalsFound'] ?? 0,
                   thresholds: [
                     BadgeThreshold(threshold: 1, assetPath: "assets/images/badges/lobo1.png"),
-                    BadgeThreshold(threshold: 5, assetPath: "assets/images/badges/lobo5.png"),
-                    BadgeThreshold(threshold: 20, assetPath: "assets/images/badges/lobo10.png"),
-                    BadgeThreshold(threshold: 50, assetPath: "assets/images/badges/lobo50.png"),
+                    BadgeThreshold(threshold: 5, assetPath: "assets/images/badges/lobo5NOVO.png"),
+                    BadgeThreshold(threshold: 20, assetPath: "assets/images/badges/lobo10NOVO.png"),
+                    BadgeThreshold(threshold: 50, assetPath: "assets/images/badges/lobo50NOVO.png"),
                   ],
                 ),
                 BadgeColumn(
@@ -432,9 +432,9 @@ class AnimaisEncontradosContent extends StatelessWidget {
                   count: counters['reptilesFound'] ?? 0,
                   thresholds: [
                     BadgeThreshold(threshold: 1, assetPath: "assets/images/badges/tartaruga1.png"),
-                    BadgeThreshold(threshold: 5, assetPath: "assets/images/badges/tartaruga5.png"),
-                    BadgeThreshold(threshold: 20, assetPath: "assets/images/badges/tartaruga10.png"),
-                    BadgeThreshold(threshold: 50, assetPath: "assets/images/badges/tartaruga50.png"),
+                    BadgeThreshold(threshold: 5, assetPath: "assets/images/badges/tartaruga5NOVO.png"),
+                    BadgeThreshold(threshold: 20, assetPath: "assets/images/badges/tartaruga10NOVO.png"),
+                    BadgeThreshold(threshold: 50, assetPath: "assets/images/badges/tartaruga50NOVO.png"),
                   ],
                 ),
               ],
