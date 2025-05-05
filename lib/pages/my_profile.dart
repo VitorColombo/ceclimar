@@ -395,71 +395,69 @@ class AnimaisEncontradosContent extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Skeletonizer(
-        enabled: isLoading,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            SizedBox(width: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                BadgeColumn(
-                  classe: "Aves",
-                  count: counters['birdsFound'] ?? 0,
-                  thresholds: [
-                    BadgeThreshold(threshold: 1, assetPath: "assets/images/badges/gaivota1.png"),
-                    BadgeThreshold(threshold: 5, assetPath: "assets/images/badges/gaivota5NOVO.png"),
-                    BadgeThreshold(threshold: 20, assetPath: "assets/images/badges/gaivota10NOVO.png"),
-                    BadgeThreshold(threshold: 50, assetPath: "assets/images/badges/gaivota50NOVO.png"),
-                  ],
-                ),
-                BadgeColumn(
-                  classe: "Mamíferos",
-                  count: counters['mammalsFound'] ?? 0,
-                  thresholds: [
-                    BadgeThreshold(threshold: 1, assetPath: "assets/images/badges/lobo1.png"),
-                    BadgeThreshold(threshold: 5, assetPath: "assets/images/badges/lobo5NOVO.png"),
-                    BadgeThreshold(threshold: 20, assetPath: "assets/images/badges/lobo10NOVO.png"),
-                    BadgeThreshold(threshold: 50, assetPath: "assets/images/badges/lobo50NOVO.png"),
-                  ],
-                ),
-                BadgeColumn(
-                  classe: "Répteis",
-                  count: counters['reptilesFound'] ?? 0,
-                  thresholds: [
-                    BadgeThreshold(threshold: 1, assetPath: "assets/images/badges/tartaruga1.png"),
-                    BadgeThreshold(threshold: 5, assetPath: "assets/images/badges/tartaruga5NOVO.png"),
-                    BadgeThreshold(threshold: 20, assetPath: "assets/images/badges/tartaruga10NOVO.png"),
-                    BadgeThreshold(threshold: 50, assetPath: "assets/images/badges/tartaruga50NOVO.png"),
-                  ],
-                ),
-              ],
-            ),
-            BadgeColumn(
-              classe: "Cientista Cidadão",
-              count: registerCount,
-              thresholds: [
-                BadgeThreshold(threshold: 100, assetPath: "assets/images/badges/secretBadge.png"),
-              ],
-            ),
-            SizedBox(height: 10),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Center(
-                child: Text(
-                "Seja um cientista cidadão! Contribua e junte as medalhas com seus registro validados",
-                style: Theme.of(context).textTheme.bodyLarge,
-                textAlign: TextAlign.center,
-                ),
+    return Skeletonizer(
+      enabled: isLoading,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          SizedBox(width: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              BadgeColumn(
+                classe: "Aves",
+                count: counters['birdsFound'] ?? 0,
+                thresholds: [
+                  BadgeThreshold(threshold: 1, assetPath: "assets/images/badges/gaivota1.png"),
+                  BadgeThreshold(threshold: 5, assetPath: "assets/images/badges/gaivota5NOVO.png"),
+                  BadgeThreshold(threshold: 20, assetPath: "assets/images/badges/gaivota10NOVO.png"),
+                  BadgeThreshold(threshold: 50, assetPath: "assets/images/badges/gaivota50NOVO.png"),
+                ],
+              ),
+              BadgeColumn(
+                classe: "Mamíferos",
+                count: counters['mammalsFound'] ?? 0,
+                thresholds: [
+                  BadgeThreshold(threshold: 1, assetPath: "assets/images/badges/lobo1.png"),
+                  BadgeThreshold(threshold: 5, assetPath: "assets/images/badges/lobo5NOVO.png"),
+                  BadgeThreshold(threshold: 20, assetPath: "assets/images/badges/lobo10NOVO.png"),
+                  BadgeThreshold(threshold: 50, assetPath: "assets/images/badges/lobo50NOVO.png"),
+                ],
+              ),
+              BadgeColumn(
+                classe: "Répteis",
+                count: counters['reptilesFound'] ?? 0,
+                thresholds: [
+                  BadgeThreshold(threshold: 1, assetPath: "assets/images/badges/tartaruga1.png"),
+                  BadgeThreshold(threshold: 5, assetPath: "assets/images/badges/tartaruga5NOVO.png"),
+                  BadgeThreshold(threshold: 20, assetPath: "assets/images/badges/tartaruga10NOVO.png"),
+                  BadgeThreshold(threshold: 50, assetPath: "assets/images/badges/tartaruga50NOVO.png"),
+                ],
+              ),
+            ],
+          ),
+          BadgeColumn(
+            classe: "Cientista Cidadão",
+            count: registerCount,
+            thresholds: [
+              BadgeThreshold(threshold: 100, assetPath: "assets/images/badges/secretBadge.png"),
+            ],
+          ),
+          SizedBox(height: 10),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Center(
+              child: Text(
+              "Seja um cientista cidadão! Contribua e junte as medalhas com seus registros validados",
+              style: Theme.of(context).textTheme.bodyLarge,
+              textAlign: TextAlign.center,
               ),
             ),
-            SizedBox(height: 20)
-          ],
-        ),
+          ),
+          SizedBox(height: 20)
+        ],
       ),
     );
   }
@@ -483,28 +481,32 @@ class BadgeColumn extends StatelessWidget {
       children: [
         SizedBox(height: 10),
         ...thresholds.map((badge) {
-          return Visibility(
-            visible: count >= badge.threshold,
-            child: Column(
-              children: [
-                Tooltip(
-                  message: classe,
-                  waitDuration: Duration(milliseconds: 0),
-                  showDuration: Duration(seconds: 3),
-                  preferBelow: false,
-                  triggerMode: TooltipTriggerMode.tap,
-                  child: BadgeItem(
-                    classe: classe,
-                    image: Image.asset(badge.assetPath),
+          bool isUnlocked = count >= badge.threshold;
+          return Column(
+            children: [
+              Tooltip(
+                message: isUnlocked 
+                  ? classe
+                  : classe == "Cientista Cidadão" ? "Conquista secreta!" : "$count/${badge.threshold} registros necessários",
+                waitDuration: Duration(milliseconds: 0),
+                showDuration: Duration(seconds: 3),
+                preferBelow: false,
+                triggerMode: TooltipTriggerMode.tap,
+                child: BadgeItem(
+                  classe: classe,
+                  image: Image.asset(
+                    isUnlocked ? badge.assetPath : "assets/images/badges/placeholderBadge.png",
+                    errorBuilder: (context, error, stackTrace) {
+                      print("Erro ao carregar imagem: ${badge.assetPath}");
+                      return const Icon(Icons.error, color: Colors.red);
+                    },
                   ),
                 ),
-                SizedBox(height: 5),
-              ],
-            ),
+              ),
+              const SizedBox(height: 10),
+            ],
           );
         }).toList(),
-        if(classe != "Cientista Cidadão")
-          Text("$count"),
       ],
     );
   }

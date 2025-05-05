@@ -120,8 +120,8 @@ class LoginPageState extends State<LoginPage> {
                         ),
                         const SizedBox(height: 20),
                         InputField(
-                          text: "E-mail", 
-                          controller: _controller.emailController, 
+                          text: "E-mail",
+                          controller: _controller.emailController,
                           validator: (value) => _controller.emailError,
                         ),
                         const SizedBox(height: 16),
