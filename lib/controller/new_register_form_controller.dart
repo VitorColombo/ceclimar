@@ -15,21 +15,10 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:hive/hive.dart';
 import 'package:tcc_ceclimar/models/local_register.dart';
 import 'package:tcc_ceclimar/utils/guarita_data.dart';
+import 'package:tcc_ceclimar/utils/register_errors.dart';
 import 'package:tcc_ceclimar/utils/register_status.dart';
 import 'package:tcc_ceclimar/utils/register_type_enum.dart';
-
-enum RegisterError {
-  requiredField('Campo obrigatório'),
-  invalidCharacter('Caractere inválido'),
-  minimumCharacter('Caracteres mínimos: '),
-  maximumCharacter('Caracteres máximos: '),
-  imageError('É obrigatório o envio de uma foto'),
-  onlyNumber('Apenas n°'),
-  switchError('É necessario preencher no mínimo um dos campos abaixo');
-
-   final String message;
-   const RegisterError(this.message);
-}
+import 'package:tcc_ceclimar/utils/register_validators.dart';
 
 class NewRegisterFormController {
   final TextEditingController nameController = TextEditingController();
@@ -90,296 +79,78 @@ class NewRegisterFormController {
   }
 
   bool validateForm() {
-    nameError = null;
-    hourError = null;
-    cityError = null;
-    beachSpotError = null;
-    referencePointError = null;
-    imageError = null;
-    locationSwitchError = null;
+    nameError = validateName(nameController.text.trim());
+    hourError = isHourSwitchOn ? validateHour(hourController.text) : null;
+    imageError = validateImages(hasImage1: _image != null, hasImage2: _image2 != null);
 
-    nameController.text = nameController.text.trim();
-    nameError = validateName(nameController.text);
-    imageError = validateImages();
-
-    if (isHourSwitchOn) {
-      hourError = validateHour(hourController.text);
-    }
     if (isLocalSwitchOn) {
-      cityController.text = cityController.text.trim();
-      beachSpotController.text = beachSpotController.text.trim();
-      referencePointController.text = referencePointController.text.trim();
+      cityError = validateCitySwitch(cityController.text.trim());
+      beachSpotError = validateBeachSpotSwitch(beachSpotController.text.trim());
+      referencePointError = validateReferencePoint(referencePointController.text.trim());
 
-      final isCityEmpty = cityController.text.isEmpty;
-      final isBeachSpotEmpty = beachSpotController.text.isEmpty;
-      final isReferencePointEmpty = referencePointController.text.isEmpty;
+      final allEmpty = cityController.text.trim().isEmpty &&
+                      beachSpotController.text.trim().isEmpty &&
+                      referencePointController.text.trim().isEmpty;
 
-      if (isCityEmpty && isBeachSpotEmpty && isReferencePointEmpty) {
-        locationSwitchError = RegisterError.switchError.message;
-      } else {
-        if (!isCityEmpty) {
-          cityError = validateCitySwitch(cityController.text);
-        }
-        if (!isBeachSpotEmpty) {
-          beachSpotError = validateBeachSpotSwitch(beachSpotController.text);
-        }
-        if (!isReferencePointEmpty) {
-          referencePointError = validateReferencePoint(referencePointController.text);
-        }
-      }
+      locationSwitchError = allEmpty ? RegisterError.switchError.message : null;
+    } else {
+      cityError = null;
+      beachSpotError = null;
+      referencePointError = null;
+      locationSwitchError = null;
     }
-    final isValid = nameError == null &&
-        hourError == null &&
-        imageError == null &&
-        cityError == null &&
-        beachSpotError == null &&
-        referencePointError == null &&
-        locationSwitchError == null;
 
-    return isValid;
+    return nameError == null &&
+          hourError == null &&
+          imageError == null &&
+          cityError == null &&
+          beachSpotError == null &&
+          referencePointError == null &&
+          locationSwitchError == null;
   }
 
   bool validateTechnicalForm() {
-    nameError = null;
-    hourError = null;
-    speciesError = null;
-    cityError = null;
-    beachSpotError = null;
-    obsError = null;
-    familyError = null;
-    genuError = null;
-    orderError = null;
-    classError = null;
-    imageError = null;
-    referencePointError = null;
-    locationSwitchError = null;
+    nameError = validateName(nameController.text.trim());
+    hourError = isHourSwitchOn ? validateHour(hourController.text) : null;
+    imageError = validateImages(hasImage1: _image != null, hasImage2: _image2 != null);
 
-    nameController.text = nameController.text.trim();
-    speciesController.text = speciesController.text.trim();
-    cityController.text = cityController.text.trim();
-    beachSpotController.text = beachSpotController.text.trim();
-    obsController.text = obsController.text.trim();
-    familyController.text = familyController.text.trim();
-    genuController.text = genuController.text.trim();
-    orderController.text = orderController.text.trim();
-    classController.text = classController.text.trim();
-    referencePointController.text = referencePointController.text.trim();
-
-    nameError = validateName(nameController.text);
-    imageError = validateImages();
-
-    if (speciesController.text.isNotEmpty) {
-      speciesError = validateSpecies(speciesController.text);
-    }
-    if (obsController.text.isNotEmpty) {
-      obsError = validateObs(obsController.text);
-    }
-    if (familyController.text.isNotEmpty) {
-       familyError = validateFamily(familyController.text);
-    }
-    if (genuController.text.isNotEmpty) {
-       genuError = validateGenu(genuController.text);
-    }
-    if (orderController.text.isNotEmpty) {
-       orderError = validateOrder(orderController.text);
-    }
-    if (isHourSwitchOn) {
-       hourError = validateHour(hourController.text);
-    }
+    speciesError = validateSpecies(speciesController.text.trim());
+    obsError = validateObs(obsController.text.trim());
+    familyError = validateFamily(familyController.text.trim());
+    genuError = validateGenu(genuController.text.trim());
+    orderError = validateOrder(orderController.text.trim());
+    classError = validateOrder(classController.text.trim());
 
     if (isLocalSwitchOn) {
-      final isCityEmpty = cityController.text.isEmpty;
-      final isBeachSpotEmpty = beachSpotController.text.isEmpty;
-      final isReferencePointEmpty = referencePointController.text.isEmpty;
+      cityError = validateCitySwitch(cityController.text.trim());
+      beachSpotError = validateBeachSpotSwitch(beachSpotController.text.trim());
+      referencePointError = validateReferencePoint(referencePointController.text.trim());
 
-      if (isCityEmpty && isBeachSpotEmpty && isReferencePointEmpty) {
-        locationSwitchError = RegisterError.switchError.message;
-      } else {
-         if (!isCityEmpty) {
-           cityError = validateCitySwitch(cityController.text);
-         }
-         if (!isBeachSpotEmpty) {
-           beachSpotError = validateBeachSpotSwitch(beachSpotController.text);
-         }
-         if (!isReferencePointEmpty) {
-           referencePointError = validateReferencePoint(referencePointController.text);
-         }
-      }
+      final allEmpty = cityController.text.trim().isEmpty &&
+                      beachSpotController.text.trim().isEmpty &&
+                      referencePointController.text.trim().isEmpty;
+
+      locationSwitchError = allEmpty ? RegisterError.switchError.message : null;
+    } else {
+      cityError = null;
+      beachSpotError = null;
+      referencePointError = null;
+      locationSwitchError = null;
     }
 
-     final isValid = nameError == null &&
-        hourError == null &&
-        speciesError == null &&
-        cityError == null &&
-        beachSpotError == null &&
-        obsError == null &&
-        familyError == null &&
-        genuError == null &&
-        orderError == null &&
-        classError == null &&
-        imageError == null &&
-        referencePointError == null &&
-        locationSwitchError == null;
-    return isValid;
-  }
-
-  String? validateImages() {
-    if (_image == null && _image2 == null) {
-      return RegisterError.imageError.message;
-    }
-    return null;
-  }
-
-  String? validateName(String? value) {
-    if (value == null || value.isEmpty) {
-      return RegisterError.requiredField.message;
-    }
-    final RegExp regex = RegExp(r'^[\p{L}\s\-]+$', unicode: true);
-    if (!regex.hasMatch(value)) {
-      return RegisterError.invalidCharacter.message;
-    }
-    if (value.length < 3) {
-      return '${RegisterError.minimumCharacter.message} 3';
-    }
-    if (value.length > 40) {
-      return '${RegisterError.maximumCharacter.message} 40';
-    }
-    return null;
-  }
-
-  String? validateHour(String? value) {
-    if (value == null || value.isEmpty) {
-      return RegisterError.requiredField.message;
-    }
-    return null;
-  }
-
-  String? validateCitySwitch(String? value) {
-     if (value == null || value.isEmpty) {
-       return null;
-     }
-    final RegExp regex = RegExp(r'^[\p{L}\s\-]+$', unicode: true);
-     if (value.length < 3) {
-       return '${RegisterError.minimumCharacter.message} 3';
-     }
-     if (value.length > 50) {
-        return '${RegisterError.maximumCharacter.message} 50';
-     }
-     if (!regex.hasMatch(value)) {
-       return RegisterError.invalidCharacter.message;
-     }
-    return null;
-  }
-
-
-  String? validateBeachSpotSwitch(String value) {
-    if (value.isEmpty) {
-      return null;
-    }
-    final RegExp regex = RegExp(r'^[\p{L}\s0-9]+$', unicode: true);
-     if (value.length > 10) {
-        return '${RegisterError.maximumCharacter.message} 10';
-     }
-    if (!regex.hasMatch(value)) {
-      return RegisterError.invalidCharacter.message;
-    }
-    return null;
-  }
-
-  String? validateReferencePoint(String referencePoint){
-    if (referencePoint.isEmpty) {
-      return null;
-    }
-    if (referencePoint.length < 5) {
-      return '${RegisterError.minimumCharacter.message} 5';
-    }
-     if (referencePoint.length > 50) {
-        return '${RegisterError.maximumCharacter.message} 50';
-     }
-    return null;
-  }
-
-  String? validateLocationSwitch(String beachSpot, String referencePoint, String city, bool isLocalSwitchOn) {
-    if(isLocalSwitchOn){
-      if (beachSpot.isEmpty && referencePoint.isEmpty && city.isEmpty) {
-        return RegisterError.switchError.message;
-      }
-      cityError = validateCitySwitch(city);
-      if(cityError != null){
-        return cityError;
-      }
-      beachSpotError = validateBeachSpotSwitch(beachSpot);
-      if(beachSpotError != null){
-        return beachSpotError;
-      }
-      referencePointError = validateReferencePoint(referencePoint);
-      if(referencePointError != null){
-        return referencePointError;
-      }
-      return null;
-    }
-    return null;
-  }
-
-  String? validateSpecies(String species) {
-    final RegExp regex = RegExp(r'^[\p{L}\s]+$', unicode: true);
-    if (species.isNotEmpty){
-      if (species.length < 5) {
-         return '${RegisterError.minimumCharacter.message} 5';
-      }
-      if (!regex.hasMatch(species)) {
-         return RegisterError.invalidCharacter.message;
-      }
-    }
-    return null;
-  }
-
-  String? validateGenu(String genu) {
-    final RegExp regex = RegExp(r'^[\p{L}\s]+$', unicode: true);
-    if (genu.isNotEmpty) {
-      if (genu.length < 3) {
-        return '${RegisterError.minimumCharacter.message} 3';
-      }
-      if (!regex.hasMatch(genu)) {
-        return RegisterError.invalidCharacter.message;
-      }
-    }
-    return null;
-  }
-
-  String? validateFamily(String family) {
-    final RegExp regex = RegExp(r'^[\p{L}\s]+$', unicode: true);
-    if (family.isNotEmpty) {
-      if (family.length < 3) {
-        return '${RegisterError.minimumCharacter.message} 3';
-      }
-      if (!regex.hasMatch(family)) {
-        return RegisterError.invalidCharacter.message;
-      }
-    }
-    return null;
-  }
-
-  String? validateObs(String obs) {
-    if (obs.isNotEmpty) {
-      if (obs.length < 5) {
-       return '${RegisterError.minimumCharacter.message} 5';
-      }
-    }
-    return null;
-  }
-
-  String? validateOrder(String order) {
-    final RegExp regex = RegExp(r'^[\p{L}\s]+$', unicode: true);
-    if (order.isNotEmpty) {
-      if (order.length < 3) {
-       return '${RegisterError.minimumCharacter.message} 3';
-      }
-      if (!regex.hasMatch(order)) {
-        return RegisterError.invalidCharacter.message;
-      }
-    }
-    return null;
+    return nameError == null &&
+          hourError == null &&
+          imageError == null &&
+          speciesError == null &&
+          obsError == null &&
+          familyError == null &&
+          genuError == null &&
+          orderError == null &&
+          classError == null &&
+          cityError == null &&
+          beachSpotError == null &&
+          referencePointError == null &&
+          locationSwitchError == null;
   }
 
   void setImage(File? image) {
@@ -400,6 +171,7 @@ class NewRegisterFormController {
     isLocalSwitchOn = !isLocalSwitchOn;
   }
 
+  //TODO: create a file for this locationService
   Future<void> getAddressFromLatLng(Position position, BuildContext context) async {
     try {
       List<Placemark> placemarks = await placemarkFromCoordinates(position.latitude, position.longitude);
@@ -703,6 +475,7 @@ class NewRegisterFormController {
     }
   }
 
+  //TODO: merge with the sendSimpleRegisterToApi
   Future<TechnicalRegisterRequest?> sendTechnicalRegisterToApi(
       String name, String hour, bool witnessed, String species, String city,
       String beachSpot, String obs, String family, String genu, String order,
@@ -807,6 +580,7 @@ class NewRegisterFormController {
     }
   }
 
+  //TODO: create a file for this offline responsibility
   void _queueRegister(Map<String, dynamic> registerData, String registerType, File? image, File? image2, BuildContext context) {
       final newRegister = LocalRegister(
         registerType: registerType,

@@ -36,6 +36,7 @@ class _SimpleRegisterFormState extends State<SimpleRegisterForm> {
 
   bool _validateForm() {
     final bool isControllerValid = _formController.validateForm();
+    setState(() {});
     return isControllerValid;
   }
 
