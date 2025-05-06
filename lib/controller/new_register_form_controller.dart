@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -6,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:tcc_ceclimar/models/simple_register_request.dart';
 import 'package:tcc_ceclimar/models/technical_register_request.dart';
 import 'package:tcc_ceclimar/pages/base_page.dart';
@@ -433,22 +435,102 @@ class NewRegisterFormController {
     }
   }
 
-  Future<void> sendSimpleRegister(BuildContext context, Function getPosition) async {
-    final connectivityResult = await (Connectivity().checkConnectivity());
-    String name = nameController.text;
-    String hour = hourController.text;
-    bool witnessed = isHourSwitchOn;
+  Future<Position?> resolvePosition(BuildContext context) async {
+    final hasPermission = await _handleLocationPermission(context);
+    if (!hasPermission) {
+      debugPrint("resolvePosition: Permission or service check failed.");
+      return null;
+    }
+
+    debugPrint("resolvePosition: Permissions OK. Attempting to get current position (using default provider)...");
+    try {
+      return await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+        timeLimit: const Duration(seconds: 45),
+      );
+
+    } on TimeoutException {
+      debugPrint('resolvePosition: Location request timed out after 45 seconds.');
+      if (context.mounted) {
+        _handleError(context, 'Falha ao obter localização. Tente novamente mais tarde.');
+      }
+      return null;
+    } on LocationServiceDisabledException {
+      debugPrint('resolvePosition: Location service became disabled.');
+      if (context.mounted) {
+        _showLocationError(context, 'Serviço de localização foi desativado.', Colors.red);
+      }
+      return null;
+    } on PlatformException catch (e) {
+      debugPrint('resolvePosition: PlatformException getting position: ${e.code} - ${e.message}');
+      if (context.mounted) {
+        _handleError(context, e);
+      }
+      return null;
+    } catch (e) {
+      debugPrint('resolvePosition: Unexpected error getting position: $e');
+      if (context.mounted) {
+        _handleError(context, e);      
+      }
+      return null;
+    }
+  }
+
+  Future<bool> _handleLocationPermission(BuildContext context) async {
+    final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      _showLocationError(context, 'Habilite o serviço de localização do dispositivo.', Colors.grey);
+      await Future.delayed(const Duration(seconds: 3));
+      await Geolocator.openLocationSettings();
+      return false;
+    }
+
+    var permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        _showLocationError(context, 'As permissões de localização foram negadas.', Colors.red);
+        return false;
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      _showLocationError(context, 'Permissões negadas permanentemente. Altere nas configurações do dispositivo.', Colors.red);
+      await Geolocator.openLocationSettings();
+      return false;
+    }
+
+    return true;
+  }
+
+  void _showLocationError(BuildContext context, String message, Color color) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: color,
+        content: Text(message, style: const TextStyle(color: Colors.white)),
+      ),
+    );
+  }
+
+  
+  Future<Map<String, dynamic>> _buildRegisterData(BuildContext context, Position position) async {
+    final name = nameController.text;
+    final hour = hourController.text;
+    final witnessed = isHourSwitchOn;
+    final String referencePoint = referencePointController.text;
+    double latitude = currentPosition!.latitude;
+    double longitude = currentPosition!.longitude;
     String? city = cityController.text;
     String? beachSpot = beachSpotController.text;
-    String? referencePoint = referencePointController.text;
 
-    await getPosition();
-    if (context.mounted) {
-      await getAddressFromLatLng(currentPosition!, context);
+    try {
+      await getAddressFromLatLng(position, context);
+    } catch (e) {
+      debugPrint('Erro ao obter endereço: $e');
+      currentAddress = null;
     }
-    if (currentPosition != null && currentAddress != null) {
-      double latitude = currentPosition!.latitude;
-      double longitude = currentPosition!.longitude;
+
+   if (currentPosition != null && currentAddress != null) {
       if(!isLocalSwitchOn && cityController.text.isEmpty && beachSpotController.text.isEmpty){
         city = currentAddress!.split(",")[0];
       }
@@ -465,42 +547,58 @@ class NewRegisterFormController {
         latitude = 0.0;
         longitude = 0.0;
       }
-      final registerData = {
-        "name": name,
-        "hour": hour,
-        "witnessed": witnessed,
-        "latitude": latitude,
-        "longitude": longitude,
-        "city": city,
-        "beachSpot": beachSpot,
-        "referencePoint": referencePoint
-      };
-      if (connectivityResult == ConnectivityResult.none) {
-        _queueRegister(registerData, 'simple', _image, _image2, context);
-        _showSuccessMessage(context, 'Registro salvo localmente. Será enviado quando a internet voltar.');
-      } else {
-        try {
-          final response = await sendSimpleRegisterToApi(
-            name,
-            hour,
-            witnessed,
-            latitude,
-            longitude,
-            city,
-            beachSpot,
-            referencePoint,
-          );
-          if (response != null) {
-            _showSuccessMessage(context, 'Registro enviado com sucesso!');
-            Navigator.pushNamedAndRemoveUntil(context, BasePage.routeName, (Route<dynamic> route) => false, arguments: 0);
-          } else {
-            _handleError(context, 'Falha ao enviar o registro.');
-          }
-        } catch (e) {
-            _handleError(context, 'Falha ao enviar registro: $e');
-        }
-      }
+   }
+    return {
+      "name": name,
+      "hour": hour,
+      "witnessed": witnessed,
+      "latitude": latitude,
+      "longitude": longitude,
+      "city": city,
+      "beachSpot": beachSpot,
+      "referencePoint": referencePoint
+    };
+  }
+
+  Future<void> _handleSubmission(BuildContext context, ConnectivityResult connectivityResult, Map<String, dynamic> data) async {
+    if (connectivityResult == ConnectivityResult.none) {
+      _queueRegister(data, 'simple', _image, _image2, context);
+      return;
     }
+
+    try {
+      final response = await sendSimpleRegisterToApi(
+        data['name'],
+        data['hour'],
+        data['witnessed'],
+        data['latitude'],
+        data['longitude'],
+        data['city'],
+        data['beachSpot'],
+        data['referencePoint'],
+      );
+
+      if (response != null) {
+        _showSuccessMessage(context, 'Registro enviado com sucesso!');
+        Navigator.pushNamedAndRemoveUntil(context, BasePage.routeName, (route) => false, arguments: 0);
+      } else {
+        _handleError(context, 'Falha ao enviar o registro.');
+      }
+    } catch (e) {
+      _handleError(context, 'Falha ao enviar registro: $e');
+    }
+  }
+
+  Future<void> sendSimpleRegister(BuildContext context) async {
+    final connectivityResult = await Connectivity().checkConnectivity();
+
+    final position = await resolvePosition(context);
+    if (position == null) return;
+    currentPosition = position;
+
+    final data = await _buildRegisterData(context, position);
+
+    await _handleSubmission(context, connectivityResult, data);
   }
 
   Future<void> sendTechnicalRegister(BuildContext context, Function getPosition) async {

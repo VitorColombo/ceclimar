@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:tcc_ceclimar/utils/guarita_data.dart';
 import 'package:tcc_ceclimar/widgets/custom_switch.dart';
@@ -63,80 +62,17 @@ class _SimpleRegisterFormState extends State<SimpleRegisterForm> {
     });
   }
 
-  Future<bool> _handleLocationPermission() async {
-    bool serviceEnabled;
-    LocationPermission permission;
-
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-              'Por favor, habilite o serviço de localização para que possamos obter as coordenadas do animal'
-              )
-            )
-          );
-      await Future.delayed(const Duration(seconds: 3));
-      await Geolocator.openLocationSettings();
-      setState(() {
-        _isFormSubmitted = false;
-      });
-      return false;
-    }
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              backgroundColor: Colors.red,
-              content: Text('As permissões de localização foram negadas',
-                style: TextStyle(color: Colors.white),
-              )
-            )
-          );
-        return false;
-      }
-    }
-    if (permission == LocationPermission.deniedForever) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          backgroundColor: Colors.red,
-          content: Text(
-              'As permissões de localização foram negadas, para enviar o registro é necessário permitir a localização nas configurações do dispositivo',
-              style: TextStyle(color: Colors.white),
-              )
-            )
-          );
-      await Future.delayed(const Duration(seconds: 3));
-      await Geolocator.openLocationSettings();
-      return false;
-    }
-    return true;
-  }
-
-  Future<void> _getCurrentPosition() async {
-    final hasPermission = await _handleLocationPermission();
-
-    if (!hasPermission){
-      return;
-    }
-    await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
-        .then((Position position) {
-          setState(() => 
-            _formController.currentPosition = position
-          );
-    }).catchError((e) {
-      debugPrint(e);
-    });
-  }
-
   Future<void> _submitForm() async {
     if (_validateForm()) {
       setState(() {
         _isFormSubmitted = true;
       });
-      await _formController.sendSimpleRegister(context, _getCurrentPosition);
+
+      await _formController.sendSimpleRegister(context);
+      
+      setState(() {
+        _isFormSubmitted = false;
+      });
     }
   }
 
