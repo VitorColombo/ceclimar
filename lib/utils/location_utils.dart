@@ -24,9 +24,12 @@ class LocationUtils {
       randomBearingDegrees,
     );
 
+    final double roundedLat = double.parse(randomPointLatLng.latitude.toStringAsFixed(7));
+    final double roundedLng = double.parse(randomPointLatLng.longitude.toStringAsFixed(7));
+
     final Position randomPosition = Position(
-        latitude: randomPointLatLng.latitude,
-        longitude: randomPointLatLng.longitude,
+        latitude: roundedLat,
+        longitude: roundedLng,
         timestamp: DateTime.now(),
         accuracy: 0.0,
         altitude: 0.0,
