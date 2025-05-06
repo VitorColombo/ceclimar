@@ -24,15 +24,15 @@ class ModalHelpRegisterImageBottomSheet extends StatelessWidget {
         ClipRRect(
           borderRadius: BorderRadius.circular(10),
           child: Container(
-            width: 200,
-            height: 200,
+            width: 160,
+            height: 160,
             margin: const EdgeInsets.only(bottom: 20),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(10),
               child: Image.asset(
                 imagePath!,
-                width: 200,
-                height: 200,
+                width: 160,
+                height:160,
                 fit: BoxFit.cover,
               ),
             ),

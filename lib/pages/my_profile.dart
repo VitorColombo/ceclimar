@@ -497,7 +497,7 @@ class BadgeColumn extends StatelessWidget {
                   image: Image.asset(
                     isUnlocked ? badge.assetPath : "assets/images/badges/placeholderBadge.png",
                     errorBuilder: (context, error, stackTrace) {
-                      print("Erro ao carregar imagem: ${badge.assetPath}");
+                      debugPrint("Erro ao carregar imagem: ${badge.assetPath}");
                       return const Icon(Icons.error, color: Colors.red);
                     },
                   ),

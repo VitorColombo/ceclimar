@@ -751,9 +751,10 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
       context: context,
       builder: (context) {
         return const ModalHelpRegisterImageBottomSheet(
-          text: "Sugerimos o envio de 2 imagens, sendo uma com escala e outra sem. A escala, pode ser representada por objetos como chinelos, óculos ou até mesmo o pé.",
+          text: "Sugerimos o envio de 2 imagens, sendo uma com escala e outra sem. A escala, pode ser representada por objetos como chinelos, óculos ou até mesmo o pé. \n" + 
+          "Por favor, não utilize imagens com rostos de pessoas ou animais vivos.",
           imagePath: "assets/images/exemplo_foto_escala.jpg",
-          height: 600,
+          height: 900,
           );
       },
     );

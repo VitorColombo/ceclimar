@@ -158,11 +158,13 @@ class TableManipulationBottomSheet extends StatelessWidget {
       final result = await OpenFilex.open(file.path);
 
       if (result.type != ResultType.done) {
+        if(!context.mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Erro ao abrir arquivo: ${result.message}')),
         );
       }
     } catch (e) {
+      if(!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erro no download: $e')));
     }
   }
@@ -177,6 +179,7 @@ class TableManipulationBottomSheet extends StatelessWidget {
         text: 'Arquivo gerado com registros selecionados.',
       );
     } catch (e) {
+      if(!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erro ao compartilhar: $e')));
     }
   }

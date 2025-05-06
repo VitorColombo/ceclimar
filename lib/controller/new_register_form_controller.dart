@@ -180,6 +180,7 @@ class NewRegisterFormController {
       currentAddress ='${place.subAdministrativeArea}, ${place.postalCode}';
     } on PlatformException catch (e) {
       debugPrint('Error when getting the address from lat and long $e');
+      if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
            content: Text(
@@ -252,6 +253,7 @@ class NewRegisterFormController {
   Future<bool> _handleLocationPermission(BuildContext context) async {
     final serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
+      if (!context.mounted) return false;
       _showLocationError(context, 'Habilite o serviço de localização do dispositivo.', Colors.grey);
       await Future.delayed(const Duration(seconds: 3));
       await Geolocator.openLocationSettings();
@@ -262,12 +264,14 @@ class NewRegisterFormController {
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
+        if (!context.mounted) return false;
         _showLocationError(context, 'As permissões de localização foram negadas.', Colors.red);
         return false;
       }
     }
 
     if (permission == LocationPermission.deniedForever) {
+      if (!context.mounted) return false;
       _showLocationError(context, 'Permissões negadas permanentemente. Altere nas configurações do dispositivo.', Colors.red);
       await Geolocator.openLocationSettings();
       return false;
@@ -383,13 +387,16 @@ class NewRegisterFormController {
           data['referencePoint'],
         );
         if (response != null) {
+          if (!context.mounted) return;
           _showSuccessMessage(context, 'Registro enviado com sucesso!');
           Navigator.pushNamedAndRemoveUntil(context, BasePage.routeName, (route) => false, arguments: 0);
         } else {
+          if (!context.mounted) return;
           _handleError(context, 'Falha ao enviar o registro.');
         }
       } catch (e) {
-      _handleError(context, 'Falha ao enviar registro: $e');
+        if (!context.mounted) return;
+        _handleError(context, 'Falha ao enviar registro: $e');
       }
     } else if (type == RegisterType.technical) {
       try{
@@ -410,12 +417,15 @@ class NewRegisterFormController {
           data['referencePoint'],
         );
         if (response != null) {
+          if (!context.mounted) return;
           _showSuccessMessage(context, 'Registro enviado com sucesso!');
           Navigator.pushNamedAndRemoveUntil(context, BasePage.routeName, (route) => false, arguments: 0);
         } else {
+          if (!context.mounted) return;
           _handleError(context, 'Falha ao enviar o registro.');
         }
       } catch (e) {
+      if (!context.mounted) return;
       _handleError(context, 'Falha ao enviar registro: $e');
       }
     }
@@ -423,13 +433,16 @@ class NewRegisterFormController {
 
   Future<void> sendRegister(BuildContext context, RegisterType type) async {
     final connectivityResult = await Connectivity().checkConnectivity();
-
+    
+    if (!context.mounted) return;
     final position = await resolvePosition(context);
     if (position == null) return;
     currentPosition = position;
 
+    if (!context.mounted) return;
     final data = await _buildRegisterData(context, position, type);
-
+    
+    if (!context.mounted) return;
     await _handleSubmission(context, connectivityResult, data, type);
   }
 

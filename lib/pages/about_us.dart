@@ -48,7 +48,7 @@ class AboutUs extends StatelessWidget {
                   padding: const EdgeInsets.only(bottom: 20, left: 30, right: 30, top: 10),
                   child: Column(
                     children: [
-                      Text("Versão 1.0.0", style: Theme.of(context).textTheme.bodyMedium),
+                      Text("Versão 2.3.3", style: Theme.of(context).textTheme.bodyMedium),
                       const SizedBox(height: 20),
                       Accordion(
                         initialOpeningSequenceDelay: 0,
