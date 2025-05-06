@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:tcc_ceclimar/utils/guarita_data.dart';
+import 'package:tcc_ceclimar/utils/register_type_enum.dart';
 import 'package:tcc_ceclimar/widgets/custom_switch.dart';
 import 'package:tcc_ceclimar/widgets/input_field.dart';
 import 'package:tcc_ceclimar/widgets/send_btn.dart';
@@ -68,7 +69,7 @@ class _SimpleRegisterFormState extends State<SimpleRegisterForm> {
         _isFormSubmitted = true;
       });
 
-      await _formController.sendSimpleRegister(context);
+      await _formController.sendRegister(context, RegisterType.simple);
       
       setState(() {
         _isFormSubmitted = false;

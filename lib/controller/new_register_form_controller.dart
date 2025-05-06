@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:tcc_ceclimar/models/simple_register_request.dart';
 import 'package:tcc_ceclimar/models/technical_register_request.dart';
 import 'package:tcc_ceclimar/pages/base_page.dart';
@@ -17,6 +16,7 @@ import 'package:hive/hive.dart';
 import 'package:tcc_ceclimar/models/local_register.dart';
 import 'package:tcc_ceclimar/utils/guarita_data.dart';
 import 'package:tcc_ceclimar/utils/register_status.dart';
+import 'package:tcc_ceclimar/utils/register_type_enum.dart';
 
 enum RegisterError {
   requiredField('Campo obrigatório'),
@@ -71,17 +71,17 @@ class NewRegisterFormController {
   String? locationSwitchError;
   
   void dispose() {
-      nameController.dispose();
-      hourController.dispose();
-      speciesController.dispose();
-      cityController.dispose();
-      beachSpotController.dispose();
-      classController.dispose();
-      orderController.dispose();
-      familyController.dispose();
-      genuController.dispose();
-      obsController.dispose();
-      referencePointController.dispose();
+    nameController.dispose();
+    hourController.dispose();
+    speciesController.dispose();
+    cityController.dispose();
+    beachSpotController.dispose();
+    classController.dispose();
+    orderController.dispose();
+    familyController.dispose();
+    genuController.dispose();
+    obsController.dispose();
+    referencePointController.dispose();
   }
 
   void clear() {
@@ -512,16 +512,20 @@ class NewRegisterFormController {
     );
   }
 
-  
-  Future<Map<String, dynamic>> _buildRegisterData(BuildContext context, Position position) async {
-    final name = nameController.text;
-    final hour = hourController.text;
+  Future<Map<String, dynamic>> _buildRegisterData(BuildContext context, Position position, RegisterType type) async {
+    final String name = nameController.text;
+    final String hour = hourController.text;
     final witnessed = isHourSwitchOn;
     final String referencePoint = referencePointController.text;
-    double latitude = currentPosition!.latitude;
-    double longitude = currentPosition!.longitude;
     String? city = cityController.text;
     String? beachSpot = beachSpotController.text;
+    //technical register
+    String? species = speciesController.text;
+    String? obs = obsController.text;
+    String? family = familyController.text;
+    String? genu = genuController.text;
+    String? order = orderController.text;
+    String? classe = classController.text;
 
     try {
       await getAddressFromLatLng(position, context);
@@ -530,96 +534,6 @@ class NewRegisterFormController {
       currentAddress = null;
     }
 
-   if (currentPosition != null && currentAddress != null) {
-      if(!isLocalSwitchOn && cityController.text.isEmpty && beachSpotController.text.isEmpty){
-        city = currentAddress!.split(",")[0];
-      }
-      if(isLocalSwitchOn && beachSpotController.text.isNotEmpty && currentGuarita != null){
-        latitude = currentGuarita!.latitude ?? 0.0;
-        longitude = currentGuarita!.longitude ?? 0.0;
-      }
-      if (isLocalSwitchOn && cityController.text.isNotEmpty && beachSpotController.text.isEmpty) {
-        final Location cityLocation = await _getCityLatLong(cityController.text);
-        latitude = cityLocation.latitude;
-        longitude = cityLocation.longitude;
-      }
-      if(isLocalSwitchOn && beachSpotController.text.isEmpty && cityController.text.isEmpty){
-        latitude = 0.0;
-        longitude = 0.0;
-      }
-   }
-    return {
-      "name": name,
-      "hour": hour,
-      "witnessed": witnessed,
-      "latitude": latitude,
-      "longitude": longitude,
-      "city": city,
-      "beachSpot": beachSpot,
-      "referencePoint": referencePoint
-    };
-  }
-
-  Future<void> _handleSubmission(BuildContext context, ConnectivityResult connectivityResult, Map<String, dynamic> data) async {
-    if (connectivityResult == ConnectivityResult.none) {
-      _queueRegister(data, 'simple', _image, _image2, context);
-      return;
-    }
-
-    try {
-      final response = await sendSimpleRegisterToApi(
-        data['name'],
-        data['hour'],
-        data['witnessed'],
-        data['latitude'],
-        data['longitude'],
-        data['city'],
-        data['beachSpot'],
-        data['referencePoint'],
-      );
-
-      if (response != null) {
-        _showSuccessMessage(context, 'Registro enviado com sucesso!');
-        Navigator.pushNamedAndRemoveUntil(context, BasePage.routeName, (route) => false, arguments: 0);
-      } else {
-        _handleError(context, 'Falha ao enviar o registro.');
-      }
-    } catch (e) {
-      _handleError(context, 'Falha ao enviar registro: $e');
-    }
-  }
-
-  Future<void> sendSimpleRegister(BuildContext context) async {
-    final connectivityResult = await Connectivity().checkConnectivity();
-
-    final position = await resolvePosition(context);
-    if (position == null) return;
-    currentPosition = position;
-
-    final data = await _buildRegisterData(context, position);
-
-    await _handleSubmission(context, connectivityResult, data);
-  }
-
-  Future<void> sendTechnicalRegister(BuildContext context, Function getPosition) async {
-    final connectivityResult = await (Connectivity().checkConnectivity());
-    String name = nameController.text;
-    String hour = hourController.text;
-    bool witnessed = isHourSwitchOn;
-    String species = speciesController.text;
-    String beachSpot = beachSpotController.text;
-    String referencePoint = referencePointController.text;
-    String obs = obsController.text;
-    String family = familyController.text;
-    String genu = genuController.text;
-    String order = orderController.text;
-    String classe = classController.text;
-    String city = cityController.text;
-
-    await getPosition();
-    if (context.mounted) {
-      await getAddressFromLatLng(currentPosition!, context);
-    }
     if (currentPosition != null && currentAddress != null) {
       double latitude = currentPosition!.latitude;
       double longitude = currentPosition!.longitude;
@@ -639,54 +553,106 @@ class NewRegisterFormController {
         latitude = 0.0;
         longitude = 0.0;
       }
-      final registerData = {
+    
+    if(type == RegisterType.technical){
+      return {
+          "name": name,
+          "hour": hour,
+          "witnessed": witnessed,
+          "species": species,
+          "city": city,
+          "beachSpot": beachSpot,
+          "obs": obs,
+          "family": family,
+          "genu": genu,
+          "order": order,
+          "classe": classe,
+          "latitude": latitude,
+          "longitude": longitude,
+          "referencePoint": referencePoint
+        };
+    } else if(type == RegisterType.simple){
+      return {
         "name": name,
         "hour": hour,
         "witnessed": witnessed,
-        "species": species,
-        "city": city,
-        "beachSpot": beachSpot,
-        "obs": obs,
-        "family": family,
-        "genu": genu,
-        "order": order,
-        "classe": classe,
         "latitude": latitude,
         "longitude": longitude,
+        "city": city,
+        "beachSpot": beachSpot,
         "referencePoint": referencePoint
       };
-      if (connectivityResult == ConnectivityResult.none) {
-        _queueRegister(registerData, 'technical', _image, _image2, context);
-        _showSuccessMessage(context, 'Registro técnico salvo localmente. Será enviado quando a internet voltar.');
-        } else {
-          try {
-            final response = await sendTechnicalRegisterToApi(
-              name,
-              hour,
-              witnessed,
-              species,
-              city,
-              beachSpot,
-              obs,
-              family,
-              genu,
-              order,
-              classe,
-              latitude,
-              longitude,
-              referencePoint,
-            );
-            if (response != null) {
-            _showSuccessMessage(context, 'Registro enviado com sucesso!');
-            Navigator.pushNamedAndRemoveUntil(context, BasePage.routeName, (Route<dynamic> route) => false, arguments: 0);
-            } else {
-              _handleError(context, 'Falha ao enviar o registro.');
-            }
-          } catch (e) {
-            _handleError(context, 'Falha ao enviar o registro: $e');
-          }
-        }
     }
+    }
+    throw Exception('Invalid RegisterType or missing data');
+  }
+
+  Future<void> _handleSubmission(BuildContext context, ConnectivityResult connectivityResult, Map<String, dynamic> data, RegisterType type) async {
+    if (connectivityResult == ConnectivityResult.none) {
+      _queueRegister(data, type.name, _image, _image2, context);
+      return;
+    }
+    if (type == RegisterType.simple) {
+      try {
+        final response = await sendSimpleRegisterToApi(
+          data['name'],
+          data['hour'],
+          data['witnessed'],
+          data['latitude'],
+          data['longitude'],
+          data['city'],
+          data['beachSpot'],
+          data['referencePoint'],
+        );
+        if (response != null) {
+          _showSuccessMessage(context, 'Registro enviado com sucesso!');
+          Navigator.pushNamedAndRemoveUntil(context, BasePage.routeName, (route) => false, arguments: 0);
+        } else {
+          _handleError(context, 'Falha ao enviar o registro.');
+        }
+      } catch (e) {
+      _handleError(context, 'Falha ao enviar registro: $e');
+      }
+    } else if (type == RegisterType.technical) {
+      try{
+        final response = await sendTechnicalRegisterToApi(
+          data['name'],
+          data['hour'],
+          data['witnessed'],
+          data['species'],
+          data['city'],
+          data['beachSpot'],
+          data['obs'],
+          data['family'],
+          data['genu'],
+          data['order'],
+          data['classe'],
+          data['latitude'],
+          data['longitude'],
+          data['referencePoint'],
+        );
+        if (response != null) {
+          _showSuccessMessage(context, 'Registro enviado com sucesso!');
+          Navigator.pushNamedAndRemoveUntil(context, BasePage.routeName, (route) => false, arguments: 0);
+        } else {
+          _handleError(context, 'Falha ao enviar o registro.');
+        }
+      } catch (e) {
+      _handleError(context, 'Falha ao enviar registro: $e');
+      }
+    }
+  }
+
+  Future<void> sendRegister(BuildContext context, RegisterType type) async {
+    final connectivityResult = await Connectivity().checkConnectivity();
+
+    final position = await resolvePosition(context);
+    if (position == null) return;
+    currentPosition = position;
+
+    final data = await _buildRegisterData(context, position, type);
+
+    await _handleSubmission(context, connectivityResult, data, type);
   }
 
   Future<SimpleRegisterRequest?> sendSimpleRegisterToApi(
