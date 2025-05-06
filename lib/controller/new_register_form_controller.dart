@@ -15,6 +15,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:hive/hive.dart';
 import 'package:tcc_ceclimar/models/local_register.dart';
 import 'package:tcc_ceclimar/utils/guarita_data.dart';
+import 'package:tcc_ceclimar/utils/location_utils.dart';
 import 'package:tcc_ceclimar/utils/register_errors.dart';
 import 'package:tcc_ceclimar/utils/register_status.dart';
 import 'package:tcc_ceclimar/utils/register_type_enum.dart';
@@ -285,6 +286,7 @@ class NewRegisterFormController {
   }
 
   Future<Map<String, dynamic>> _buildRegisterData(BuildContext context, Position position, RegisterType type) async {
+    LocationUtils locationUtils = LocationUtils();
     final String name = nameController.text;
     final String hour = hourController.text;
     final witnessed = isHourSwitchOn;
@@ -315,6 +317,10 @@ class NewRegisterFormController {
       if(isLocalSwitchOn && beachSpotController.text.isNotEmpty && currentGuarita != null){
         latitude = currentGuarita!.latitude ?? 0.0;
         longitude = currentGuarita!.longitude ?? 0.0;
+        final randomizedLoc = locationUtils.getRandomPositionInRadius(latitude, longitude, 50);
+
+        latitude = randomizedLoc.latitude;
+        longitude = randomizedLoc.longitude;
       }
       if (isLocalSwitchOn && cityController.text.isNotEmpty && beachSpotController.text.isEmpty) {
         final Location cityLocation = await _getCityLatLong(cityController.text);

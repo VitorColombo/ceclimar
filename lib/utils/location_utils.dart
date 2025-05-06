@@ -1,6 +1,9 @@
+import 'dart:math';
+
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:flutter/material.dart';
+import 'package:latlong2/latlong.dart';
 
 class LocationUtils {
   Future<bool> handleLocationPermission(BuildContext context) async {
@@ -71,5 +74,42 @@ class LocationUtils {
       debugPrint(e.toString());
       return null;
     }
+  }
+
+  Position getRandomPositionInRadius(double lat, double long, double radiusInMeters) {
+    if (radiusInMeters <= 0) {
+      throw ArgumentError("Radius must be positive.");
+    }
+
+    final Random random = Random();
+    final LatLng centerPointLatLng = LatLng(lat, long);
+
+    final double randomBearingDegrees = random.nextDouble() * 360.0;
+
+    final double u = random.nextDouble();
+    final double randomDistanceInMeters = radiusInMeters * sqrt(u);
+
+    const Distance distanceCalculator = Distance();
+
+    final LatLng randomPointLatLng = distanceCalculator.offset(
+      centerPointLatLng,
+      randomDistanceInMeters,
+      randomBearingDegrees,
+    );
+
+    final Position randomPosition = Position(
+        latitude: randomPointLatLng.latitude,
+        longitude: randomPointLatLng.longitude,
+        timestamp: DateTime.now(),
+        accuracy: 0.0,
+        altitude: 0.0,
+        altitudeAccuracy: 0.0,
+        heading: 0.0,
+        headingAccuracy: 0.0,
+        speed: 0.0,
+        speedAccuracy: 0.0,
+      );
+      
+    return randomPosition;
   }
 }
