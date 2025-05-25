@@ -174,6 +174,27 @@ class NewRegisterFormController {
 
   //TODO: create a file for this locationService
   Future<void> getAddressFromLatLng(Position position, BuildContext context) async {
+    if (position.latitude == 0.0 && position.longitude == 0.0) {
+      debugPrint('Coordenadas inválidas: (0.0, 0.0)');
+      return;
+    }
+    
+    final connectivity = await Connectivity().checkConnectivity();
+    if (connectivity == ConnectivityResult.none) {
+      debugPrint('Sem conexão com a internet. Não é possível obter o endereço.');
+      currentAddress = null;
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Dados de latitude e longitude coletados'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      }
+      return;
+    }
+
     try {
       List<Placemark> placemarks = await placemarkFromCoordinates(position.latitude, position.longitude);
       Placemark place = placemarks[0];
@@ -195,7 +216,7 @@ class NewRegisterFormController {
         ),
       );
     } catch (e) {
-      debugPrint('Erro desconhecido: $e');
+      debugPrint('Erro inesperado ao obter endereço: $e');
     }
   }
 
@@ -211,40 +232,24 @@ class NewRegisterFormController {
 
   Future<Position?> resolvePosition(BuildContext context) async {
     final hasPermission = await _handleLocationPermission(context);
-    if (!hasPermission) {
-      debugPrint("resolvePosition: Permission or service check failed.");
-      return null;
-    }
+    if (!hasPermission) return null;
 
-    debugPrint("resolvePosition: Permissions OK. Attempting to get current position (using default provider)...");
     try {
-      return await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
-        timeLimit: const Duration(seconds: 45),
+      const locationSettings = LocationSettings(
+        accuracy: LocationAccuracy.high,
+        timeLimit: Duration(seconds: 40),
       );
 
-    } on TimeoutException {
-      debugPrint('resolvePosition: Location request timed out after 45 seconds.');
-      if (context.mounted) {
-        _handleError(context, 'Falha ao obter localização. Tente novamente mais tarde.');
-      }
-      return null;
-    } on LocationServiceDisabledException {
-      debugPrint('resolvePosition: Location service became disabled.');
-      if (context.mounted) {
-        _showLocationError(context, 'Serviço de localização foi desativado.', Colors.red);
-      }
-      return null;
-    } on PlatformException catch (e) {
-      debugPrint('resolvePosition: PlatformException getting position: ${e.code} - ${e.message}');
-      if (context.mounted) {
-        _handleError(context, e);
-      }
-      return null;
+      final position = await Geolocator.getCurrentPosition(
+        locationSettings: locationSettings,
+      );
+
+      debugPrint("resolvePosition: Posição obtida via GPS: $position");
+      return position;
     } catch (e) {
-      debugPrint('resolvePosition: Unexpected error getting position: $e');
+      debugPrint("resolvePosition: Falha ao obter localização: $e");
       if (context.mounted) {
-        _handleError(context, e);      
+        _showLocationError(context, 'Não foi possível obter sua localização.', Colors.red);
       }
       return null;
     }
@@ -253,10 +258,10 @@ class NewRegisterFormController {
   Future<bool> _handleLocationPermission(BuildContext context) async {
     final serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      if (!context.mounted) return false;
-      _showLocationError(context, 'Habilite o serviço de localização do dispositivo.', Colors.grey);
-      await Future.delayed(const Duration(seconds: 3));
-      await Geolocator.openLocationSettings();
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).clearSnackBars();
+        _showLocationError(context, 'Habilite o serviço de localização do dispositivo.', Colors.grey);
+      }
       return false;
     }
 
@@ -264,16 +269,22 @@ class NewRegisterFormController {
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
-        if (!context.mounted) return false;
-        _showLocationError(context, 'As permissões de localização foram negadas.', Colors.red);
+        if (context.mounted) {
+          _showLocationError(context, 'As permissões de localização foram negadas.', Colors.red);
+        }
         return false;
       }
     }
 
     if (permission == LocationPermission.deniedForever) {
-      if (!context.mounted) return false;
-      _showLocationError(context, 'Permissões negadas permanentemente. Altere nas configurações do dispositivo.', Colors.red);
-      await Geolocator.openLocationSettings();
+      if (context.mounted) {
+        _showLocationError(
+          context,
+          'Permissões negadas permanentemente. Altere nas configurações do dispositivo',
+          Colors.red,
+        );
+      }
+      await Geolocator.openAppSettings();
       return false;
     }
 
@@ -289,21 +300,35 @@ class NewRegisterFormController {
     );
   }
 
+  Future<bool> _waitForLocationService({int attempts = 10, Duration interval = const Duration(seconds: 5)}) async {
+    for (var i = 0; i < attempts; i++) {
+      final enabled = await Geolocator.isLocationServiceEnabled();
+      debugPrint('[waitForLocationService] Tentativa ${i + 1}: $enabled');
+      if (enabled) return true;
+      await Future.delayed(interval);
+    }
+    return false;
+  }
+
   Future<Map<String, dynamic>> _buildRegisterData(BuildContext context, Position position, RegisterType type) async {
-    LocationUtils locationUtils = LocationUtils();
-    final String name = nameController.text;
-    final String hour = hourController.text;
+    final locationUtils = LocationUtils();
+    final name = nameController.text.trim();
+    final hour = hourController.text.trim();
     final witnessed = isHourSwitchOn;
-    final String referencePoint = referencePointController.text;
-    String? city = cityController.text;
-    String? beachSpot = beachSpotController.text;
-    //technical register
-    String? species = speciesController.text;
-    String? obs = obsController.text;
-    String? family = familyController.text;
-    String? genu = genuController.text;
-    String? order = orderController.text;
-    String? classe = classController.text;
+    final referencePoint = referencePointController.text.trim();
+    String? city = cityController.text.trim();
+    String? beachSpot = beachSpotController.text.trim();
+
+    // Campos técnicos
+    final species = speciesController.text.trim();
+    final obs = obsController.text.trim();
+    final family = familyController.text.trim();
+    final genu = genuController.text.trim();
+    final order = orderController.text.trim();
+    final classe = classController.text.trim();
+
+    double latitude = position.latitude;
+    double longitude = position.longitude;
 
     try {
       await getAddressFromLatLng(position, context);
@@ -312,61 +337,66 @@ class NewRegisterFormController {
       currentAddress = null;
     }
 
-    if (currentPosition != null && currentAddress != null) {
-      double latitude = currentPosition!.latitude;
-      double longitude = currentPosition!.longitude;
-      if(!isLocalSwitchOn && cityController.text.isEmpty && beachSpotController.text.isEmpty){
-        city = currentAddress!.split(",")[0];
-      }
-      if(isLocalSwitchOn && beachSpotController.text.isNotEmpty && currentGuarita != null){
+    if (currentPosition != null) {
+      latitude = currentPosition!.latitude;
+      longitude = currentPosition!.longitude;
+    }
+
+    if (!isLocalSwitchOn && city.isEmpty && beachSpot.isEmpty && currentAddress != null) {
+      city = currentAddress!.split(",").first.trim();
+    }
+
+    if (isLocalSwitchOn) {
+      if (beachSpot.isNotEmpty && currentGuarita != null) {
         latitude = currentGuarita!.latitude ?? 0.0;
         longitude = currentGuarita!.longitude ?? 0.0;
-        final randomizedLoc = locationUtils.getRandomPositionInRadius(latitude, longitude, 50);
-
-        latitude = randomizedLoc.latitude;
-        longitude = randomizedLoc.longitude;
-      }
-      if (isLocalSwitchOn && cityController.text.isNotEmpty && beachSpotController.text.isEmpty) {
-        final Location cityLocation = await _getCityLatLong(cityController.text);
-        latitude = cityLocation.latitude;
-        longitude = cityLocation.longitude;
-      }
-      if(isLocalSwitchOn && beachSpotController.text.isEmpty && cityController.text.isEmpty){
+        final randomized = locationUtils.getRandomPositionInRadius(latitude, longitude, 50);
+        latitude = randomized.latitude;
+        longitude = randomized.longitude;
+      } else if (city.isNotEmpty && beachSpot.isEmpty) {
+        try {
+          final loc = await _getCityLatLong(city);
+          latitude = loc.latitude;
+          longitude = loc.longitude;
+        } catch (e) {
+          debugPrint('Erro ao buscar coordenadas da cidade: $e');
+        }
+      } else if (city.isEmpty && beachSpot.isEmpty) {
         latitude = 0.0;
         longitude = 0.0;
       }
-    
-    if(type == RegisterType.technical){
-      return {
-          "name": name,
-          "hour": hour,
-          "witnessed": witnessed,
-          "species": species,
-          "city": city,
-          "beachSpot": beachSpot,
-          "obs": obs,
-          "family": family,
-          "genu": genu,
-          "order": order,
-          "classe": classe,
-          "latitude": latitude,
-          "longitude": longitude,
-          "referencePoint": referencePoint
-        };
-    } else if(type == RegisterType.simple){
-      return {
+    }
+
+    final hasValidCoords = latitude != 0.0 || longitude != 0.0;
+
+    if (hasValidCoords) {
+      final baseData = {
         "name": name,
         "hour": hour,
         "witnessed": witnessed,
         "latitude": latitude,
         "longitude": longitude,
-        "city": city,
-        "beachSpot": beachSpot,
-        "referencePoint": referencePoint
+        "city": city.isNotEmpty ? city : "",
+        "beachSpot": beachSpot.isNotEmpty ? beachSpot : "",
+        "referencePoint": referencePoint,
       };
+
+      if (type == RegisterType.technical) {
+        return {
+          ...baseData,
+          "species": species,
+          "obs": obs,
+          "family": family,
+          "genu": genu,
+          "order": order,
+          "classe": classe,
+        };
+      } else {
+        return baseData;
+      }
     }
-    }
-    throw Exception('Invalid RegisterType or missing data');
+
+    throw Exception('Invalid RegisterType or missing data (invalid coordinates)');
   }
 
   Future<void> _handleSubmission(BuildContext context, ConnectivityResult connectivityResult, Map<String, dynamic> data, RegisterType type) async {
@@ -388,6 +418,7 @@ class NewRegisterFormController {
         );
         if (response != null) {
           if (!context.mounted) return;
+          ScaffoldMessenger.of(context).clearSnackBars();
           _showSuccessMessage(context, 'Registro enviado com sucesso!');
           Navigator.pushNamedAndRemoveUntil(context, BasePage.routeName, (route) => false, arguments: 0);
         } else {
@@ -418,6 +449,7 @@ class NewRegisterFormController {
         );
         if (response != null) {
           if (!context.mounted) return;
+          ScaffoldMessenger.of(context).clearSnackBars();
           _showSuccessMessage(context, 'Registro enviado com sucesso!');
           Navigator.pushNamedAndRemoveUntil(context, BasePage.routeName, (route) => false, arguments: 0);
         } else {
@@ -432,18 +464,81 @@ class NewRegisterFormController {
   }
 
   Future<void> sendRegister(BuildContext context, RegisterType type) async {
-    final connectivityResult = await Connectivity().checkConnectivity();
-    
-    if (!context.mounted) return;
-    final position = await resolvePosition(context);
-    if (position == null) return;
-    currentPosition = position;
+    debugPrint('[sendRegister] Início do processo de registro');
+    showStepMessage(context, 'Verificando conexão...');
 
-    if (!context.mounted) return;
+    final connectivityResult = await Connectivity().checkConnectivity();
+    debugPrint('[sendRegister] Conectividade: $connectivityResult');
+
+    if (!context.mounted) {
+      debugPrint('[sendRegister] Contexto desmontado, encerrando.');
+      return;
+    }
+
+    showStepMessage(context, 'Verificando permissões de localização...');
+    debugPrint('[sendRegister] Tentando resolver posição...');
+    Position? position = await resolvePosition(context);
+
+    if (position == null) {
+      debugPrint('[sendRegister] Localização indisponível, solicitando ativação...');
+      showStepMessage(context, 'Ativando GPS, aguarde...', color: Colors.orange);
+
+      await Geolocator.openLocationSettings();
+      final serviceReady = await _waitForLocationService();
+      debugPrint('[sendRegister] Serviço de localização ativado: $serviceReady');
+
+      if (!serviceReady) {
+        debugPrint('[sendRegister] Serviço ainda desativado, cancelando.');
+        if (context.mounted) {
+          _handleError(context, 'Serviço de localização ainda desativado.');
+        }
+        return;
+      }
+
+      showStepMessage(context, 'Tentando novamente obter localização...');
+      debugPrint('[sendRegister] Re-tentando resolver posição...');
+      position = await resolvePosition(context);
+    }
+
+    if (position == null) {
+      debugPrint('[sendRegister] Falha ao obter localização após revalidação.');
+      if (context.mounted) {
+        _handleError(context, 'Não foi possível obter sua localização.');
+      }
+      return;
+    }
+
+    debugPrint('[sendRegister] Localização obtida: (${position.latitude}, ${position.longitude})');
+    currentPosition = position;
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    showStepMessage(context, 'Construindo dados do registro...');
+    debugPrint('[sendRegister] Montando dados...');
+    if (!context.mounted) {
+      debugPrint('[sendRegister] Contexto desmontado antes de montar dados.');
+      return;
+    }
+
     final data = await _buildRegisterData(context, position, type);
-    
-    if (!context.mounted) return;
+    debugPrint('[sendRegister] Dados montados: $data');
+    debugPrint('[sendRegister] Enviando registro ao backend...');
+    if (!context.mounted) {
+      debugPrint('[sendRegister] Contexto desmontado antes do envio.');
+      return;
+    }
+
     await _handleSubmission(context, connectivityResult, data, type);
+    debugPrint('[sendRegister] Final do processo de envio.');
+  }
+
+
+  void showStepMessage(BuildContext context, String message, {Color color = Colors.blue}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: color,
+        duration: const Duration(seconds: 3),
+      ),
+    );
   }
 
   Future<SimpleRegisterRequest?> sendSimpleRegisterToApi(
@@ -573,7 +668,7 @@ class NewRegisterFormController {
       throw Exception('Falha ao enviar a imagem para o Firebase Storage: ${e.message ?? 'Erro desconhecido'}');
     }
     catch (e){
-       debugPrint('Erro ao enviar imagem para o Firebase Storage: $e');
+      debugPrint('Erro ao enviar imagem para o Firebase Storage: $e');
       throw Exception('Falha ao enviar a imagem para o Firebase Storage: ${e.toString()}');
     }
   }
@@ -610,7 +705,8 @@ class NewRegisterFormController {
       );
       _registerBox.add(newRegister);
       trimRegisterBox();
-      _showSuccessMessage(context, 'Registro salvo localmente. Será enviado quando a internet voltar.');
+      ScaffoldMessenger.of(context).clearSnackBars();
+      _showSuccessMessage(context, 'Registro salvo localmente. Será enviado quando a internet voltar');
       Navigator.pushNamedAndRemoveUntil(context, BasePage.routeName, (Route<dynamic> route) => false, arguments: 0);
   }
   
@@ -637,7 +733,7 @@ class NewRegisterFormController {
     } else if (error is Exception) {
       message = error.toString();
     } else {
-      message = 'Erro desconhecido';
+      message = 'Falha ao se comunicar com os satélites, tente novamente: $error';
     }
 
     ScaffoldMessenger.of(context).hideCurrentSnackBar();

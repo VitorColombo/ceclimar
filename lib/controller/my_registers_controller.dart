@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:tcc_ceclimar/models/register_response.dart';
+import 'package:tcc_ceclimar/utils/animals_service.dart';
 
 class MyRegistersController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -10,6 +11,8 @@ class MyRegistersController {
 
   Future<List<RegisterResponse>> getRegisters() async {
     User? user = _auth.currentUser;
+    AnimalService animalService = AnimalService();
+    await animalService.insertAnimals();
 
     if (user == null) {
       throw Exception('Usuário não autenticado');

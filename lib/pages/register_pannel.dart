@@ -123,11 +123,10 @@ class RegisterPannelState extends State<RegisterPannel> {
         evaluatedRegisters = allRegisters.where((reg) => reg.status == "Validado").length;
         pendingRegisters = allRegisters.where((reg) => reg.status == "Enviado").length;
         displayRegisters = allRegisters;
-        birdsCounter = allRegisters.where((reg) => reg.animal.classe!.toLowerCase() == "aves").length;
-        mammalsCounter = allRegisters.where((reg) => reg.animal.classe!.toLowerCase() == "mammalia").length;
-        reptilesCounter = allRegisters.where((reg) => reg.animal.classe!.toLowerCase() == "reptilia").length;
-
-      });
+        birdsCounter = allRegisters.where((reg) => reg.animal.classe!.toLowerCase() == "aves" && reg.status == "Validado").length;
+        mammalsCounter = allRegisters.where((reg) => reg.animal.classe!.toLowerCase() == "mammalia" && reg.status == "Validado").length;
+        reptilesCounter = allRegisters.where((reg) => reg.animal.classe!.toLowerCase() == "reptilia" && reg.status == "Validado").length;
+        });
     } finally {
       setState(() {
         isLoading = false;
