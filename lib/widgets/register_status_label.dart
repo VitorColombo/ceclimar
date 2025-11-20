@@ -28,16 +28,22 @@ class _StatusLabelState extends State<StatusLabel> {
           width: 2,
         ),
       ),
-      child: Text(
-        widget.status,
-        style: TextStyle(
-          color: Colors.black,
-          fontSize: textSize,
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Text(
+          widget.status,
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: textSize,
+          ),
+          softWrap: false,
+          overflow: TextOverflow.fade,
         ),
       ),
     );
   }
 }
+
 double getResponsiveTextSize(BuildContext context, double baseSize) {
   double screenWidth = MediaQuery.of(context).size.width;
   return baseSize * (screenWidth / 375.0);

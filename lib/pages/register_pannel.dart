@@ -313,6 +313,7 @@ class RegisterPannelState extends State<RegisterPannel> {
                                 children: [
                                   TileLayer(
                                     urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                                    userAgentPackageName: 'com.example.tcc_ceclimar',
                                   ),
                                   MarkerLayer(
                                     markers: _getRegistersForMap().map((register) {
