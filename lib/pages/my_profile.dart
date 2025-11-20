@@ -33,9 +33,6 @@ class _MyProfileState extends State<MyProfile> {
   final MyProfileController _myProfileController = MyProfileController();
   final ValueNotifier<bool> isUltimosRegistrosNotifier = ValueNotifier<bool>(false);
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  bool isLoading = true;
-  List<RegisterResponse> registers = [];
-  Map<dynamic, dynamic> animalCounters = {};
   ImageProvider image = AssetImage('assets/images/imageProfile.png');
 
   Future<void> _logout(BuildContext context) async {
@@ -70,8 +67,6 @@ class _MyProfileState extends State<MyProfile> {
       Navigator.pushNamedAndRemoveUntil(context, '/login', (Route<dynamic> route) => false);
     } else {
       _loadUserImage();
-      fetchRegisters();
-      fetchAnimalCounters();
     }
   }
 
@@ -80,149 +75,149 @@ class _MyProfileState extends State<MyProfile> {
     super.didChangeDependencies();
     _checkUserStatus();
   }
-  
-  Future<void> fetchRegisters() async {
-    await Future.delayed(const Duration(milliseconds: 200));
-    if (!mounted) return;
-    List<RegisterResponse> fetchedRegisters = await _myProfileController.getRegisters();
-    if (mounted){ 
-      setState(() {
-        registers = fetchedRegisters;
-        isLoading = false;
-      });
-    }    
-  }
 
-  Future<void> fetchAnimalCounters() async {
-    await Future.delayed(const Duration(milliseconds: 200));
-    if (!mounted) return;
-    Map<dynamic, dynamic> fetchedAnimalCounters = await _myProfileController.getAnimalsCounters();
-    if (mounted){ 
-      setState(() {
-        animalCounters = fetchedAnimalCounters;
-        isLoading = false;
-      });
-    }    
-  }
-
-  @override
+@override
   Widget build(BuildContext context) {
     UserResponse? userData = _controller.getUserInfo();
     
-    return Scaffold(
-      key: _scaffoldKey,
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            automaticallyImplyLeading: false,
-            pinned: true,
-            collapsedHeight: 250,
-            expandedHeight: 250,
-            backgroundColor: Colors.white,
-            shadowColor: Color.fromARGB(0, 173, 145, 145),
-            flexibleSpace: FlexibleSpaceBar(
-              background: Container(
-                  color: Colors.white,
-                  child: Stack(
-                  children: [
-                    LoginHeaderWidget(imageFuture: Future.value(image)),
-                    PageHeader(
-                      text: "Meu perfil",
-                      icon: const Icon(Icons.arrow_back, color: Colors.white,),
-                      onTap: () => widget.updateIndex(0),
-                      color: Colors.white,
-                    ),
-                    Positioned(
-                      top: 55,
-                      right: 16,
-                      child: TextButton(
-                        onPressed: () => _logout(context),
-                        child: const Text("Logout", style: TextStyle(color: Colors.white),),
+    return StreamBuilder<List<RegisterResponse>>(
+      stream: _myProfileController.getRegistersStream(),
+      builder: (context, registerSnapshot) {
+        
+        final List<RegisterResponse> registers = registerSnapshot.data ?? [];
+        final bool isLoading = 
+            !registerSnapshot.hasData && registerSnapshot.connectionState != ConnectionState.active;
+        
+        return StreamBuilder<Map<dynamic, dynamic>>(
+          stream: _myProfileController.getAnimalsCountersStream(),
+          builder: (context, countersSnapshot) {
+            
+            final Map<dynamic, dynamic> animalCounters = countersSnapshot.data ?? {};
+            
+            final bool combinedIsLoading = isLoading || 
+                (!countersSnapshot.hasData && countersSnapshot.connectionState != ConnectionState.active);
+
+            return Scaffold(
+              key: _scaffoldKey,
+              body: CustomScrollView(
+                slivers: [
+                  SliverAppBar(
+                    collapsedHeight: 250,
+                    expandedHeight: 250,
+                    flexibleSpace: FlexibleSpaceBar(
+                      background: Container(
+                          color: Colors.white,
+                          child: Stack(
+                          children: [
+                            LoginHeaderWidget(imageFuture: Future.value(image)),
+                            PageHeader(
+                                text: "Meu perfil",
+                                icon: const Icon(Icons.arrow_back, color: Colors.white,),
+                                onTap: () => widget.updateIndex(0),
+                                color: Colors.white,
+                              ),
+                            Positioned(
+                              top: 55,
+                              right: 16,
+                              child: TextButton(
+                                onPressed: () => _logout(context),
+                                child: const Text("Logout", style: TextStyle(color: Colors.white),),
+                              ),
+                            ),
+                          ],
                       ),
                     ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          SliverList(
-            delegate: SliverChildListDelegate(
-              [
-                Column(
-                  children: [
-                    SizedBox(height: 9),
-                    InkWell(
-                      splashColor: Colors.transparent,
-                      onTap: () => showMyProfileBottomSheet(context),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                    ),
+                  ),
+                  SliverList(
+                    delegate: SliverChildListDelegate(
+                      [
+                        Column(
                           children: [
-                            Flexible(
-                              child: Visibility(
-                                visible: userData?.name != null,
-                                child: Text(
-                                  '${userData?.name}',
-                                  style: Theme.of(context).textTheme.titleLarge,
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 1,
+                            const SizedBox(height: 9),
+                            InkWell(
+                              splashColor: Colors.transparent,
+                              onTap: () => showMyProfileBottomSheet(context),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 20),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Flexible(
+                                      child: Visibility(
+                                        visible: userData?.name != null,
+                                        child: Text(
+                                          '${userData?.name}',
+                                          style: Theme.of(context).textTheme.titleLarge,
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 1,
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Icon(
+                                      PhosphorIcons.pencilSimple(PhosphorIconsStyle.regular),
+                                      size: 20,
+                                    ),
+                                  ],
                                 ),
                               ),
                             ),
-                            SizedBox(width: 8),
-                            Icon(
-                              PhosphorIcons.pencilSimple(PhosphorIconsStyle.regular),
-                              size: 20,
+                            const SizedBox(height: 9),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                RichText(
+                                  text: TextSpan(
+                                  text: "Registros realizados: ",
+                                  style: Theme.of(context).textTheme.bodyLarge,
+                                  ),
+                                ),
+                                combinedIsLoading
+                                  ? const Skeletonizer(
+                                      enabled: true, 
+                                      child: Text("XX", style: TextStyle(fontSize: 16)),
+                                    ) 
+                                  : RichText(
+                                    text: TextSpan(
+                                    text: "${registers.length}",
+                                    style: Theme.of(context).textTheme.bodyLarge,
+                                    ),
+                                  ),
+                              ],
                             ),
+                            const SizedBox(height: 20),
+                            ProfileSwitch(
+                                size: 600,
+                                isUltimosRegistrosNotifier: isUltimosRegistrosNotifier
+                            ),
+                            const SizedBox(height: 10),
                           ],
                         ),
-                      ),
-                    ),
-                    SizedBox(height: 9),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [                    
-                        RichText(
-                          text: TextSpan(
-                          text: "Registros realizados: ",
-                          style: Theme.of(context).textTheme.bodyLarge,
-                          ),
+                        ValueListenableBuilder<bool>(
+                          valueListenable: isUltimosRegistrosNotifier,
+                          builder: (context, isUltimosRegistros, child) {
+                            return !isUltimosRegistros
+                              ? UltimosRegistrosContent(
+                                  registers: registers, 
+                                  isLoading: combinedIsLoading,
+                                )
+                              : AnimaisEncontradosContent(
+                                  counters: animalCounters,
+                                  isLoading: combinedIsLoading,
+                                  registerCount: registers.length,
+                                );
+                          },
                         ),
-                        isLoading
-                          ? const Skeletonizer(
-                            enabled: true, 
-                            child: Text("XX", style: TextStyle(fontSize: 16)),
-                          ) 
-                          : RichText(
-                            text: TextSpan(
-                            text: "${registers.length}",
-                            style: Theme.of(context).textTheme.bodyLarge,
-                            ),
-                          ),
-                      ],
-                    ),
-                    SizedBox(height: 20),
-                    ProfileSwitch(
-                        size: 600,
-                        isUltimosRegistrosNotifier: isUltimosRegistrosNotifier
-                    ),
-                    SizedBox(height: 10),
-                  ],
-                ),
-                ValueListenableBuilder<bool>(
-                  valueListenable: isUltimosRegistrosNotifier,
-                  builder: (context, isUltimosRegistros, child) {
-                    return !isUltimosRegistros
-                            ? UltimosRegistrosContent(registers: registers, isLoading: isLoading)
-                            : AnimaisEncontradosContent(counters: animalCounters, isLoading: isLoading, registerCount: registers.length);
-                  },
-                ),
-              ]
-            )
-          )
-        ]
-      )
+                      ]
+                    )
+                  )
+                ]
+              )
+            );
+          },
+        );
+      }
     );
   }
 

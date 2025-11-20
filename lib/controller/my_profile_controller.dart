@@ -5,57 +5,59 @@ import 'package:tcc_ceclimar/models/register_response.dart';
 class MyProfileController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  
-  Future<List<RegisterResponse>> getRegisters() async {
+
+  Stream<List<RegisterResponse>> getRegistersStream() {
     User? user = _auth.currentUser;
 
     if (user == null) {
-      throw Exception('Usuário não autenticado');
+      return Stream.value([]);
     }
 
-    QuerySnapshot registerSnapshot = await _firestore
+    return _firestore
         .collection('users')
         .doc(user.uid)
         .collection('registers')
-        .get();
-
-    List<RegisterResponse> registers = registerSnapshot.docs.map((doc) {
-      return RegisterResponse.fromJson({
-        ...doc.data() as Map<String, dynamic>, 
-        'id': doc.id,
-      });
-    }).toList();
-    registers.sort((a, b) => b.date.compareTo(a.date));
-    await Future.delayed(Duration(milliseconds: 100));
-    
-    return registers;
+        .snapshots() 
+        .map((snapshot) {
+      List<RegisterResponse> registers = snapshot.docs.map((doc) {
+        return RegisterResponse.fromJson({
+          ...doc.data() as Map<String, dynamic>,
+          'id': doc.id,
+        });
+      }).toList();
+      registers.sort((a, b) => b.date.compareTo(a.date));
+      return registers;
+    });
   }
 
-  Future<Map<dynamic, dynamic>> getAnimalsCounters() async{
-    Map <String, int> animalsCounters = {
+  Stream<Map<dynamic, dynamic>> getAnimalsCountersStream() {
+    User? user = _auth.currentUser;
+
+    if (user == null) {
+      return Stream.value({});
+    }
+
+    Map<dynamic, dynamic> defaultCounters = {
       'mammalsFound': 0,
       'birdsFound': 0,
       'reptilesFound': 0,
     };
 
-    User? user = _auth.currentUser;
-    if (user == null) {
-      throw Exception('Usuário não autenticado');
-    }
-
-    DocumentSnapshot userSnapshot = await _firestore
+    return _firestore
         .collection('users')
         .doc(user.uid)
-        .get();
-    if (userSnapshot.exists) {
-      Map<dynamic, dynamic> data = userSnapshot.data() as Map<dynamic, dynamic>;
-      animalsCounters['mammalsFound'] = data['mammalsFound'] ?? 0;
-      animalsCounters['birdsFound'] = data['birdsFound'] ?? 0;
-      animalsCounters['reptilesFound'] = data['reptilesFound'] ?? 0;
-    } else {
-      throw Exception('Usuário não encontrado');
-    }
-
-    return animalsCounters;
+        .snapshots()
+        .map((userSnapshot) {
+      if (userSnapshot.exists) {
+        Map<dynamic, dynamic> data = userSnapshot.data() as Map<dynamic, dynamic>;
+        
+        defaultCounters['mammalsFound'] = data['mammalsFound'] ?? 0;
+        defaultCounters['birdsFound'] = data['birdsFound'] ?? 0;
+        defaultCounters['reptilesFound'] = data['reptilesFound'] ?? 0;
+        return defaultCounters;
+      } else {
+        return defaultCounters;
+      }
+    });
   }
 }
