@@ -17,11 +17,14 @@ import '../widgets/page_header.dart';
 import '../widgets/profile_switch.dart';
 
 class MyProfile extends StatefulWidget {
-  static const String routeName = '/myprofile'; 
+  static const String routeName = '/myprofile';
   final Function(int) updateIndex;
 
-  const MyProfile({super.key, this.updateIndex = _defaultUpdateIndex,});
-  
+  const MyProfile({
+    super.key,
+    this.updateIndex = _defaultUpdateIndex,
+  });
+
   static void _defaultUpdateIndex(int index) {}
 
   @override
@@ -33,15 +36,8 @@ class _MyProfileState extends State<MyProfile> {
   final MyProfileController _myProfileController = MyProfileController();
   final ValueNotifier<bool> isUltimosRegistrosNotifier = ValueNotifier<bool>(false);
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  ImageProvider image = AssetImage('assets/images/imageProfile.png');
-
-  Future<void> _logout(BuildContext context) async {
-    try {
-      _controller.signOut(_scaffoldKey.currentContext!);
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erro ao sair: $e')));
-    }
-  }
+  Future<ImageProvider?>? _profileImageFuture;
+  final ImageProvider _defaultImage = const AssetImage('assets/images/imageProfile.png');
 
   @override
   void initState() {
@@ -49,84 +45,111 @@ class _MyProfileState extends State<MyProfile> {
     _checkUserStatus();
   }
 
-  Future<void> _loadUserImage() async {
+  Future<ImageProvider?> _fetchProfileImage() async {
     User? user = _controller.getCurrentUser();
     if (user != null) {
       String? profileImageUrl = await _controller.getProfileImageUrl(user.uid);
-      if (profileImageUrl != null && profileImageUrl.isNotEmpty && mounted) {
-        setState(() {
-          image = NetworkImage(profileImageUrl);
-        });
+      if (profileImageUrl != null && profileImageUrl.isNotEmpty) {
+        return NetworkImage(profileImageUrl);
       }
     }
+    return null;
   }
 
   Future<void> _checkUserStatus() async {
     User? user = _controller.getCurrentUser();
     if (user == null) {
-      Navigator.pushNamedAndRemoveUntil(context, '/login', (Route<dynamic> route) => false);
+      if (mounted) {
+        Navigator.pushNamedAndRemoveUntil(
+            context, '/login', (Route<dynamic> route) => false);
+      }
     } else {
-      _loadUserImage();
+      setState(() {
+        _profileImageFuture = _fetchProfileImage();
+      });
     }
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _checkUserStatus();
+  Future<void> _logout(BuildContext context) async {
+    try {
+      _controller.signOut(_scaffoldKey.currentContext!);
+    } catch (e) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Erro ao sair: $e')));
+    }
+  }
+  
+  void _loadUserImage() {
+    setState(() {
+      _profileImageFuture = _fetchProfileImage();
+    });
   }
 
-@override
+  @override
   Widget build(BuildContext context) {
     UserResponse? userData = _controller.getUserInfo();
-    
+
     return StreamBuilder<List<RegisterResponse>>(
       stream: _myProfileController.getRegistersStream(),
       builder: (context, registerSnapshot) {
-        
         final List<RegisterResponse> registers = registerSnapshot.data ?? [];
-        final bool isLoading = 
-            !registerSnapshot.hasData && registerSnapshot.connectionState != ConnectionState.active;
-        
+        final bool registersLoading = !registerSnapshot.hasData &&
+            registerSnapshot.connectionState != ConnectionState.active;
+
         return StreamBuilder<Map<dynamic, dynamic>>(
           stream: _myProfileController.getAnimalsCountersStream(),
           builder: (context, countersSnapshot) {
-            
-            final Map<dynamic, dynamic> animalCounters = countersSnapshot.data ?? {};
-            
-            final bool combinedIsLoading = isLoading || 
-                (!countersSnapshot.hasData && countersSnapshot.connectionState != ConnectionState.active);
+            final Map<dynamic, dynamic> animalCounters =
+                countersSnapshot.data ?? {};
+
+            final bool combinedIsLoading = registersLoading ||
+                (!countersSnapshot.hasData &&
+                    countersSnapshot.connectionState !=
+                        ConnectionState.active);
 
             return Scaffold(
               key: _scaffoldKey,
               body: CustomScrollView(
                 slivers: [
                   SliverAppBar(
+                    automaticallyImplyLeading: false,
+                    pinned: true,
                     collapsedHeight: 250,
                     expandedHeight: 250,
+                    backgroundColor: Colors.white,
+                    shadowColor: const Color.fromARGB(0, 173, 145, 145),
                     flexibleSpace: FlexibleSpaceBar(
                       background: Container(
-                          color: Colors.white,
-                          child: Stack(
+                        color: Colors.white,
+                        child: Stack(
                           children: [
-                            LoginHeaderWidget(imageFuture: Future.value(image)),
-                            PageHeader(
+                            LoginHeaderWidget(
+                              imageFuture: _profileImageFuture ?? Future.value(null),
+                              pageHeader: PageHeader(
                                 text: "Meu perfil",
-                                icon: const Icon(Icons.arrow_back, color: Colors.white,),
+                                icon: const Icon(
+                                  Icons.arrow_back,
+                                  color: Colors.white,
+                                ),
                                 onTap: () => widget.updateIndex(0),
                                 color: Colors.white,
                               ),
+                              defaultImage: _defaultImage,
+                            ),
                             Positioned(
                               top: 55,
                               right: 16,
                               child: TextButton(
                                 onPressed: () => _logout(context),
-                                child: const Text("Logout", style: TextStyle(color: Colors.white),),
+                                child: const Text(
+                                  "Logout",
+                                  style: TextStyle(color: Colors.white),
+                                ),
                               ),
                             ),
                           ],
+                        ),
                       ),
-                    ),
                     ),
                   ),
                   SliverList(
@@ -139,7 +162,8 @@ class _MyProfileState extends State<MyProfile> {
                               splashColor: Colors.transparent,
                               onTap: () => showMyProfileBottomSheet(context),
                               child: Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 20),
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 20),
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
@@ -148,7 +172,9 @@ class _MyProfileState extends State<MyProfile> {
                                         visible: userData?.name != null,
                                         child: Text(
                                           '${userData?.name}',
-                                          style: Theme.of(context).textTheme.titleLarge,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .titleLarge,
                                           overflow: TextOverflow.ellipsis,
                                           maxLines: 1,
                                         ),
@@ -156,7 +182,8 @@ class _MyProfileState extends State<MyProfile> {
                                     ),
                                     const SizedBox(width: 8),
                                     Icon(
-                                      PhosphorIcons.pencilSimple(PhosphorIconsStyle.regular),
+                                      PhosphorIcons.pencilSimple(
+                                          PhosphorIconsStyle.regular),
                                       size: 20,
                                     ),
                                   ],
@@ -169,28 +196,30 @@ class _MyProfileState extends State<MyProfile> {
                               children: [
                                 RichText(
                                   text: TextSpan(
-                                  text: "Registros realizados: ",
-                                  style: Theme.of(context).textTheme.bodyLarge,
+                                    text: "Registros realizados: ",
+                                    style: Theme.of(context).textTheme.bodyLarge,
                                   ),
                                 ),
                                 combinedIsLoading
-                                  ? const Skeletonizer(
-                                      enabled: true, 
-                                      child: Text("XX", style: TextStyle(fontSize: 16)),
-                                    ) 
-                                  : RichText(
-                                    text: TextSpan(
-                                    text: "${registers.length}",
-                                    style: Theme.of(context).textTheme.bodyLarge,
-                                    ),
-                                  ),
+                                    ? const Skeletonizer(
+                                        enabled: true,
+                                        child: Text("XX",
+                                            style: TextStyle(fontSize: 16)),
+                                      )
+                                    : RichText(
+                                        text: TextSpan(
+                                          text: "${registers.length}",
+                                          style:
+                                              Theme.of(context).textTheme.bodyLarge,
+                                        ),
+                                      ),
                               ],
                             ),
                             const SizedBox(height: 20),
                             ProfileSwitch(
                                 size: 600,
-                                isUltimosRegistrosNotifier: isUltimosRegistrosNotifier
-                            ),
+                                isUltimosRegistrosNotifier:
+                                    isUltimosRegistrosNotifier),
                             const SizedBox(height: 10),
                           ],
                         ),
@@ -198,29 +227,29 @@ class _MyProfileState extends State<MyProfile> {
                           valueListenable: isUltimosRegistrosNotifier,
                           builder: (context, isUltimosRegistros, child) {
                             return !isUltimosRegistros
-                              ? UltimosRegistrosContent(
-                                  registers: registers, 
-                                  isLoading: combinedIsLoading,
-                                )
-                              : AnimaisEncontradosContent(
-                                  counters: animalCounters,
-                                  isLoading: combinedIsLoading,
-                                  registerCount: registers.length,
-                                );
+                                ? UltimosRegistrosContent(
+                                    registers: registers,
+                                    isLoading: combinedIsLoading,
+                                  )
+                                : AnimaisEncontradosContent(
+                                    counters: animalCounters,
+                                    isLoading: combinedIsLoading,
+                                    registerCount: registers.length,
+                                  );
                           },
                         ),
-                      ]
-                    )
+                      ],
+                    ),
                   )
-                ]
-              )
+                ],
+              ),
             );
           },
         );
-      }
+      },
     );
   }
-
+  
   void showMyProfileBottomSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -235,9 +264,9 @@ class _MyProfileState extends State<MyProfile> {
               child: TextButton(
                 onPressed: () {
                   Navigator.pop(context);
-                      Navigator.pushNamed(context, EditProfile.routeName).then((_) {
-                        _loadUserImage();
-                      });
+                  Navigator.pushNamed(context, EditProfile.routeName).then((_) {
+                    _loadUserImage(); 
+                  });
                 },
                 style: TextButton.styleFrom(
                   shape: RoundedRectangleBorder(
@@ -249,15 +278,12 @@ class _MyProfileState extends State<MyProfile> {
                     vertical: 16,
                   ),
                   textStyle: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: "Inter"
-                  ),
+                      fontSize: 18, fontWeight: FontWeight.bold, fontFamily: "Inter"),
                   overlayColor: Colors.white,
                 ),
                 child: const Text(
                   "Editar perfil",
-                  style: TextStyle(color: Colors.white), 
+                  style: TextStyle(color: Colors.white),
                 ),
               ),
             ),
@@ -277,14 +303,11 @@ class _MyProfileState extends State<MyProfile> {
                   vertical: 16,
                 ),
                 textStyle: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: "Inter"
-                ),
+                    fontSize: 18, fontWeight: FontWeight.bold, fontFamily: "Inter"),
               ),
               child: const Text(
                 "Excluir conta",
-                style: TextStyle(color: Colors.white), 
+                style: TextStyle(color: Colors.white),
               ),
             ),
           ],
@@ -325,10 +348,11 @@ class _MyProfileState extends State<MyProfile> {
             TextButton(
               onPressed: () async {
                 String password = _controller.passController.text.trim();
-                  bool success = await _controller.deleteAccount(password, _scaffoldKey.currentContext!);
-                  if (success) {
-                    _logout(_scaffoldKey.currentContext!);
-                  }
+                bool success =
+                    await _controller.deleteAccount(password, _scaffoldKey.currentContext!);
+                if (success) {
+                  if (mounted) _logout(_scaffoldKey.currentContext!);
+                }
               },
               child: const Text("Excluir"),
             ),
@@ -342,7 +366,8 @@ class _MyProfileState extends State<MyProfile> {
 class UltimosRegistrosContent extends StatelessWidget {
   final List<RegisterResponse> registers;
   final bool isLoading;
-  const UltimosRegistrosContent({super.key, required this.registers, required this.isLoading});
+  const UltimosRegistrosContent(
+      {super.key, required this.registers, required this.isLoading});
   @override
   Widget build(BuildContext context) {
     if (!isLoading && registers.isEmpty) {
@@ -365,15 +390,15 @@ class UltimosRegistrosContent extends StatelessWidget {
       child: Skeletonizer(
         enabled: isLoading,
         child: ListView.builder(
-          padding: EdgeInsets.only(top: 0, bottom: 70),
-          physics: AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.only(top: 0, bottom: 70),
+          physics: const AlwaysScrollableScrollPhysics(),
           shrinkWrap: true,
           itemCount: displayRegisters.length,
           itemBuilder: (context, index) {
             return RegisterItem(
               isLoading: isLoading,
               register: displayRegisters[index],
-              route: RegisterDetailPage.routeName  
+              route: RegisterDetailPage.routeName,
             );
           },
         ),
@@ -386,8 +411,12 @@ class AnimaisEncontradosContent extends StatelessWidget {
   final Map<dynamic, dynamic> counters;
   final bool isLoading;
   final int registerCount;
-  const AnimaisEncontradosContent({super.key, required this.counters, required this.isLoading, required this.registerCount});
-  
+  const AnimaisEncontradosContent(
+      {super.key,
+      required this.counters,
+      required this.isLoading,
+      required this.registerCount});
+
   @override
   Widget build(BuildContext context) {
     return Skeletonizer(
@@ -396,7 +425,7 @@ class AnimaisEncontradosContent extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          SizedBox(width: 10),
+          const SizedBox(width: 10),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -440,18 +469,18 @@ class AnimaisEncontradosContent extends StatelessWidget {
               BadgeThreshold(threshold: 100, assetPath: "assets/images/badges/secretBadge.png"),
             ],
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Center(
               child: Text(
-              "Seja um cientista cidadão! Contribua e junte as medalhas com seus registros validados",
-              style: Theme.of(context).textTheme.bodyLarge,
-              textAlign: TextAlign.center,
+                "Seja um cientista cidadão! Contribua e junte as medalhas com seus registros validados",
+                style: Theme.of(context).textTheme.bodyLarge,
+                textAlign: TextAlign.center,
               ),
             ),
           ),
-          SizedBox(height: 20)
+          const SizedBox(height: 20)
         ],
       ),
     );
@@ -474,23 +503,27 @@ class BadgeColumn extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         ...thresholds.map((badge) {
           bool isUnlocked = count >= badge.threshold;
           return Column(
             children: [
               Tooltip(
-                message: isUnlocked 
-                  ? classe
-                  : classe == "Cientista Cidadão" ? "Conquista secreta!" : "$count/${badge.threshold} registros necessários",
-                waitDuration: Duration(milliseconds: 0),
-                showDuration: Duration(seconds: 3),
+                message: isUnlocked
+                    ? classe
+                    : classe == "Cientista Cidadão"
+                        ? "Conquista secreta!"
+                        : "$count/${badge.threshold} registros necessários",
+                waitDuration: const Duration(milliseconds: 0),
+                showDuration: const Duration(seconds: 3),
                 preferBelow: false,
                 triggerMode: TooltipTriggerMode.tap,
                 child: BadgeItem(
                   classe: classe,
                   image: Image.asset(
-                    isUnlocked ? badge.assetPath : "assets/images/badges/placeholderBadge.png",
+                    isUnlocked
+                        ? badge.assetPath
+                        : "assets/images/badges/placeholderBadge.png",
                     errorBuilder: (context, error, stackTrace) {
                       debugPrint("Erro ao carregar imagem: ${badge.assetPath}");
                       return const Icon(Icons.error, color: Colors.red);
