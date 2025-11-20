@@ -27,8 +27,8 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
   final _formController = NewRegisterFormController();
   final _formKey = GlobalKey<FormState>();
   final AnimalService _animalService = AnimalService();
-  bool isSwitchOn = false;
-  bool isOnLocal = false;
+  bool sawStranding = false;
+  bool isNotOnLocal = false;
   bool _isFormSubmitted = false;
   
   final List<String> species = [];
@@ -310,7 +310,7 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
       _formController.changeHourSwitch();
       _formController.hourController.text = '';
       _formController.hourError = null;
-      isSwitchOn = valueHour;
+      sawStranding = valueHour;
     });
   }
 
@@ -321,9 +321,12 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
       _formController.changeLocalSwitch();
       _formController.cityController.text = '';
       _formController.beachSpotController.text = '';
+      _formController.dateController.text = '';
+      _formController.dateOriginal = null;
       _formController.beachSpotError = null;
       _formController.cityError = null;
-      isOnLocal = valueLocal;
+      _formController.dateError = null;
+      isNotOnLocal = valueLocal;
     });
   }
 
@@ -421,7 +424,7 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
               padding: const EdgeInsets.only(left: 8),
               child: CustomSwitch(
                 text: "Não estou mais no local",
-                value: isOnLocal,
+                value: isNotOnLocal,
                 onChanged: _onLocalSwitchChanged,
                 onTap: _showSwitchLocalInfoBottomSheet,
                 isDisabled: _isFormSubmitted,
@@ -429,9 +432,48 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
             ),
             const SizedBox(height: 5),
             Visibility(
-              visible: isOnLocal,
+              visible: isNotOnLocal,
               child: Column(
                 children: [
+                  Column(
+                    children: [
+                      GestureDetector(
+                        onTap: () async {
+                          DateTime? pickedDate = await showDatePicker(
+                            context: context,
+                            initialDate: DateTime.now(),
+                            firstDate: DateTime(2000),
+                            lastDate: DateTime.now(),
+                          );
+                          if (pickedDate != null) {
+                            setState(() {
+                              _formController.dateOriginal = pickedDate;
+                              _formController.dateController.text =
+                                "${pickedDate.day.toString().padLeft(2, '0')}/${pickedDate.month.toString().padLeft(2, '0')}/${pickedDate.year}";
+                              _formController.dateError = null;
+                            });
+                          }
+                        },
+                        child: AbsorbPointer(
+                          child: Stack(
+                            alignment: Alignment.centerRight,
+                            children: [
+                              InputField(
+                                text: "Data do avistamento",
+                                controller: _formController.dateController,
+                                validator: (value) => _formController.dateError,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(right: 12.0),
+                                child: Icon(Icons.calendar_today, size: 20, color: Colors.grey),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                    ],
+                  ),
                   Visibility(
                     visible: _formController.locationSwitchError != null,
                     child:
@@ -599,15 +641,15 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
             Padding(
               padding: const EdgeInsets.only(left: 8),
               child: CustomSwitch(
-                text: "Presenciou o animal encalhando?",
-                value: isSwitchOn,
+                text: "Presenciei o animal encalhando",
+                value: sawStranding,
                 onChanged: _onHourSwitchChanged,
                 onTap: _showSwitchInfoBottomSheet,
                 isDisabled: _isFormSubmitted,
               ),
             ),
             const SizedBox(height: 5),
-            if (isSwitchOn)
+            if (sawStranding)
               Column(
                 children: [
                   GestureDetector(

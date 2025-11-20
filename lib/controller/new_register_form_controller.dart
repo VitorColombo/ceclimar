@@ -24,6 +24,7 @@ import 'package:tcc_ceclimar/utils/register_validators.dart';
 class NewRegisterFormController {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController hourController = TextEditingController();
+  final TextEditingController dateController = TextEditingController();
   final TextEditingController speciesController = TextEditingController();
   final TextEditingController cityController = TextEditingController();
   final TextEditingController beachSpotController = TextEditingController();
@@ -38,6 +39,7 @@ class NewRegisterFormController {
   File? _image;
   File? _image2;
   String? currentAddress;
+  DateTime? dateOriginal;
   Position? currentPosition;
   GuaritaData? currentGuarita;
   final String newRegisterEndpoint = '';
@@ -47,6 +49,7 @@ class NewRegisterFormController {
   
   String? nameError;
   String? hourError;
+  String? dateError;
   String? speciesError;
   String? cityError;
   String? beachSpotError;
@@ -63,6 +66,7 @@ class NewRegisterFormController {
   void dispose() {
     nameController.dispose();
     hourController.dispose();
+    dateController.dispose();
     speciesController.dispose();
     cityController.dispose();
     beachSpotController.dispose();
@@ -85,24 +89,28 @@ class NewRegisterFormController {
     imageError = validateImages(hasImage1: _image != null, hasImage2: _image2 != null);
 
     if (isLocalSwitchOn) {
+      dateError = validateDate(dateOriginal != null ? dateOriginal.toString() : '');
+
       cityError = validateCitySwitch(cityController.text.trim());
       beachSpotError = validateBeachSpotSwitch(beachSpotController.text.trim());
       referencePointError = validateReferencePoint(referencePointController.text.trim());
 
-      final allEmpty = cityController.text.trim().isEmpty &&
-                      beachSpotController.text.trim().isEmpty &&
-                      referencePointController.text.trim().isEmpty;
+      final hasAnyLocationField = cityController.text.trim().isNotEmpty ||
+                                  beachSpotController.text.trim().isNotEmpty ||
+                                  referencePointController.text.trim().isNotEmpty;
 
-      locationSwitchError = allEmpty ? RegisterError.switchError.message : null;
+      locationSwitchError = hasAnyLocationField ? null : RegisterError.switchError.message;
     } else {
       cityError = null;
       beachSpotError = null;
       referencePointError = null;
+      dateError = null;
       locationSwitchError = null;
     }
 
     return nameError == null &&
           hourError == null &&
+          dateError == null &&
           imageError == null &&
           cityError == null &&
           beachSpotError == null &&
@@ -126,6 +134,7 @@ class NewRegisterFormController {
       cityError = validateCitySwitch(cityController.text.trim());
       beachSpotError = validateBeachSpotSwitch(beachSpotController.text.trim());
       referencePointError = validateReferencePoint(referencePointController.text.trim());
+      dateError = validateDate(dateOriginal != null ? dateOriginal.toString() : '');
 
       final allEmpty = cityController.text.trim().isEmpty &&
                       beachSpotController.text.trim().isEmpty &&
@@ -136,11 +145,13 @@ class NewRegisterFormController {
       cityError = null;
       beachSpotError = null;
       referencePointError = null;
+      dateError = null;
       locationSwitchError = null;
     }
 
     return nameError == null &&
           hourError == null &&
+          dateError == null &&
           imageError == null &&
           speciesError == null &&
           obsError == null &&
@@ -314,6 +325,7 @@ class NewRegisterFormController {
     final locationUtils = LocationUtils();
     final name = nameController.text.trim();
     final hour = hourController.text.trim();
+    final date = dateOriginal ?? DateTime.now();
     final witnessed = isHourSwitchOn;
     final referencePoint = referencePointController.text.trim();
     String? city = cityController.text.trim();
@@ -367,12 +379,10 @@ class NewRegisterFormController {
       }
     }
 
-    final hasValidCoords = latitude != 0.0 || longitude != 0.0;
-
-    if (hasValidCoords) {
       final baseData = {
         "name": name,
         "hour": hour,
+        "date": date,
         "witnessed": witnessed,
         "latitude": latitude,
         "longitude": longitude,
@@ -394,7 +404,7 @@ class NewRegisterFormController {
       } else {
         return baseData;
       }
-    }
+    
 
     throw Exception('Invalid RegisterType or missing data (invalid coordinates)');
   }
@@ -415,6 +425,7 @@ class NewRegisterFormController {
           data['city'],
           data['beachSpot'],
           data['referencePoint'],
+          data['date'],
         );
         if (response != null) {
           if (!context.mounted) return;
@@ -446,6 +457,7 @@ class NewRegisterFormController {
           data['latitude'],
           data['longitude'],
           data['referencePoint'],
+          data['date'],
         );
         if (response != null) {
           if (!context.mounted) return;
@@ -544,7 +556,7 @@ class NewRegisterFormController {
   Future<SimpleRegisterRequest?> sendSimpleRegisterToApi(
       String name, String hour, bool witnessed,
       double latitude, double longitude, String city,
-      String beachSpot, String referencePoint) async {
+      String beachSpot, String referencePoint, DateTime date) async {
     User user = FirebaseAuth.instance.currentUser!;
     try{
       if(_image == null){
@@ -570,7 +582,7 @@ class NewRegisterFormController {
         },
         registerImageUrl: imageUrl,
         registerImageUrl2: imageUrl2,
-        date: DateTime.now(),
+        date: date,
         status: 'Enviado',
         city: city,
         beachSpot: beachSpot,
@@ -593,7 +605,7 @@ class NewRegisterFormController {
   Future<TechnicalRegisterRequest?> sendTechnicalRegisterToApi(
       String name, String hour, bool witnessed, String species, String city,
       String beachSpot, String obs, String family, String genu, String order,
-      String classe, double latitude, double longitude, String referencePoint) async {     
+      String classe, double latitude, double longitude, String referencePoint, DateTime date) async {     
     User user = FirebaseAuth.instance.currentUser!;
     try{
       if(_image == null){
@@ -628,7 +640,7 @@ class NewRegisterFormController {
         obs: obs,
         registerImageUrl: imageUrl,
         registerImageUrl2: imageUrl2,
-        date: DateTime.now(),
+        date: date,
         status: 'Enviado',
       );
       await addRegisterToFirestore(
@@ -773,6 +785,7 @@ class NewRegisterFormController {
                   register.data['city'],
                   register.data['beachSpot'],
                   register.data['referencePoint'],
+                  register.data['date'],
                 );
               } else if(register.registerType == 'technical') {
                   await sendTechnicalRegisterToApi(
@@ -790,6 +803,7 @@ class NewRegisterFormController {
                   register.data['latitude'],
                   register.data['longitude'],
                   register.data['referencePoint'],
+                  register.data['date'],
                 );
               }
               _updateRegisterStatus(register, RegisterStatus.sent);
@@ -846,5 +860,12 @@ class NewRegisterFormController {
         debugPrint('Registro mantido: ${register.toJson()}');
       }
     }
+  }
+  
+  String? validateDate(String trim) {
+    if (trim.isEmpty) {
+      return RegisterError.requiredField.message;
+    }
+    return null;
   }
 }
