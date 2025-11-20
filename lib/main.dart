@@ -7,6 +7,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:tcc_ceclimar/models/local_register.dart';
 import 'package:tcc_ceclimar/myapp.dart';
 import 'package:tcc_ceclimar/utils/register_status.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 void main() async {
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
@@ -19,6 +20,7 @@ void main() async {
   await FirebaseAppCheck.instance.activate(
     androidProvider: AndroidProvider.playIntegrity,
   );
+  FirebaseFirestore.instance.settings = const Settings(persistenceEnabled: true);
   final appDocumentDir = await getApplicationDocumentsDirectory();
   Hive.init(appDocumentDir.path);
   Hive.registerAdapter(LocalRegisterAdapter());

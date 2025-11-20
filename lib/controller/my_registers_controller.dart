@@ -9,32 +9,30 @@ class MyRegistersController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  Future<List<RegisterResponse>> getRegisters() async {
-    User? user = _auth.currentUser;
-    AnimalService animalService = AnimalService();
-    await animalService.insertAnimals();
+Stream<List<RegisterResponse>> getRegistersStream() {
+  User? user = _auth.currentUser;
 
-    if (user == null) {
-      throw Exception('Usuário não autenticado');
-    }
+  if (user == null) {
+    return Stream.value([]); // Retorna uma lista vazia se não houver usuário
+  }
 
-    QuerySnapshot registerSnapshot = await _firestore
-        .collection('users')
-        .doc(user.uid)
-        .collection('registers')
-        .get();
-
-    List<RegisterResponse> registers = registerSnapshot.docs.map((doc) {
+  return _firestore
+      .collection('users')
+      .doc(user.uid)
+      .collection('registers')
+      .snapshots() // ⬅️ Usa snapshots() para obter atualizações em tempo real (e cache)
+      .map((snapshot) {
+    List<RegisterResponse> registers = snapshot.docs.map((doc) {
       return RegisterResponse.fromJson({
-        ...doc.data() as Map<String, dynamic>, 
+        ...doc.data() as Map<String, dynamic>,
         'id': doc.id,
       });
     }).toList();
+    // Você ainda pode ordenar aqui, se necessário
     registers.sort((a, b) => b.date.compareTo(a.date));
-    await Future.delayed(Duration(milliseconds: 100));
-
     return registers;
-  }
+  });
+}
 
   Stream<int> getRegistersCountStream() {
       User? user = _auth.currentUser;
