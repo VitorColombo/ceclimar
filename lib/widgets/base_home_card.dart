@@ -20,7 +20,7 @@ abstract class BaseHomeCard extends StatelessWidget {
     return Stack(
       children: [
         Card(
-          shadowColor: Colors.black.withOpacity(0.7),
+          shadowColor: Color.fromRGBO(0, 0, 0, 0.7),
           elevation: 6.0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10.0),
@@ -53,8 +53,8 @@ abstract class BaseHomeCard extends StatelessWidget {
           color: Colors.transparent,
           child: InkWell(
             onTap: () => onTapAction(context),
-            splashColor: Colors.white.withOpacity(0.2),
-            highlightColor: Colors.white.withOpacity(0.2),
+            splashColor: Color.fromRGBO(255, 255, 255, 0.2),
+            highlightColor: Color.fromRGBO(255, 255, 255, 0.2),
             borderRadius: BorderRadius.circular(10.0),
           ),
         ),

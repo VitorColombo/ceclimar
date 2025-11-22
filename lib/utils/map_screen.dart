@@ -11,11 +11,6 @@ class MapScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (registers.isNotEmpty) {
-      print('First register latitude: ${registers.first.latitude}');
-      print('First register longitude: ${registers.first.longitude}');
-    }
-
     if (registers.isEmpty) {
       return Scaffold(
         appBar: AppBar(

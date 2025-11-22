@@ -10,6 +10,7 @@ class RegisterResponse {
   final String? hour;
   final bool state;
   final String beachSpot;
+  final String? referencePoint;
   final int? sampleState;
   final String latitude;
   final String longitude;
@@ -32,6 +33,7 @@ class RegisterResponse {
     this.hour,
     required this.authorName,
     required this.beachSpot,
+    this.referencePoint,
     this.sampleState,
     required this.latitude,
     required this.longitude,
@@ -52,6 +54,7 @@ class RegisterResponse {
       hour: json['hour'],
       state: json['state'] ?? false,
       beachSpot: json['beachSpot'] ?? '',
+      referencePoint: json['referencePoint'] ?? '',
       sampleState: json['sampleState'],
       latitude: json['location']?['latitude'] ?? '',
       longitude: json['location']?['longitude'] ?? '',
@@ -74,6 +77,7 @@ class RegisterResponse {
       'hour': hour,
       'state': state,
       'beachSpot': beachSpot,
+      'referencePoint': referencePoint,
       'sampleState': sampleState,
       'latitude': latitude,
       'longitude': longitude,
@@ -84,5 +88,47 @@ class RegisterResponse {
       'status': status,
       'animal': animal.toJson(),
     };
+  }
+
+  RegisterResponse copyWith({
+    String? registerNumber,
+    String? userId,
+    String? authorName,
+    String? city,
+    DateTime? date,
+    String? hour,
+    bool? state,
+    String? beachSpot,
+    String? referencePoint,
+    int? sampleState,
+    String? latitude,
+    String? longitude,
+    String? specialistReturn,
+    String? obs,
+    String? registerImageUrl,
+    String? registerImageUrl2,
+    String? status,
+    AnimalResponse? animal,
+  }) {
+    return RegisterResponse(
+      registerNumber: registerNumber ?? this.registerNumber,
+      userId: userId ?? this.userId,
+      authorName: authorName ?? this.authorName,
+      city: city ?? this.city,
+      date: date ?? this.date,
+      hour: hour ?? this.hour,
+      state: state ?? this.state,
+      beachSpot: beachSpot ?? this.beachSpot,
+      referencePoint: referencePoint ?? this.referencePoint,
+      sampleState: sampleState ?? this.sampleState,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
+      specialistReturn: specialistReturn ?? this.specialistReturn,
+      obs: obs ?? this.obs,
+      registerImageUrl: registerImageUrl ?? this.registerImageUrl,
+      registerImageUrl2: registerImageUrl2 ?? this.registerImageUrl2,
+      status: status ?? this.status,
+      animal: animal ?? this.animal,
+    );
   }
 }

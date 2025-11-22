@@ -13,10 +13,10 @@ class SendBtn extends StatefulWidget {
   });
 
   @override
-  _SendBtnState createState() => _SendBtnState();
+  SendBtnState createState() => SendBtnState();
 }
 
-class _SendBtnState extends State<SendBtn> {
+class SendBtnState extends State<SendBtn> {
   bool _isLoading = false;
 
   void _handlePress() async {

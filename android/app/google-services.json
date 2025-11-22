@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "281709662067-pctbr3nlfoijgu3podob644a07dqfkan.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.tcc_ceclimar",
+            "certificate_hash": "414622323461bc51e05b329719bd17bf1a61f262"
+          }
+        },
+        {
           "client_id": "281709662067-mt9eu2hgknq5antl9i9qu7118evd6o7f.apps.googleusercontent.com",
           "client_type": 3
         }

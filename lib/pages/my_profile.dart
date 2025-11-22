@@ -4,7 +4,6 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:tcc_ceclimar/controller/auth_user_controller.dart';
 import 'package:tcc_ceclimar/controller/my_profile_controller.dart';
-import 'package:tcc_ceclimar/models/animal_response.dart';
 import 'package:tcc_ceclimar/models/register_response.dart';
 import 'package:tcc_ceclimar/pages/edit_profile.dart';
 import 'package:tcc_ceclimar/pages/register_view.dart';
@@ -18,11 +17,14 @@ import '../widgets/page_header.dart';
 import '../widgets/profile_switch.dart';
 
 class MyProfile extends StatefulWidget {
-  static const String routeName = '/myprofile'; 
+  static const String routeName = '/myprofile';
   final Function(int) updateIndex;
 
-  const MyProfile({super.key, this.updateIndex = _defaultUpdateIndex,});
-  
+  const MyProfile({
+    super.key,
+    this.updateIndex = _defaultUpdateIndex,
+  });
+
   static void _defaultUpdateIndex(int index) {}
 
   @override
@@ -34,18 +36,8 @@ class _MyProfileState extends State<MyProfile> {
   final MyProfileController _myProfileController = MyProfileController();
   final ValueNotifier<bool> isUltimosRegistrosNotifier = ValueNotifier<bool>(false);
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  bool isLoading = true;
-  List<RegisterResponse> registers = [];
-  List<AnimalResponse> animals = [];
-  ImageProvider image = AssetImage('assets/images/imageProfile.png');
-
-  Future<void> _logout(BuildContext context) async {
-    try {
-      _controller.signOut(_scaffoldKey.currentContext!);
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erro ao sair: $e')));
-    }
-  }
+  Future<ImageProvider?>? _profileImageFuture;
+  final ImageProvider _defaultImage = const AssetImage('assets/images/imageProfile.png');
 
   @override
   void initState() {
@@ -53,159 +45,211 @@ class _MyProfileState extends State<MyProfile> {
     _checkUserStatus();
   }
 
-  Future<void> _loadUserImage() async {
+  Future<ImageProvider?> _fetchProfileImage() async {
     User? user = _controller.getCurrentUser();
     if (user != null) {
       String? profileImageUrl = await _controller.getProfileImageUrl(user.uid);
-      if (profileImageUrl != null && profileImageUrl.isNotEmpty && mounted) {
-        setState(() {
-          image = NetworkImage(profileImageUrl);
-        });
+      if (profileImageUrl != null && profileImageUrl.isNotEmpty) {
+        return NetworkImage(profileImageUrl);
       }
     }
+    return null;
   }
 
   Future<void> _checkUserStatus() async {
     User? user = _controller.getCurrentUser();
     if (user == null) {
-      Navigator.pushNamedAndRemoveUntil(context, '/login', (Route<dynamic> route) => false);
+      if (mounted) {
+        Navigator.pushNamedAndRemoveUntil(
+            context, '/login', (Route<dynamic> route) => false);
+      }
     } else {
-      _loadUserImage();
-      fetchMockedRegisters();
+      setState(() {
+        _profileImageFuture = _fetchProfileImage();
+      });
     }
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _checkUserStatus();
+  Future<void> _logout(BuildContext context) async {
+    try {
+      _controller.signOut(_scaffoldKey.currentContext!);
+    } catch (e) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Erro ao sair: $e')));
+    }
   }
   
-  Future<void> fetchMockedRegisters() async {
-    await Future.delayed(const Duration(milliseconds: 200));
-    if (!mounted) return;
-    List<RegisterResponse> fetchedRegisters = await _myProfileController.getRegisters();
-    if (mounted){ 
-      setState(() {
-        registers = fetchedRegisters;
-        isLoading = false;
-      });
-    }    
+  void _loadUserImage() {
+    setState(() {
+      _profileImageFuture = _fetchProfileImage();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     UserResponse? userData = _controller.getUserInfo();
-    
-    return Scaffold(
-      key: _scaffoldKey,
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            automaticallyImplyLeading: false,
-            pinned: true,
-            collapsedHeight: 250,
-            expandedHeight: 250,
-            backgroundColor: Colors.white,
-            shadowColor: Color.fromARGB(0, 173, 145, 145),
-            flexibleSpace: FlexibleSpaceBar(
-              background: Container(
-                  color: Colors.white,
-                  child: Stack(
-                  children: [
-                    LoginHeaderWidget(imageFuture: Future.value(image)),
-                    PageHeader(
-                      text: "Meu perfil",
-                      icon: const Icon(Icons.arrow_back, color: Colors.white,),
-                      onTap: () => widget.updateIndex(0),
-                      color: Colors.white,
-                    ),
-                    Positioned(
-                      top: 55,
-                      right: 16,
-                      child: TextButton(
-                        onPressed: () => _logout(context),
-                        child: const Text("Logout", style: TextStyle(color: Colors.white),),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          SliverList(
-            delegate: SliverChildListDelegate(
-              [
-                Column(
-                  children: [
-                    SizedBox(height: 9),
-                    InkWell(
-                      splashColor: Colors.transparent,
-                      onTap: () => showMyProfileBottomSheet(context),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Visibility(
-                            visible: userData?.name != null,
-                            child: RichText(
-                              text: TextSpan(
-                              text: '${userData?.name}',
-                              style: Theme.of(context).textTheme.titleLarge,
+
+    return StreamBuilder<List<RegisterResponse>>(
+      stream: _myProfileController.getRegistersStream(),
+      builder: (context, registerSnapshot) {
+        final List<RegisterResponse> registers = registerSnapshot.data ?? [];
+        final bool registersLoading = !registerSnapshot.hasData &&
+            registerSnapshot.connectionState != ConnectionState.active;
+
+        return StreamBuilder<Map<dynamic, dynamic>>(
+          stream: _myProfileController.getAnimalsCountersStream(),
+          builder: (context, countersSnapshot) {
+            final Map<dynamic, dynamic> animalCounters =
+                countersSnapshot.data ?? {};
+
+            final bool combinedIsLoading = registersLoading ||
+                (!countersSnapshot.hasData &&
+                    countersSnapshot.connectionState !=
+                        ConnectionState.active);
+
+            return Scaffold(
+              key: _scaffoldKey,
+              body: CustomScrollView(
+                slivers: [
+                  SliverAppBar(
+                    automaticallyImplyLeading: false,
+                    pinned: true,
+                    collapsedHeight: 250,
+                    expandedHeight: 250,
+                    backgroundColor: Colors.white,
+                    shadowColor: const Color.fromARGB(0, 173, 145, 145),
+                    flexibleSpace: FlexibleSpaceBar(
+                      background: Container(
+                        color: Colors.white,
+                        child: Stack(
+                          children: [
+                            LoginHeaderWidget(
+                              imageFuture: _profileImageFuture ?? Future.value(null),
+                              pageHeader: PageHeader(
+                                text: "Meu perfil",
+                                icon: const Icon(
+                                  Icons.arrow_back,
+                                  color: Colors.white,
+                                ),
+                                onTap: () => widget.updateIndex(0),
+                                color: Colors.white,
+                              ),
+                              defaultImage: _defaultImage,
+                            ),
+                            Positioned(
+                              top: 55,
+                              right: 16,
+                              child: TextButton(
+                                onPressed: () => _logout(context),
+                                child: const Text(
+                                  "Logout",
+                                  style: TextStyle(color: Colors.white),
+                                ),
                               ),
                             ),
-                          ),
-                          SizedBox(width: 8),
-                          Icon(PhosphorIcons.pencilSimple(PhosphorIconsStyle.regular), size: 20),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
-                    SizedBox(height: 9),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [                    
-                        RichText(
-                          text: TextSpan(
-                          text: "Registros realizados: ",
-                          style: Theme.of(context).textTheme.bodyLarge,
-                          ),
-                        ),
-                        isLoading
-                          ? const Skeletonizer(
-                            enabled: true, 
-                            child: Text("XX", style: TextStyle(fontSize: 16)),
-                          ) 
-                          : RichText(
-                            text: TextSpan(
-                            text: "${registers.length}",
-                            style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                  SliverList(
+                    delegate: SliverChildListDelegate(
+                      [
+                        Column(
+                          children: [
+                            const SizedBox(height: 9),
+                            InkWell(
+                              splashColor: Colors.transparent,
+                              onTap: () => showMyProfileBottomSheet(context),
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 20),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Flexible(
+                                      child: Visibility(
+                                        visible: userData?.name != null,
+                                        child: Text(
+                                          '${userData?.name}',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .titleLarge,
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 1,
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Icon(
+                                      PhosphorIcons.pencilSimple(
+                                          PhosphorIconsStyle.regular),
+                                      size: 20,
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ),
-                          ),
+                            const SizedBox(height: 9),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                RichText(
+                                  text: TextSpan(
+                                    text: "Registros realizados: ",
+                                    style: Theme.of(context).textTheme.bodyLarge,
+                                  ),
+                                ),
+                                combinedIsLoading
+                                    ? const Skeletonizer(
+                                        enabled: true,
+                                        child: Text("XX",
+                                            style: TextStyle(fontSize: 16)),
+                                      )
+                                    : RichText(
+                                        text: TextSpan(
+                                          text: "${registers.length}",
+                                          style:
+                                              Theme.of(context).textTheme.bodyLarge,
+                                        ),
+                                      ),
+                              ],
+                            ),
+                            const SizedBox(height: 20),
+                            ProfileSwitch(
+                                size: 600,
+                                isUltimosRegistrosNotifier:
+                                    isUltimosRegistrosNotifier),
+                            const SizedBox(height: 10),
+                          ],
+                        ),
+                        ValueListenableBuilder<bool>(
+                          valueListenable: isUltimosRegistrosNotifier,
+                          builder: (context, isUltimosRegistros, child) {
+                            return !isUltimosRegistros
+                                ? UltimosRegistrosContent(
+                                    registers: registers,
+                                    isLoading: combinedIsLoading,
+                                  )
+                                : AnimaisEncontradosContent(
+                                    counters: animalCounters,
+                                    isLoading: combinedIsLoading,
+                                    registerCount: registers.length,
+                                  );
+                          },
+                        ),
                       ],
                     ),
-                    SizedBox(height: 20),
-                    ProfileSwitch(
-                        size: 600,
-                        isUltimosRegistrosNotifier: isUltimosRegistrosNotifier
-                    ),
-                    SizedBox(height: 10),
-                  ],
-                ),
-                ValueListenableBuilder<bool>(
-                  valueListenable: isUltimosRegistrosNotifier,
-                  builder: (context, isUltimosRegistros, child) {
-                    return !isUltimosRegistros
-                            ? UltimosRegistrosContent(registers: registers, isLoading: isLoading)
-                            : AnimaisEncontradosContent(registers: registers, isLoading: isLoading);
-                  },
-                ),
-              ]
-            )
-          )
-        ]
-      )
+                  )
+                ],
+              ),
+            );
+          },
+        );
+      },
     );
   }
-
+  
   void showMyProfileBottomSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -220,9 +264,9 @@ class _MyProfileState extends State<MyProfile> {
               child: TextButton(
                 onPressed: () {
                   Navigator.pop(context);
-                      Navigator.pushNamed(context, EditProfile.routeName).then((_) {
-                        _loadUserImage();
-                      });
+                  Navigator.pushNamed(context, EditProfile.routeName).then((_) {
+                    _loadUserImage(); 
+                  });
                 },
                 style: TextButton.styleFrom(
                   shape: RoundedRectangleBorder(
@@ -234,15 +278,12 @@ class _MyProfileState extends State<MyProfile> {
                     vertical: 16,
                   ),
                   textStyle: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: "Inter"
-                  ),
+                      fontSize: 18, fontWeight: FontWeight.bold, fontFamily: "Inter"),
                   overlayColor: Colors.white,
                 ),
                 child: const Text(
                   "Editar perfil",
-                  style: TextStyle(color: Colors.white), 
+                  style: TextStyle(color: Colors.white),
                 ),
               ),
             ),
@@ -262,14 +303,11 @@ class _MyProfileState extends State<MyProfile> {
                   vertical: 16,
                 ),
                 textStyle: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: "Inter"
-                ),
+                    fontSize: 18, fontWeight: FontWeight.bold, fontFamily: "Inter"),
               ),
               child: const Text(
                 "Excluir conta",
-                style: TextStyle(color: Colors.white), 
+                style: TextStyle(color: Colors.white),
               ),
             ),
           ],
@@ -310,10 +348,11 @@ class _MyProfileState extends State<MyProfile> {
             TextButton(
               onPressed: () async {
                 String password = _controller.passController.text.trim();
-                  bool success = await _controller.deleteAccount(password, _scaffoldKey.currentContext!);
-                  if (success) {
-                    _logout(_scaffoldKey.currentContext!);
-                  }
+                bool success =
+                    await _controller.deleteAccount(password, _scaffoldKey.currentContext!);
+                if (success) {
+                  if (mounted) _logout(_scaffoldKey.currentContext!);
+                }
               },
               child: const Text("Excluir"),
             ),
@@ -327,7 +366,8 @@ class _MyProfileState extends State<MyProfile> {
 class UltimosRegistrosContent extends StatelessWidget {
   final List<RegisterResponse> registers;
   final bool isLoading;
-  const UltimosRegistrosContent({super.key, required this.registers, required this.isLoading});
+  const UltimosRegistrosContent(
+      {super.key, required this.registers, required this.isLoading});
   @override
   Widget build(BuildContext context) {
     if (!isLoading && registers.isEmpty) {
@@ -346,19 +386,19 @@ class UltimosRegistrosContent extends StatelessWidget {
     final displayRegisters = isLoading ? placeholderRegisters : limitedRegisters;
 
     return SizedBox(
-      height: 400,
+      height: 340,
       child: Skeletonizer(
         enabled: isLoading,
         child: ListView.builder(
-          padding: EdgeInsets.only(top: 0, bottom: 70),
-          physics: AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.only(top: 0, bottom: 70),
+          physics: const AlwaysScrollableScrollPhysics(),
           shrinkWrap: true,
           itemCount: displayRegisters.length,
           itemBuilder: (context, index) {
             return RegisterItem(
               isLoading: isLoading,
               register: displayRegisters[index],
-              route: RegisterDetailPage.routeName  
+              route: RegisterDetailPage.routeName,
             );
           },
         ),
@@ -368,43 +408,141 @@ class UltimosRegistrosContent extends StatelessWidget {
 }
 
 class AnimaisEncontradosContent extends StatelessWidget {
-  final List<dynamic> registers;
+  final Map<dynamic, dynamic> counters;
   final bool isLoading;
-  const AnimaisEncontradosContent({super.key, required this.registers, required this.isLoading});
+  final int registerCount;
+  const AnimaisEncontradosContent(
+      {super.key,
+      required this.counters,
+      required this.isLoading,
+      required this.registerCount});
 
   @override
   Widget build(BuildContext context) {
-    if (!isLoading && registers.isEmpty) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 20),
-          child: Text(
-            "Nenhum registro encontrado",
-            style: Theme.of(context).textTheme.bodyLarge,
+    return Skeletonizer(
+      enabled: isLoading,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          const SizedBox(width: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              BadgeColumn(
+                classe: "Aves",
+                count: counters['birdsFound'] ?? 0,
+                thresholds: [
+                  BadgeThreshold(threshold: 1, assetPath: "assets/images/badges/gaivota1.png"),
+                  BadgeThreshold(threshold: 5, assetPath: "assets/images/badges/gaivota5NOVO.png"),
+                  BadgeThreshold(threshold: 20, assetPath: "assets/images/badges/gaivota10NOVO.png"),
+                  BadgeThreshold(threshold: 50, assetPath: "assets/images/badges/gaivota50NOVO.png"),
+                ],
+              ),
+              BadgeColumn(
+                classe: "Mamíferos",
+                count: counters['mammalsFound'] ?? 0,
+                thresholds: [
+                  BadgeThreshold(threshold: 1, assetPath: "assets/images/badges/lobo1.png"),
+                  BadgeThreshold(threshold: 5, assetPath: "assets/images/badges/lobo5NOVO.png"),
+                  BadgeThreshold(threshold: 20, assetPath: "assets/images/badges/lobo10NOVO.png"),
+                  BadgeThreshold(threshold: 50, assetPath: "assets/images/badges/lobo50NOVO.png"),
+                ],
+              ),
+              BadgeColumn(
+                classe: "Répteis",
+                count: counters['reptilesFound'] ?? 0,
+                thresholds: [
+                  BadgeThreshold(threshold: 1, assetPath: "assets/images/badges/tartaruga1.png"),
+                  BadgeThreshold(threshold: 5, assetPath: "assets/images/badges/tartaruga5NOVO.png"),
+                  BadgeThreshold(threshold: 20, assetPath: "assets/images/badges/tartaruga10NOVO.png"),
+                  BadgeThreshold(threshold: 50, assetPath: "assets/images/badges/tartaruga50NOVO.png"),
+                ],
+              ),
+            ],
           ),
-        ),
-      );
-    }
-    final placeholderRegisters = generatePlaceholderRegisters(6);
-    final displayRegisters = isLoading ? placeholderRegisters : registers;
-
-    return SizedBox(
-      height: 400,
-      child: Skeletonizer(
-        enabled: isLoading,
-        child: GridView.builder(
-          padding: EdgeInsets.only(top: 0, bottom: 70, left: 1, right: 1),
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3,
-            crossAxisSpacing: 9,
-            mainAxisSpacing: 1,
+          BadgeColumn(
+            classe: "Cientista Cidadão",
+            count: registerCount,
+            thresholds: [
+              BadgeThreshold(threshold: 100, assetPath: "assets/images/badges/secretBadge.png"),
+            ],
           ),
-          itemCount: displayRegisters.length,
-          itemBuilder: (context, index) {
-            return BadgeItem(register: displayRegisters[index]);
-          },
-        ),
+          const SizedBox(height: 10),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Center(
+              child: Text(
+                "Seja um cientista cidadão! Contribua e junte as medalhas com seus registros validados",
+                style: Theme.of(context).textTheme.bodyLarge,
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+          const SizedBox(height: 20)
+        ],
       ),
     );
   }
+}
+
+class BadgeColumn extends StatelessWidget {
+  final String classe;
+  final int count;
+  final List<BadgeThreshold> thresholds;
+
+  const BadgeColumn({
+    super.key,
+    required this.classe,
+    required this.count,
+    required this.thresholds,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        const SizedBox(height: 10),
+        ...thresholds.map((badge) {
+          bool isUnlocked = count >= badge.threshold;
+          return Column(
+            children: [
+              Tooltip(
+                message: isUnlocked
+                    ? classe
+                    : classe == "Cientista Cidadão"
+                        ? "Conquista secreta!"
+                        : "$count/${badge.threshold} registros necessários",
+                waitDuration: const Duration(milliseconds: 0),
+                showDuration: const Duration(seconds: 3),
+                preferBelow: false,
+                triggerMode: TooltipTriggerMode.tap,
+                child: BadgeItem(
+                  classe: classe,
+                  image: Image.asset(
+                    isUnlocked
+                        ? badge.assetPath
+                        : "assets/images/badges/placeholderBadge.png",
+                    errorBuilder: (context, error, stackTrace) {
+                      debugPrint("Erro ao carregar imagem: ${badge.assetPath}");
+                      return const Icon(Icons.error, color: Colors.red);
+                    },
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+            ],
+          );
+        }).toList(),
+      ],
+    );
+  }
+}
+
+class BadgeThreshold {
+  final int threshold;
+  final String assetPath;
+
+  BadgeThreshold({required this.threshold, required this.assetPath});
 }

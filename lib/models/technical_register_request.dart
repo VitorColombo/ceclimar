@@ -8,6 +8,7 @@ class TechnicalRegisterRequest {
   final Map<String, dynamic> location;
   final String city;
   final String beachSpot;
+  final String? referencePoint;
   final String? obs;
   final String registerImageUrl;
   final String? registerImageUrl2;
@@ -23,6 +24,7 @@ class TechnicalRegisterRequest {
     required this.witnessed,
     required this.city,
     required this.beachSpot,
+    this.referencePoint,
     this.obs,
     required this.location,
     required this.registerImageUrl,
@@ -41,6 +43,7 @@ class TechnicalRegisterRequest {
       'witnessed': witnessed,
       'city': city,
       'beachSpot': beachSpot,
+      'referencePoint': referencePoint,
       'obs': obs,
       'location': location,
       'registerImageUrl': registerImageUrl,
@@ -59,6 +62,7 @@ class TechnicalRegisterRequest {
         witnessed = json['witnessed'],
         city = json['city'],
         beachSpot = json['beachSpot'],
+        referencePoint = json['referencePoint'],
         obs = json['obs'],
         location = json['location'],
         registerImageUrl = json['registerImageUrl'],

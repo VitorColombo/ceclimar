@@ -18,7 +18,7 @@ class ImagePickerModal extends StatelessWidget {
       text: "Escolha a forma de envio da imagem", 
       buttons: [
         Card(
-          shadowColor: Colors.black.withOpacity(0.7),
+          shadowColor: Color.fromRGBO(0, 0, 0, 0.7),
           elevation: 6.0,
           color: const Color.fromARGB(255, 31, 73, 95),
           shape: RoundedRectangleBorder(
@@ -31,7 +31,7 @@ class ImagePickerModal extends StatelessWidget {
           ),
         ),
         Card(
-          shadowColor: Colors.black.withOpacity(0.7),
+          shadowColor: Color.fromRGBO(0, 0, 0, 0.7),
           elevation: 6.0,
           color: const Color.fromARGB(255, 71, 169, 218),
           shape: RoundedRectangleBorder(

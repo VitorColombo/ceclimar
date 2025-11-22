@@ -16,6 +16,7 @@ class RedirectHomeCard extends BaseHomeCard {
   void onTapAction(BuildContext context) async {
     final Uri url = Uri.parse(websiteUrl);
     if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+      if(!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Não foi possível acessar a funcionalidade. Tente novamente mais tarde.')),
       );

@@ -1,17 +1,26 @@
 import 'dart:io';
+import 'dart:math';
 import 'dart:typed_data';
+
+import 'package:excel/excel.dart';
 import 'package:flutter/material.dart';
+// ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:excel/excel.dart';
+
 import 'package:tcc_ceclimar/models/register_response.dart';
-import 'dart:math';
 
 class TableManipulationBottomSheet extends StatelessWidget {
-  const TableManipulationBottomSheet({super.key, required this.data});
+  final String userRole;
+
+  const TableManipulationBottomSheet({
+    super.key,
+    required this.data,
+    required this.userRole,
+  });
 
   final List<RegisterResponse> data;
 
@@ -20,9 +29,18 @@ class TableManipulationBottomSheet extends StatelessWidget {
     final filePath = '${directory.path}/dados_fauna_marinha.xlsx';
     final file = File(filePath);
 
-    var excelData = convertDataToExcel(data);
+    List<RegisterResponse> filteredData = data;
+
+    if (userRole != 'admin') {
+      filteredData = data
+        .where((e) => e.status.toLowerCase() == 'validado')
+        .map((e) => e.copyWith(authorName: ''))
+        .toList();
+    }
+
+    var excelData = convertDataToExcel(filteredData);
     List<int>? encodedData = excelData.encode();
-    
+
     if (encodedData != null) {
       await file.writeAsBytes(Uint8List.fromList(encodedData));
     }
@@ -140,11 +158,13 @@ class TableManipulationBottomSheet extends StatelessWidget {
       final result = await OpenFilex.open(file.path);
 
       if (result.type != ResultType.done) {
+        if(!context.mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Erro ao abrir arquivo: ${result.message}')),
         );
       }
     } catch (e) {
+      if(!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erro no download: $e')));
     }
   }
@@ -159,6 +179,7 @@ class TableManipulationBottomSheet extends StatelessWidget {
         text: 'Arquivo gerado com registros selecionados.',
       );
     } catch (e) {
+      if(!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erro ao compartilhar: $e')));
     }
   }

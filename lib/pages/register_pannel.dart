@@ -1,14 +1,15 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:graphic/graphic.dart';
+// ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:pie_chart/pie_chart.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:tcc_ceclimar/controller/auth_user_controller.dart';
 import 'package:tcc_ceclimar/controller/register_pannel_controller.dart';
 import 'package:tcc_ceclimar/pages/evaluated_registers.dart';
-import 'package:tcc_ceclimar/pages/pending_registers.dart';
 import 'package:tcc_ceclimar/pages/pending_registers_view.dart';
 import 'package:tcc_ceclimar/pages/register_view.dart';
 import 'package:tcc_ceclimar/utils/animals_service.dart';
@@ -30,16 +31,17 @@ class RegisterPannel extends StatefulWidget {
   const RegisterPannel({super.key, this.updateIndex = _defaultUpdateIndex});
 
   @override
-  _RegisterPannelState createState() => _RegisterPannelState();
+  RegisterPannelState createState() => RegisterPannelState();
 }
 
-class _RegisterPannelState extends State<RegisterPannel> {
+class RegisterPannelState extends State<RegisterPannel> {
   final TextEditingController initDateController = TextEditingController();
   final TextEditingController endDateController = TextEditingController();
   final TextEditingController speciesController = TextEditingController();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final AnimalService _animalService = AnimalService();
   final RegisterPannelController _registerController = RegisterPannelController();
+  final AuthenticationController _userController = AuthenticationController();
   late Future<List<AnimalResponse>> animalData;
   late Map<String, double> dataMap = {};
   int totalRegisters = 0;
@@ -59,12 +61,24 @@ class _RegisterPannelState extends State<RegisterPannel> {
   late List<String> speciesList = [];
   List<RegisterResponse> speciesRegisters = [];
   Future<List<RegisterResponse>>? _registerDataFuture;
+  String userRole = "user";
+  int birdsCounter = 0;
+  int reptilesCounter = 0;
+  int mammalsCounter = 0;
 
   @override
   void initState() {
     super.initState();
     endDate = DateTime.now();
     _loadInitialData();
+    _loadUserRole(); 
+  }
+
+  Future<void> _loadUserRole() async {
+    String role = await _userController.getUserRole();
+    setState(() {
+      userRole = role;
+    });
   }
 
   Future<void> _loadInitialData() async {
@@ -109,7 +123,10 @@ class _RegisterPannelState extends State<RegisterPannel> {
         evaluatedRegisters = allRegisters.where((reg) => reg.status == "Validado").length;
         pendingRegisters = allRegisters.where((reg) => reg.status == "Enviado").length;
         displayRegisters = allRegisters;
-      });
+        birdsCounter = allRegisters.where((reg) => reg.animal.classe!.toLowerCase() == "aves" && reg.status == "Validado").length;
+        mammalsCounter = allRegisters.where((reg) => reg.animal.classe!.toLowerCase() == "mammalia" && reg.status == "Validado").length;
+        reptilesCounter = allRegisters.where((reg) => reg.animal.classe!.toLowerCase() == "reptilia" && reg.status == "Validado").length;
+        });
     } finally {
       setState(() {
         isLoading = false;
@@ -194,8 +211,8 @@ class _RegisterPannelState extends State<RegisterPannel> {
                           onTap: () {
                             Navigator.pushNamed(context, EvaluatedRegisters.routeName);
                           },
-                          splashColor: Colors.blue.withOpacity(0.2),
-                          highlightColor: Colors.blue.withOpacity(0.2),
+                          splashColor: Color.fromRGBO(33, 150, 243, 0.2),
+                          highlightColor: Color.fromRGBO(33, 150, 243, 0.2),
                           borderRadius: BorderRadius.circular(8.0),
                           child: Column(
                           children: [
@@ -233,8 +250,8 @@ class _RegisterPannelState extends State<RegisterPannel> {
                           onTap: () {
                             Navigator.pushNamed(context, PendingRegistersView.routeName);
                           },
-                          splashColor: Colors.blue.withOpacity(0.2),
-                          highlightColor: Colors.blue.withOpacity(0.2),
+                          splashColor:  Color.fromRGBO(33, 150, 243, 0.2),
+                          highlightColor:  Color.fromRGBO(33, 150, 243, 0.2),
                           borderRadius: BorderRadius.circular(8.0),
                             child: Column(
                             children: [
@@ -268,6 +285,7 @@ class _RegisterPannelState extends State<RegisterPannel> {
                                 ]
                               ),
                             ],
+                            
                           ),
                         )
                       ],
@@ -284,7 +302,7 @@ class _RegisterPannelState extends State<RegisterPannel> {
                     Divider(height: 20),
                     Padding(
                       padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-                      child: Container(
+                      child: SizedBox(
                         height: 300,
                         width: double.infinity,
                         child: FlutterMap(
@@ -295,6 +313,7 @@ class _RegisterPannelState extends State<RegisterPannel> {
                                 children: [
                                   TileLayer(
                                     urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                                    userAgentPackageName: 'com.example.tcc_ceclimar',
                                   ),
                                   MarkerLayer(
                                     markers: _getRegistersForMap().map((register) {
@@ -376,20 +395,16 @@ class _RegisterPannelState extends State<RegisterPannel> {
                                         children: [
                                           PieChart(
                                             dataMap: dataMap,
-                                            animationDuration:
-                                                const Duration(milliseconds: 800),
+                                            animationDuration: const Duration(milliseconds: 800),
                                             chartLegendSpacing: 32,
                                             chartRadius: chartSize * 0.8,
-                                            chartValuesOptions:
-                                                const ChartValuesOptions(
+                                            chartValuesOptions: const ChartValuesOptions(
                                               decimalPlaces: 0,
                                               showChartValues: true,
                                             ),
                                             legendOptions: LegendOptions(
-                                              legendPosition:
-                                                  LegendPosition.bottom,
-                                              legendTextStyle:
-                                                  const TextStyle(
+                                              legendPosition: LegendPosition.bottom,
+                                              legendTextStyle: const TextStyle(
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 14,
                                               ),
@@ -405,6 +420,86 @@ class _RegisterPannelState extends State<RegisterPannel> {
                           }
                         },
                       ),
+                    ),
+                    Divider(height: 40, thickness: 1.2, color: Colors.grey[200]),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            children: [
+                              Skeletonizer(
+                              enabled: isLoading,
+                              child: Text("$mammalsCounter",
+                                style: TextStyle(
+                                  fontSize: 30,
+                                  fontWeight: FontWeight.bold,
+                                  color:
+                                    const Color.fromRGBO(71, 169, 218, 1),
+                                )),
+                              ),
+                              Text(
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color: const Color.fromRGBO(71, 169, 218, 1),
+                                ),
+                                "Mamíferos",
+                              ),
+                            ],
+                          ),
+                        ),
+                        Expanded(
+                          child: Column(
+                            children: [
+                              Skeletonizer(
+                                enabled: isLoading,
+                                child: Text(
+                                  "$birdsCounter",
+                                  style: TextStyle(
+                                    fontSize: 30,
+                                    fontWeight: FontWeight.bold,
+                                    color: const Color.fromRGBO(71, 169, 218, 1),
+                                  )
+                                ),
+                              ),
+                              Text(
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color: const Color.fromRGBO(71, 169, 218, 1),
+                                ),
+                                "Aves",
+                              ),
+                            ],                        
+                          ),
+                        ),
+                        Expanded(
+                          child: Column(
+                            children: [
+                              Skeletonizer(
+                                enabled: isLoading,
+                                child: Text(
+                                  "$reptilesCounter",
+                                  style: TextStyle(
+                                    fontSize: 30,
+                                    fontWeight: FontWeight.bold,
+                                    color: const Color.fromRGBO(71, 169, 218, 1),
+                                  )
+                                ),
+                              ),
+                              Text(
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color: const Color.fromRGBO(71, 169, 218, 1),
+                                ),
+                                "Répteis",
+                              ),
+                            ],                        
+                                                 ),
+                        )
+                      ],
                     ),
                     Divider(height: 40, thickness: 1.2, color: Colors.grey[200]),
                     Text(
@@ -592,7 +687,7 @@ class _RegisterPannelState extends State<RegisterPannel> {
                                 showModalBottomSheet(
                                   context: context,
                                   builder: (BuildContext context) {
-                                    return TableManipulationBottomSheet(data: registerData);
+                                    return TableManipulationBottomSheet(data: registerData, userRole: userRole);
                                   },
                                 );
                               },

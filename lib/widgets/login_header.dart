@@ -43,6 +43,11 @@ class LoginHeaderWidget extends StatelessWidget {
             child: FutureBuilder<ImageProvider?>(
               future: imageFuture,
               builder: (context, snapshot) {
+                final ImageProvider imageToDisplay = 
+                    snapshot.hasData && snapshot.data != null
+                        ? snapshot.data!
+                        : defaultImage ?? const AssetImage('assets/images/placeholder.png');
+
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Skeletonizer(
                     enabled: true,
@@ -56,7 +61,8 @@ class LoginHeaderWidget extends StatelessWidget {
                       ),
                     ),
                   );
-                } else if (snapshot.hasError) {
+                } 
+                else if (snapshot.hasError) {
                   return Container(
                     height: 148,
                     width: 170,
@@ -69,25 +75,12 @@ class LoginHeaderWidget extends StatelessWidget {
                       child: Icon(Icons.error, color: Colors.red),
                     ),
                   );
-                } else if (snapshot.hasData && snapshot.data != null) {
+                } else {
                     return CircularImageWidget(
-                      imageProvider: snapshot.data!,
+                      imageProvider: imageToDisplay,
                       width: 148,
                       heigth: 170,
                   );
-                } else {
-                  return Container(
-                      height: 148,
-                      width: 170,
-                      decoration: BoxDecoration(
-                        border: Border.all(width: 4, color: Colors.white),
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                      ),
-                      child: defaultImage != null ? 
-                      CircularImageWidget(imageProvider: defaultImage!, width: 148, heigth: 170) :
-                       Container(),
-                    );
                 }
               },
             ),

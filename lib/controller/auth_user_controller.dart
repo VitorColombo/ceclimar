@@ -18,6 +18,7 @@ class AuthenticationController {
   final TextEditingController profileImageController = TextEditingController();
   final FirebaseAuthService _auth = FirebaseAuthService();
   final GoogleSignIn googleSignIn = GoogleSignIn();
+  String? userRole;
   File? _image;
   
   String? nameError;
@@ -159,7 +160,7 @@ class AuthenticationController {
         'profileImageUrl': '',
         'role': 'user',
       });
-
+      if (!context.mounted) return;
       Navigator.pushReplacementNamed(context, '/basePage');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -183,11 +184,13 @@ class AuthenticationController {
         default:
           message = 'Ocorreu um erro. Por favor, tente novamente.';
       }
+      if (!context.mounted) return;
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(message), backgroundColor: Colors.red),
       );
     } catch (e) {
+      if (!context.mounted) return;
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(e.toString()), backgroundColor: Colors.red),
@@ -201,6 +204,7 @@ class AuthenticationController {
     try {
       User? user = await _auth.signInWithEmailAndPassword(email, password);
       if (user != null) {
+        if (!context.mounted) return;
         Navigator.pushReplacementNamed(context, '/basePage');
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Bem vindo, ${user.displayName}'), backgroundColor: Colors.green),
@@ -227,11 +231,13 @@ class AuthenticationController {
         default:
           message = 'Ocorreu um erro. Por favor, tente novamente.';
       }
+      if (!context.mounted) return;
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(message), backgroundColor: Colors.red),
       );
     } catch (e) {
+      if (!context.mounted) return;
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(e.toString()), backgroundColor: Colors.red),
@@ -312,6 +318,7 @@ class AuthenticationController {
     try {
       await _auth.signOut();
       await googleSignIn.signOut();
+      if (!context.mounted) return;
       Navigator.pushNamedAndRemoveUntil(context, '/login', (Route<dynamic> route) => false);
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Logout realizado com sucesso!'), backgroundColor: Colors.green,));
     } catch (e) {
@@ -449,11 +456,13 @@ class AuthenticationController {
         AuthCredential credential = EmailAuthProvider.credential(email: email, password: password);
         await user.reauthenticateWithCredential(credential);
       } on FirebaseAuthException {
+        if (!context.mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text('Senha inválida'),
           backgroundColor: Colors.red));
         rethrow;
       } catch (e) {
+        if (!context.mounted) return;
         ScaffoldMessenger.of(context).hideCurrentSnackBar();
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text('Erro inesperado'), backgroundColor: Colors.red));
@@ -650,18 +659,18 @@ class AuthenticationController {
     return null;
   }
 
-  Future<UserRole?> getUserRole() async {
+  Future<String> getUserRole() async {
     User? user = FirebaseAuth.instance.currentUser;
     if (user != null) {
-      DocumentSnapshot userDoc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
       String role = userDoc['role'];
-      if (role == UserRole.admin.roleString) {
-        return UserRole.admin;
-      } else {
-        return UserRole.user;
-      }
+      userRole = role;
+      return role;
     }
-    return null;
+    return 'user';
   }
 
   Future<void> setRole(UserRole role, context) async {
@@ -781,7 +790,7 @@ class AuthenticationController {
           'profileImageUrl': '',
           'role': 'admin',
         });
-
+        if (!context.mounted) return "falha";
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Pesquisador cadastrado com sucesso!'),
@@ -806,12 +815,14 @@ class AuthenticationController {
         default:
           message = 'Ocorreu um erro. Por favor, tente novamente.';
       }
+      if (!context.mounted) return "falha";
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(message), backgroundColor: Colors.red),
       );
       return "falha";
     } catch (e) {
+      if (!context.mounted) return "falha";
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(e.toString()), backgroundColor: Colors.red),

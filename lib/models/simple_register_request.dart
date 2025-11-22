@@ -12,6 +12,7 @@ class SimpleRegisterRequest {
   final String status;
   final String city;
   final String beachSpot;
+  final String referencePoint;
 
   SimpleRegisterRequest({
     required this.userId,
@@ -26,7 +27,8 @@ class SimpleRegisterRequest {
     required this.registerImageUrl,
     this.registerImageUrl2,
     required this.city,
-    required this.beachSpot
+    required this.beachSpot,
+    required this.referencePoint
   });
 
   Map<String, dynamic> toJson() {
@@ -43,7 +45,8 @@ class SimpleRegisterRequest {
       'date': date.toIso8601String(),
       'status': status,
       'city': city,
-      'beachSpot': beachSpot
+      'beachSpot': beachSpot,
+      'referencePoint': referencePoint
     };
   }
 
@@ -60,5 +63,6 @@ class SimpleRegisterRequest {
         date = DateTime.parse(json['date']),
         status = json['status'],
         city = json['city'], 
-        beachSpot = json['beachSpot'];
+        beachSpot = json['beachSpot'], 
+        referencePoint = json['referencePoint'];
 }

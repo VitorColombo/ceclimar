@@ -23,51 +23,37 @@ class MyRegisters extends StatefulWidget {
 
 class _MyRegistersState extends State<MyRegisters> {
   final MyRegistersController _myRegistersController = MyRegistersController();
-  List<RegisterResponse> registers = [];
-  bool isLoading = true;
-  bool isFiltered = false;
+  // Remoção de List<RegisterResponse> registers = [];
+  // Remoção de bool isLoading = true;
   String selectedFilter = "Todos";
 
-  @override
-  void initState() {
-    super.initState();
-    fetchRegisters(selectedFilter);
-  }
-
+  // Não precisamos de initState ou fetchRegisters, pois o StreamBuilder 
+  // fará o trabalho de carregamento e atualização.
+  
+  // ⭐️ Mantenha o fetchRegisters para fins de filtro e refresh manual (opcional)
+  // Mas mude a implementação para usar o Stream.
   Future<void> fetchRegisters(String status) async {
     setState(() {
-      isLoading = true;
+      selectedFilter = status;
     });
-    try {
-      List<RegisterResponse> fetchedRegisters =
-          await _myRegistersController.getRegisters();
-      if (mounted) {
-        setState(() {
-          registers = fetchedRegisters;
-          isLoading = false;
-          if (status != "Todos") {
-            registers =
-                registers.where((element) => element.status == status).toList();
-          }
-          selectedFilter = status;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          isLoading = false;
-        });
-      }
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erro ao carregar registros: $e')),
-      );
-    }
+    // Forçar um refresh manual do StreamBuilder não é necessário.
+    // O StreamBuilder reagirá à mudança do selectedFilter no filtro.
   }
+  
+  // ⭐️ Função de filtragem movida para dentro do StreamBuilder
+  List<RegisterResponse> _filterRegisters(List<RegisterResponse> allRegisters) {
+    if (selectedFilter == "Todos") {
+      return allRegisters;
+    }
+    return allRegisters
+        .where((element) => element.status == selectedFilter)
+        .toList();
+  }
+
 
   @override
   Widget build(BuildContext context) {
     final placeholderRegisters = generatePlaceholderRegisters(6);
-    final displayRegisters = isLoading ? placeholderRegisters : registers;
 
     return Scaffold(
       body: CustomScrollView(
@@ -78,7 +64,7 @@ class _MyRegistersState extends State<MyRegisters> {
             collapsedHeight: 115,
             expandedHeight: 115,
             backgroundColor: Colors.white,
-            shadowColor: Color.fromARGB(0, 173, 145, 145),
+            shadowColor: const Color.fromARGB(0, 173, 145, 145),
             flexibleSpace: FlexibleSpaceBar(
               background: Container(
                 color: Colors.white,
@@ -109,13 +95,7 @@ class _MyRegistersState extends State<MyRegisters> {
                           ),
                           const SizedBox(width: 10),
                           InkWell(
-                            onTap: () {
-                              if (selectedFilter == "Validado") {
-                                fetchRegisters("Todos");
-                              } else {
-                                fetchRegisters("Validado");
-                              }
-                            },
+                            onTap: () => fetchRegisters(selectedFilter == "Validado" ? "Todos" : "Validado"),
                             child: StatusLabel(
                               status: "Validado",
                               borderColor: selectedFilter == "Validado"
@@ -125,13 +105,7 @@ class _MyRegistersState extends State<MyRegisters> {
                           ),
                           const SizedBox(width: 10),
                           InkWell(
-                            onTap: () {
-                              if (selectedFilter == "Enviado") {
-                                fetchRegisters("Todos");
-                              } else {
-                                fetchRegisters("Enviado");
-                              }
-                            },
+                            onTap: () => fetchRegisters(selectedFilter == "Enviado" ? "Todos" : "Enviado"),
                             child: StatusLabel(
                               status: "Enviado",
                               borderColor: selectedFilter == "Enviado"
@@ -152,51 +126,84 @@ class _MyRegistersState extends State<MyRegisters> {
               [
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    children: [
-                      !isLoading && registers.isEmpty
-                          ? Center(
-                              child: Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: Text(
-                                  "Nenhum registro encontrado.",
-                                  style: const TextStyle(fontSize: 18),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                            )
-                          : SizedBox(
-                              height: MediaQuery.of(context).size.height - 250,
-                              child: Skeletonizer(
-                                enabled: isLoading,
-                                child: ListView.builder(
-                                  padding: const EdgeInsets.only(top: 0, bottom: 100),
-                                  physics: const AlwaysScrollableScrollPhysics(),
-                                  shrinkWrap: true,
-                                  itemCount: displayRegisters.length,
-                                  itemBuilder: (context, index) {
-                                    return RegisterItem(
-                                      register: displayRegisters[index],
-                                      route: RegisterDetailPage.routeName,
-                                      isLoading: isLoading,
-                                    );
-                                  },
-                                ),
-                              ),
+                  child: StreamBuilder<List<RegisterResponse>>(
+                    stream: _myRegistersController.getRegistersStream(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasError) {
+                        return Center(child: Text('Erro ao carregar dados: ${snapshot.error}'));
+                      }
+                      if (!snapshot.hasData && snapshot.connectionState == ConnectionState.waiting) {
+                        return SizedBox(
+                          height: MediaQuery.of(context).size.height - 250,
+                          child: Skeletonizer(
+                            enabled: true,
+                            child: ListView.builder(
+                              padding: const EdgeInsets.only(top: 0, bottom: 100),
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              shrinkWrap: true,
+                              itemCount: placeholderRegisters.length,
+                              itemExtent: 100,
+                              itemBuilder: (context, index) {
+                                return RegisterItem(
+                                  register: placeholderRegisters[index],
+                                  route: RegisterDetailPage.routeName,
+                                  isLoading: true,
+                                  onDeleted: () {},
+                                );
+                              },
                             ),
-                    ],
+                          ),
+                        );
+                      }
+                      final allRegisters = snapshot.data ?? [];
+                      final filteredRegisters = _filterRegisters(allRegisters);
+                      final displayRegisters = filteredRegisters;
+                      final isLoading = snapshot.connectionState == ConnectionState.waiting;
+
+                      if (displayRegisters.isEmpty) {
+                        return const Center(
+                          child: Padding(
+                            padding: EdgeInsets.all(16.0),
+                            child: Text(
+                              "Nenhum registro encontrado.",
+                              style: TextStyle(fontSize: 18),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        );
+                      }
+
+                      return SizedBox(
+                        height: MediaQuery.of(context).size.height - 250,
+                        child: Skeletonizer(
+                          enabled: isLoading && displayRegisters.isEmpty, 
+                          child: ListView.builder(
+                            padding: const EdgeInsets.only(top: 0, bottom: 100),
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            itemCount: displayRegisters.length,
+                            itemExtent: 100,
+                            itemBuilder: (context, index) {
+                              return RegisterItem(
+                                register: displayRegisters[index],
+                                route: RegisterDetailPage.routeName,
+                                isLoading: isLoading,
+                                onDeleted: () {
+                                   fetchRegisters(selectedFilter);
+                                },
+                              );
+                            },
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 ),
-              ]
-            )
+              ],
+            ),
           )
         ],
       ),
     );
   }
-}
-
-double getResponsiveTextSize(BuildContext context, double baseSize) {
-  double screenWidth = MediaQuery.of(context).size.width;
-  return baseSize * (screenWidth / 375.0);
 }

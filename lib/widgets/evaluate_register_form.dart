@@ -1,13 +1,19 @@
+// ignore: depend_on_referenced_packages
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+
 import 'package:tcc_ceclimar/controller/evaluate_register_controller.dart';
 import 'package:tcc_ceclimar/models/animal_response.dart';
 import 'package:tcc_ceclimar/models/register_response.dart';
 import 'package:tcc_ceclimar/utils/animals_service.dart';
+import 'package:tcc_ceclimar/utils/guarita_data.dart';
+import 'package:tcc_ceclimar/widgets/custom_switch.dart';
 import 'package:tcc_ceclimar/widgets/input_field.dart';
+import 'package:tcc_ceclimar/widgets/modal_help_register_image_btnsheet.dart';
 import 'package:tcc_ceclimar/widgets/radio_btn_animal_state.dart';
 import 'package:tcc_ceclimar/widgets/search_input_field.dart';
 import 'package:tcc_ceclimar/widgets/send_btn.dart';
-import 'package:collection/collection.dart';
 
 class EvaluateRegisterForm extends StatefulWidget {
   final RegisterResponse register;
@@ -25,6 +31,7 @@ class _EvaluateRegisterFormState extends State<EvaluateRegisterForm> {
   final _formController = EvaluateRegisterFormController();
   final _formKey = GlobalKey<FormState>();
   final AnimalService _animalService = AnimalService();
+  bool _isFormSubmitted = false;
 
   final List<String> species = [];
   final List<String> classes = [];
@@ -82,6 +89,8 @@ class _EvaluateRegisterFormState extends State<EvaluateRegisterForm> {
         _populateFilterLists();
       });
     }
+    
+    _formController.animalStateController.text = "3";
   }
 
   void _populateFilterLists(){
@@ -303,6 +312,47 @@ class _EvaluateRegisterFormState extends State<EvaluateRegisterForm> {
     return _formKey.currentState?.validate() ?? false;
   }
 
+  Future<void> _submitForm() async {
+    if (_validateForm()) {
+      setState(() {
+        _isFormSubmitted = true;
+      });
+      await _formController.sendEvaluation(context, widget.register);
+    }
+  }
+
+    void _onSwitchChanged(bool valueHour) {
+    if (_isFormSubmitted) return;
+    bool newValue = !_formController.newAnimalSwitch.value;
+    setState(() {
+      _formController.toggleNewAnimalSwitch(newValue);
+    });
+  }
+
+  void _showSwitchNewAnimalInfoBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return const ModalHelpRegisterImageBottomSheet(
+            text: "Marque esse campo se você não encontrou o animal na lista e deseja adicioná-lo no banco de dados",
+          height: 350,
+          );
+      },
+    );
+  }  
+
+  List<String> _getCities() {
+    return guaritas.where((element) => element.city != null).map((guarita) => guarita.city!).toSet().toList();
+  }
+
+  List<GuaritaData> _getFilteredGuaritas() {
+    if (_formController.cityController.text.isEmpty) {
+      return guaritas;
+    } else {
+      return guaritas.where((guarita) => guarita.city == _formController.cityController.text).toList();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -310,6 +360,138 @@ class _EvaluateRegisterFormState extends State<EvaluateRegisterForm> {
         key: _formKey,
         child: Column(
           children: [
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: DropdownButtonFormField<String>(
+                    menuMaxHeight: 400,
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: const Color(0xF6F6F6F6),
+                      labelText: "Município",
+                      labelStyle: Theme.of(context).textTheme.labelLarge,
+                      enabledBorder: const OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(10)),
+                        borderSide: BorderSide(
+                          color: Colors.grey,
+                          width: 1.0,
+                          style: BorderStyle.solid,
+                        ),
+                      ),
+                      focusedBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.lightBlue,
+                          width: 1.0,
+                        ),
+                        borderRadius: BorderRadius.all(Radius.circular(10)),
+                      ),
+                      floatingLabelStyle: const TextStyle(color: Colors.grey, fontSize: 17),
+                      contentPadding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 10.0),
+                    ),
+                    value: _formController.cityController.text.isEmpty
+                        ? null
+                        : _formController.cityController.text,
+                    items: _getCities().map((String city) {
+                      return DropdownMenuItem<String>(
+                        value: city,
+                        child: 
+                          Text(
+                            city,
+                            style:
+                              const TextStyle(
+                                color: Colors.black,
+                                fontSize: 16,
+                                fontWeight: FontWeight.normal
+                              ),
+                          ),
+                      );
+                    }).toList(),
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        _formController.cityController.text = newValue ?? '';
+                        _formController.beachSpotController.text = '';
+                      });
+                    },
+                    validator: (value) => _formController.cityError,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                SizedBox(
+                  width: 125,
+                  child: DropdownButtonFormField<String>(
+                    menuMaxHeight: 400,
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: const Color(0xF6F6F6F6),
+                      labelText: "Nº Guarita",
+                      labelStyle: Theme.of(context).textTheme.labelLarge,
+                      enabledBorder: const OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(10)),
+                        borderSide: BorderSide(
+                          color: Colors.grey,
+                          width: 1.0,
+                          style: BorderStyle.solid,
+                        ),
+                      ),
+                      focusedBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.lightBlue,
+                          width: 1.0,
+                        ),
+                        borderRadius: BorderRadius.all(Radius.circular(10)),
+                      ),
+                      floatingLabelStyle: const TextStyle(color: Colors.grey, fontSize: 17),
+                      contentPadding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 10.0),
+                    ),
+                    value: _formController.beachSpotController.text.isEmpty
+                        ? null
+                        : _formController.beachSpotController.text,
+                    items: _getFilteredGuaritas()
+                        .map((GuaritaData guarita) {
+                      return DropdownMenuItem<String>(
+                        value: guarita.number,
+                        child: Text(
+                          guarita.number,
+                          style: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 16,
+                              fontWeight: FontWeight.normal),
+                        ),
+                      );
+                    }).toList(),
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        _formController.beachSpotController.text = newValue ?? '';
+                        _formController.currentGuarita = _getFilteredGuaritas().firstWhere((element) => element.number == newValue);
+                        if (_formController.cityController.text.isEmpty && _formController.currentGuarita != null && _formController.currentGuarita!.city != null) {
+                          _formController.cityController.text = _formController.currentGuarita!.city!;
+                        }
+                      });
+                    },
+                    validator: (value) => _formController.beachSpotError,
+                  ),
+                ),
+                SizedBox(width: 10),
+                Padding(
+                  padding: const EdgeInsets.only(top: 16.0),
+                  child: InkWell(
+                    onTap: () {
+                      setState(() {
+                        _formController.beachSpotController.text = '';
+                        _formController.cityController.text = '';
+                        _formController.currentGuarita = null;
+                      });
+                    },
+                    borderRadius: BorderRadius.circular(10),
+                    child: 
+                      PhosphorIcon(PhosphorIcons.trash(PhosphorIconsStyle.regular), size: 24, color: Colors.grey)
+                  ),
+                ),
+              ],
+            ),
             const SizedBox(height: 16),
             InputField(
               text: "Nome Popular",
@@ -410,11 +592,22 @@ class _EvaluateRegisterFormState extends State<EvaluateRegisterForm> {
               ),
             ),
             const SizedBox(height: 16),
+            Padding(
+              padding: const EdgeInsets.only(left: 8),
+              child: CustomSwitch(
+                text: "Adicionar novo animal",
+                value: _formController.newAnimalSwitch.value,
+                isDisabled: _isFormSubmitted,
+                onChanged: _onSwitchChanged,
+                onTap: _showSwitchNewAnimalInfoBottomSheet,
+              ),
+            ),
+            const SizedBox(height: 16),
             SizedBox(
               width: double.infinity,
               height: 56,
               child: SendBtn(
-                  onSend: () => _formController.sendEvaluation(context, widget.register),
+                  onSend: _submitForm,
                   onValidate: _validateForm,
                   text: "Enviar Análise",
               ),

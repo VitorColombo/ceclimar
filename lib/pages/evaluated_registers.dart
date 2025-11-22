@@ -115,6 +115,9 @@ class _EvaluatedRegistersState extends State<EvaluatedRegisters> {
                                 isLoading: isLoading,
                                 register: displayRegisters[index],
                                 route: RegisterDetailPage.routeName,
+                                onDeleted: () {
+                                  fetchRegisters(); 
+                                },
                               );
                             },
                           ),

@@ -14,9 +14,18 @@ class LocalRegister {
   @HiveField(3)
   final String? registerImagePath;
   @HiveField(4)
-   final String? registerImagePath2;
+  final String? registerImagePath2;
+  @HiveField(5)
+  final DateTime createdAt;
 
-  LocalRegister({required this.registerType, required this.data, required this.status, this.registerImagePath, this.registerImagePath2});
+  LocalRegister({
+    required this.registerType,
+    required this.data,
+    required this.status,
+    this.registerImagePath,
+    this.registerImagePath2,
+    DateTime? createdAt,
+  }) : createdAt = createdAt ?? DateTime.now();
 
   Map<String, dynamic> toJson() {
     return {
