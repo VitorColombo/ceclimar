@@ -1,7 +1,7 @@
 import 'package:accordion/accordion.dart';
 import 'package:accordion/controllers.dart';
 import 'package:flutter/material.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:tcc_ceclimar/utils/app_icons.dart';
 import 'package:tcc_ceclimar/widgets/header_banner_widget.dart';
 import '../widgets/page_header.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -45,33 +45,38 @@ class AboutUs extends StatelessWidget {
             delegate: SliverChildListDelegate(
               [
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 20, left: 30, right: 30, top: 10),
+                  padding: const EdgeInsets.only(
+                      bottom: 20, left: 30, right: 30, top: 10),
                   child: Column(
                     children: [
-                      Text("Versão 2.3.7", style: Theme.of(context).textTheme.bodyMedium),
+                      Text("Versão 2.3.7",
+                          style: Theme.of(context).textTheme.bodyMedium),
                       const SizedBox(height: 20),
                       Accordion(
                         initialOpeningSequenceDelay: 0,
                         scrollIntoViewOfItems: ScrollIntoViewOfItems.fast,
                         disableScrolling: true,
-                        headerPadding: const EdgeInsets.only(top: 20, bottom: 20, left: 6, right: 6),
-                        rightIcon: Icon(PhosphorIcons.caretDown(PhosphorIconsStyle.regular)),
+                        headerPadding: const EdgeInsets.only(
+                            top: 20, bottom: 20, left: 6, right: 6),
+                        rightIcon: Icon(PhosphorIcons.caretDown(
+                            PhosphorIconsStyle.regular)),
                         headerBackgroundColor: Colors.white,
                         headerBorderWidth: 1,
                         headerBorderRadius: 6,
-                        headerBorderColor: const Color.fromARGB(255, 71, 169, 218),
-                        headerBorderColorOpened: const Color.fromARGB(255, 71, 169, 218),
-                        contentBorderColor: const Color.fromARGB(255, 71, 169, 218),
+                        headerBorderColor:
+                            const Color.fromARGB(255, 71, 169, 218),
+                        headerBorderColorOpened:
+                            const Color.fromARGB(255, 71, 169, 218),
+                        contentBorderColor:
+                            const Color.fromARGB(255, 71, 169, 218),
                         children: [
                           AccordionSection(
-                            header: const Text(
-                              'Projeto Fauna Marinha RS',
-                              style: TextStyle(
-                                fontWeight: FontWeight.normal, 
-                                fontSize: 18,
-                                color:  Color.fromARGB(255, 71, 169, 218),
-                              )
-                            ),
+                            header: const Text('Projeto Fauna Marinha RS',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.normal,
+                                  fontSize: 18,
+                                  color: Color.fromARGB(255, 71, 169, 218),
+                                )),
                             content: Padding(
                               padding: const EdgeInsets.all(8),
                               child: Text(
@@ -81,14 +86,12 @@ class AboutUs extends StatelessWidget {
                             ),
                           ),
                           AccordionSection(
-                            header: const Text(
-                              'Sobre o aplicativo',
-                              style: TextStyle(
-                                fontWeight: FontWeight.normal, 
-                                fontSize: 18,
-                                color: Color.fromARGB(255, 71, 169, 218),
-                              )
-                            ),
+                            header: const Text('Sobre o aplicativo',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.normal,
+                                  fontSize: 18,
+                                  color: Color.fromARGB(255, 71, 169, 218),
+                                )),
                             content: Padding(
                               padding: const EdgeInsets.all(8),
                               child: Text(
@@ -98,14 +101,12 @@ class AboutUs extends StatelessWidget {
                             ),
                           ),
                           AccordionSection(
-                            header: const Text(
-                              'Desenvolvimento',
-                              style: TextStyle(
-                                fontWeight: FontWeight.normal, 
-                                fontSize: 18,
-                                color: Color.fromARGB(255, 71, 169, 218),
-                              )
-                            ),
+                            header: const Text('Desenvolvimento',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.normal,
+                                  fontSize: 18,
+                                  color: Color.fromARGB(255, 71, 169, 218),
+                                )),
                             content: Padding(
                               padding: const EdgeInsets.all(8),
                               child: Text(
@@ -117,7 +118,8 @@ class AboutUs extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 10),
-                      Text("Confira nossas redes sociais:", style: Theme.of(context).textTheme.bodyMedium),
+                      Text("Confira nossas redes sociais:",
+                          style: Theme.of(context).textTheme.bodyMedium),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -136,8 +138,7 @@ class AboutUs extends StatelessWidget {
                           _buildSocialMediaButton(
                               'https://open.spotify.com/show/2ZeHXdjgzmRUpLRJEX0XYY?si=gOk-QtrVSoinxJ_jvWqNJA',
                               PhosphorIcons.spotifyLogo()),
-                          _buildSocialMediaButton(
-                              'https://t.me/FaunaMarinhaRS',
+                          _buildSocialMediaButton('https://t.me/FaunaMarinhaRS',
                               PhosphorIcons.telegramLogo()),
                         ],
                       ),
@@ -160,7 +161,10 @@ class AboutUs extends StatelessWidget {
           throw Exception('Could not launch $uri');
         }
       },
-      icon: Icon(icon, color: const Color.fromARGB(255, 31, 73, 95),),
+      icon: Icon(
+        icon,
+        color: const Color.fromARGB(255, 31, 73, 95),
+      ),
       iconSize: 30,
     );
   }

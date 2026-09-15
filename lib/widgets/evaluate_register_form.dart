@@ -1,7 +1,7 @@
 // ignore: depend_on_referenced_packages
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:tcc_ceclimar/utils/app_icons.dart';
 
 import 'package:tcc_ceclimar/controller/evaluate_register_controller.dart';
 import 'package:tcc_ceclimar/models/animal_response.dart';
@@ -18,11 +18,8 @@ import 'package:tcc_ceclimar/widgets/send_btn.dart';
 class EvaluateRegisterForm extends StatefulWidget {
   final RegisterResponse register;
 
-  const EvaluateRegisterForm({
-    super.key,
-    required this.register
-  });
-  
+  const EvaluateRegisterForm({super.key, required this.register});
+
   @override
   State<EvaluateRegisterForm> createState() => _EvaluateRegisterFormState();
 }
@@ -56,15 +53,28 @@ class _EvaluateRegisterFormState extends State<EvaluateRegisterForm> {
   void initState() {
     super.initState();
     _formController.nameController.text = widget.register.animal.popularName!;
-    _formController.speciesController.text = widget.register.animal.species != null ? widget.register.animal.species! : '';
-    _formController.classController.text = widget.register.animal.classe != null ? widget.register.animal.classe! : '';
-    _formController.orderController.text = widget.register.animal.order != null ? widget.register.animal.order! : '';
-    _formController.familyController.text = widget.register.animal.family != null ? widget.register.animal.family! : '';
-    _formController.genuController.text = widget.register.animal.genus != null ? widget.register.animal.genus! : '';
-    _formController.obsController.text = widget.register.obs != null ? widget.register.obs! : '';
+    _formController.speciesController.text =
+        widget.register.animal.species != null
+            ? widget.register.animal.species!
+            : '';
+    _formController.classController.text = widget.register.animal.classe != null
+        ? widget.register.animal.classe!
+        : '';
+    _formController.orderController.text = widget.register.animal.order != null
+        ? widget.register.animal.order!
+        : '';
+    _formController.familyController.text =
+        widget.register.animal.family != null
+            ? widget.register.animal.family!
+            : '';
+    _formController.genuController.text = widget.register.animal.genus != null
+        ? widget.register.animal.genus!
+        : '';
+    _formController.obsController.text =
+        widget.register.obs != null ? widget.register.obs! : '';
     _loadAnimals();
     _initializeFilteredLists();
-    
+
     _speciesFocusNode.addListener(_handleFocusChange);
     _classFocusNode.addListener(_handleFocusChange);
     _orderFocusNode.addListener(_handleFocusChange);
@@ -73,72 +83,73 @@ class _EvaluateRegisterFormState extends State<EvaluateRegisterForm> {
   }
 
   void _handleFocusChange() {
-    if (mounted && (_speciesFocusNode.hasFocus ||
-        _classFocusNode.hasFocus ||
-        _orderFocusNode.hasFocus ||
-        _familyFocusNode.hasFocus ||
-        _genusFocusNode.hasFocus)) {
+    if (mounted &&
+        (_speciesFocusNode.hasFocus ||
+            _classFocusNode.hasFocus ||
+            _orderFocusNode.hasFocus ||
+            _familyFocusNode.hasFocus ||
+            _genusFocusNode.hasFocus)) {
       _updateDropdownOptions();
     }
   }
 
   Future<void> _loadAnimals() async {
     _allAnimals = await _animalService.getAnimals();
-    if(mounted){
+    if (mounted) {
       setState(() {
         _populateFilterLists();
       });
     }
-    
+
     _formController.animalStateController.text = "3";
   }
 
-  void _populateFilterLists(){
+  void _populateFilterLists() {
     setState(() {
       species.addAll(
         _allAnimals
-          .map((animal) => animal.scientificName)
-          .where((species) => species != null && species.isNotEmpty)
-          .map((species) => species!)
-          .toSet()
-          .toList(),
+            .map((animal) => animal.scientificName)
+            .where((species) => species != null && species.isNotEmpty)
+            .map((species) => species!)
+            .toSet()
+            .toList(),
       );
       classes.addAll(
         _allAnimals
-          .map((animal) => animal.classe)
-          .where((classe) => classe != null && classe.isNotEmpty)
-          .map((classe) => classe!)
-          .toSet()
-          .toList(),
+            .map((animal) => animal.classe)
+            .where((classe) => classe != null && classe.isNotEmpty)
+            .map((classe) => classe!)
+            .toSet()
+            .toList(),
       );
       orders.addAll(
         _allAnimals
-          .map((animal) => animal.order)
-          .where((order) => order != null && order.isNotEmpty)
-          .map((order) => order!)
-          .toSet()
-          .toList(),
+            .map((animal) => animal.order)
+            .where((order) => order != null && order.isNotEmpty)
+            .map((order) => order!)
+            .toSet()
+            .toList(),
       );
       families.addAll(
         _allAnimals
-          .map((animal) => animal.family)
-          .where((family) => family != null && family.isNotEmpty)
-          .map((family) => family!)
-          .toSet()
-          .toList(),
+            .map((animal) => animal.family)
+            .where((family) => family != null && family.isNotEmpty)
+            .map((family) => family!)
+            .toSet()
+            .toList(),
       );
       genus.addAll(
         _allAnimals
-          .map((animal) => animal.genus)
-          .where((genus) => genus != null && genus.isNotEmpty)
-          .map((genus) => genus!)
-          .toSet()
-          .toList(),
+            .map((animal) => animal.genus)
+            .where((genus) => genus != null && genus.isNotEmpty)
+            .map((genus) => genus!)
+            .toSet()
+            .toList(),
       );
     });
   }
 
-  void _initializeFilteredLists(){
+  void _initializeFilteredLists() {
     setState(() {
       _filteredSpecies = species;
       _filteredClasses = classes;
@@ -148,23 +159,38 @@ class _EvaluateRegisterFormState extends State<EvaluateRegisterForm> {
     });
   }
 
-    List<AnimalResponse> _filterAnimals() {
+  List<AnimalResponse> _filterAnimals() {
     List<AnimalResponse> filteredAnimals = _allAnimals;
 
     if (_formController.speciesController.text.isNotEmpty) {
-      filteredAnimals = filteredAnimals.where((animal) => animal.scientificName!.contains(_formController.speciesController.text)).toList();
+      filteredAnimals = filteredAnimals
+          .where((animal) => animal.scientificName!
+              .contains(_formController.speciesController.text))
+          .toList();
     }
     if (_formController.classController.text.isNotEmpty) {
-      filteredAnimals = filteredAnimals.where((animal) => animal.classe!.contains(_formController.classController.text)).toList();
+      filteredAnimals = filteredAnimals
+          .where((animal) =>
+              animal.classe!.contains(_formController.classController.text))
+          .toList();
     }
     if (_formController.orderController.text.isNotEmpty) {
-      filteredAnimals = filteredAnimals.where((animal) => animal.order!.contains(_formController.orderController.text)).toList();
+      filteredAnimals = filteredAnimals
+          .where((animal) =>
+              animal.order!.contains(_formController.orderController.text))
+          .toList();
     }
     if (_formController.familyController.text.isNotEmpty) {
-      filteredAnimals = filteredAnimals.where((animal) => animal.family!.contains(_formController.familyController.text)).toList();
+      filteredAnimals = filteredAnimals
+          .where((animal) =>
+              animal.family!.contains(_formController.familyController.text))
+          .toList();
     }
     if (_formController.genuController.text.isNotEmpty) {
-      filteredAnimals = filteredAnimals.where((animal) => animal.genus!.contains(_formController.genuController.text)).toList();
+      filteredAnimals = filteredAnimals
+          .where((animal) =>
+              animal.genus!.contains(_formController.genuController.text))
+          .toList();
     }
 
     return filteredAnimals;
@@ -174,66 +200,114 @@ class _EvaluateRegisterFormState extends State<EvaluateRegisterForm> {
     List<AnimalResponse> filteredAnimals = _filterAnimals();
 
     setState(() {
-      _filteredClasses = filteredAnimals.map((animal) => animal.classe!).toSet().toList();
-      _filteredSpecies = filteredAnimals.map((animal) => animal.scientificName!).toSet().toList();
-      _filteredOrders = filteredAnimals.map((animal) => animal.order!).toSet().toList();
-      _filteredFamilies = filteredAnimals.map((animal) => animal.family!).toSet().toList();
-      _filteredGenus = filteredAnimals.map((animal) => animal.genus!).toSet().toList();
-      
+      _filteredClasses =
+          filteredAnimals.map((animal) => animal.classe!).toSet().toList();
+      _filteredSpecies = filteredAnimals
+          .map((animal) => animal.scientificName!)
+          .toSet()
+          .toList();
+      _filteredOrders =
+          filteredAnimals.map((animal) => animal.order!).toSet().toList();
+      _filteredFamilies =
+          filteredAnimals.map((animal) => animal.family!).toSet().toList();
+      _filteredGenus =
+          filteredAnimals.map((animal) => animal.genus!).toSet().toList();
+
       if (_speciesFocusNode.hasFocus) {
         _filteredSpecies = _allAnimals
-            .where((animal) => !(_formController.classController.text.isNotEmpty && animal.classe?.toLowerCase() != _formController.classController.text.toLowerCase()) &&
-                                !(_formController.orderController.text.isNotEmpty && animal.order?.toLowerCase() != _formController.orderController.text.toLowerCase()) &&
-                                !(_formController.familyController.text.isNotEmpty && animal.family?.toLowerCase() != _formController.familyController.text.toLowerCase()) &&
-                                !(_formController.genuController.text.isNotEmpty && animal.genus?.toLowerCase() != _formController.genuController.text.toLowerCase())
-              )
-              .map((animal) => animal.scientificName!)
-              .toSet()
-              .toList();
-        } else if (_genusFocusNode.hasFocus) {
+            .where((animal) =>
+                !(_formController.classController.text.isNotEmpty &&
+                    animal.classe?.toLowerCase() !=
+                        _formController.classController.text.toLowerCase()) &&
+                !(_formController.orderController.text.isNotEmpty &&
+                    animal.order?.toLowerCase() !=
+                        _formController.orderController.text.toLowerCase()) &&
+                !(_formController.familyController.text.isNotEmpty &&
+                    animal.family?.toLowerCase() !=
+                        _formController.familyController.text.toLowerCase()) &&
+                !(_formController.genuController.text.isNotEmpty &&
+                    animal.genus?.toLowerCase() !=
+                        _formController.genuController.text.toLowerCase()))
+            .map((animal) => animal.scientificName!)
+            .toSet()
+            .toList();
+      } else if (_genusFocusNode.hasFocus) {
         _filteredGenus = _allAnimals
-            .where((animal) => !(_formController.classController.text.isNotEmpty && animal.classe?.toLowerCase() != _formController.classController.text.toLowerCase()) &&
-                                !(_formController.orderController.text.isNotEmpty && animal.order?.toLowerCase() != _formController.orderController.text.toLowerCase()) &&
-                                !(_formController.familyController.text.isNotEmpty && animal.family?.toLowerCase() != _formController.familyController.text.toLowerCase()) &&
-                                !(_formController.speciesController.text.isNotEmpty && animal.scientificName?.toLowerCase() != _formController.speciesController.text.toLowerCase())
-              )
+            .where((animal) =>
+                !(_formController.classController.text.isNotEmpty &&
+                    animal.classe?.toLowerCase() !=
+                        _formController.classController.text.toLowerCase()) &&
+                !(_formController.orderController.text.isNotEmpty &&
+                    animal.order?.toLowerCase() !=
+                        _formController.orderController.text.toLowerCase()) &&
+                !(_formController.familyController.text.isNotEmpty &&
+                    animal.family?.toLowerCase() !=
+                        _formController.familyController.text.toLowerCase()) &&
+                !(_formController.speciesController.text.isNotEmpty &&
+                    animal.scientificName?.toLowerCase() !=
+                        _formController.speciesController.text.toLowerCase()))
             .map((animal) => animal.genus!)
             .toSet()
             .toList();
       } else if (_familyFocusNode.hasFocus) {
-          _filteredFamilies = _allAnimals
-            .where((animal) => !(_formController.classController.text.isNotEmpty && animal.classe?.toLowerCase() != _formController.classController.text.toLowerCase()) &&
-                                !(_formController.orderController.text.isNotEmpty && animal.order?.toLowerCase() != _formController.orderController.text.toLowerCase()) &&
-                                !(_formController.genuController.text.isNotEmpty && animal.genus?.toLowerCase() != _formController.genuController.text.toLowerCase()) &&
-                                !(_formController.speciesController.text.isNotEmpty && animal.scientificName?.toLowerCase() != _formController.speciesController.text.toLowerCase())
-              )
+        _filteredFamilies = _allAnimals
+            .where((animal) =>
+                !(_formController.classController.text.isNotEmpty &&
+                    animal.classe?.toLowerCase() !=
+                        _formController.classController.text.toLowerCase()) &&
+                !(_formController.orderController.text.isNotEmpty &&
+                    animal.order?.toLowerCase() !=
+                        _formController.orderController.text.toLowerCase()) &&
+                !(_formController.genuController.text.isNotEmpty &&
+                    animal.genus?.toLowerCase() !=
+                        _formController.genuController.text.toLowerCase()) &&
+                !(_formController.speciesController.text.isNotEmpty &&
+                    animal.scientificName?.toLowerCase() !=
+                        _formController.speciesController.text.toLowerCase()))
             .map((animal) => animal.family!)
             .toSet()
             .toList();
       } else if (_orderFocusNode.hasFocus) {
-          _filteredOrders = _allAnimals
-            .where((animal) => !(_formController.classController.text.isNotEmpty && animal.classe?.toLowerCase() != _formController.classController.text.toLowerCase()) &&
-                                !(_formController.familyController.text.isNotEmpty && animal.family?.toLowerCase() != _formController.familyController.text.toLowerCase()) &&
-                                !(_formController.genuController.text.isNotEmpty && animal.genus?.toLowerCase() != _formController.genuController.text.toLowerCase()) &&
-                                !(_formController.speciesController.text.isNotEmpty && animal.scientificName?.toLowerCase() != _formController.speciesController.text.toLowerCase())
-              )
+        _filteredOrders = _allAnimals
+            .where((animal) =>
+                !(_formController.classController.text.isNotEmpty &&
+                    animal.classe?.toLowerCase() !=
+                        _formController.classController.text.toLowerCase()) &&
+                !(_formController.familyController.text.isNotEmpty &&
+                    animal.family?.toLowerCase() !=
+                        _formController.familyController.text.toLowerCase()) &&
+                !(_formController.genuController.text.isNotEmpty &&
+                    animal.genus?.toLowerCase() !=
+                        _formController.genuController.text.toLowerCase()) &&
+                !(_formController.speciesController.text.isNotEmpty &&
+                    animal.scientificName?.toLowerCase() !=
+                        _formController.speciesController.text.toLowerCase()))
             .map((animal) => animal.order!)
             .toSet()
             .toList();
-        } else if (_classFocusNode.hasFocus) {
-          _filteredClasses = _allAnimals
-            .where((animal) => !(_formController.orderController.text.isNotEmpty && animal.order?.toLowerCase() != _formController.orderController.text.toLowerCase()) &&
-                                !(_formController.familyController.text.isNotEmpty && animal.family?.toLowerCase() != _formController.familyController.text.toLowerCase()) &&
-                                !(_formController.genuController.text.isNotEmpty && animal.genus?.toLowerCase() != _formController.genuController.text.toLowerCase()) &&
-                                !(_formController.speciesController.text.isNotEmpty && animal.scientificName?.toLowerCase() != _formController.speciesController.text.toLowerCase())
-              )
+      } else if (_classFocusNode.hasFocus) {
+        _filteredClasses = _allAnimals
+            .where((animal) =>
+                !(_formController.orderController.text.isNotEmpty &&
+                    animal.order?.toLowerCase() !=
+                        _formController.orderController.text.toLowerCase()) &&
+                !(_formController.familyController.text.isNotEmpty &&
+                    animal.family?.toLowerCase() !=
+                        _formController.familyController.text.toLowerCase()) &&
+                !(_formController.genuController.text.isNotEmpty &&
+                    animal.genus?.toLowerCase() !=
+                        _formController.genuController.text.toLowerCase()) &&
+                !(_formController.speciesController.text.isNotEmpty &&
+                    animal.scientificName?.toLowerCase() !=
+                        _formController.speciesController.text.toLowerCase()))
             .map((animal) => animal.classe!)
             .toSet()
             .toList();
-        }
+      }
       if (_formController.speciesController.text.isNotEmpty) {
         AnimalResponse? selectedAnimal = _allAnimals.firstWhereOrNull(
-          (animal) => animal.scientificName == _formController.speciesController.text,
+          (animal) =>
+              animal.scientificName == _formController.speciesController.text,
         );
         if (selectedAnimal != null) {
           _formController.classController.text = selectedAnimal.classe ?? '';
@@ -321,7 +395,7 @@ class _EvaluateRegisterFormState extends State<EvaluateRegisterForm> {
     }
   }
 
-    void _onSwitchChanged(bool valueHour) {
+  void _onSwitchChanged(bool valueHour) {
     if (_isFormSubmitted) return;
     bool newValue = !_formController.newAnimalSwitch.value;
     setState(() {
@@ -334,22 +408,30 @@ class _EvaluateRegisterFormState extends State<EvaluateRegisterForm> {
       context: context,
       builder: (context) {
         return const ModalHelpRegisterImageBottomSheet(
-            text: "Marque esse campo se você não encontrou o animal na lista e deseja adicioná-lo no banco de dados",
+          text:
+              "Marque esse campo se você não encontrou o animal na lista e deseja adicioná-lo no banco de dados",
           height: 350,
-          );
+        );
       },
     );
-  }  
+  }
 
   List<String> _getCities() {
-    return guaritas.where((element) => element.city != null).map((guarita) => guarita.city!).toSet().toList();
+    return guaritas
+        .where((element) => element.city != null)
+        .map((guarita) => guarita.city!)
+        .toSet()
+        .toList();
   }
 
   List<GuaritaData> _getFilteredGuaritas() {
     if (_formController.cityController.text.isEmpty) {
       return guaritas;
     } else {
-      return guaritas.where((guarita) => guarita.city == _formController.cityController.text).toList();
+      return guaritas
+          .where(
+              (guarita) => guarita.city == _formController.cityController.text)
+          .toList();
     }
   }
 
@@ -388,8 +470,10 @@ class _EvaluateRegisterFormState extends State<EvaluateRegisterForm> {
                         ),
                         borderRadius: BorderRadius.all(Radius.circular(10)),
                       ),
-                      floatingLabelStyle: const TextStyle(color: Colors.grey, fontSize: 17),
-                      contentPadding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 10.0),
+                      floatingLabelStyle:
+                          const TextStyle(color: Colors.grey, fontSize: 17),
+                      contentPadding: const EdgeInsets.symmetric(
+                          vertical: 16.0, horizontal: 10.0),
                     ),
                     value: _formController.cityController.text.isEmpty
                         ? null
@@ -397,16 +481,13 @@ class _EvaluateRegisterFormState extends State<EvaluateRegisterForm> {
                     items: _getCities().map((String city) {
                       return DropdownMenuItem<String>(
                         value: city,
-                        child: 
-                          Text(
-                            city,
-                            style:
-                              const TextStyle(
-                                color: Colors.black,
-                                fontSize: 16,
-                                fontWeight: FontWeight.normal
-                              ),
-                          ),
+                        child: Text(
+                          city,
+                          style: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 16,
+                              fontWeight: FontWeight.normal),
+                        ),
                       );
                     }).toList(),
                     onChanged: (String? newValue) {
@@ -443,14 +524,15 @@ class _EvaluateRegisterFormState extends State<EvaluateRegisterForm> {
                         ),
                         borderRadius: BorderRadius.all(Radius.circular(10)),
                       ),
-                      floatingLabelStyle: const TextStyle(color: Colors.grey, fontSize: 17),
-                      contentPadding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 10.0),
+                      floatingLabelStyle:
+                          const TextStyle(color: Colors.grey, fontSize: 17),
+                      contentPadding: const EdgeInsets.symmetric(
+                          vertical: 16.0, horizontal: 10.0),
                     ),
                     value: _formController.beachSpotController.text.isEmpty
                         ? null
                         : _formController.beachSpotController.text,
-                    items: _getFilteredGuaritas()
-                        .map((GuaritaData guarita) {
+                    items: _getFilteredGuaritas().map((GuaritaData guarita) {
                       return DropdownMenuItem<String>(
                         value: guarita.number,
                         child: Text(
@@ -464,10 +546,16 @@ class _EvaluateRegisterFormState extends State<EvaluateRegisterForm> {
                     }).toList(),
                     onChanged: (String? newValue) {
                       setState(() {
-                        _formController.beachSpotController.text = newValue ?? '';
-                        _formController.currentGuarita = _getFilteredGuaritas().firstWhere((element) => element.number == newValue);
-                        if (_formController.cityController.text.isEmpty && _formController.currentGuarita != null && _formController.currentGuarita!.city != null) {
-                          _formController.cityController.text = _formController.currentGuarita!.city!;
+                        _formController.beachSpotController.text =
+                            newValue ?? '';
+                        _formController.currentGuarita = _getFilteredGuaritas()
+                            .firstWhere(
+                                (element) => element.number == newValue);
+                        if (_formController.cityController.text.isEmpty &&
+                            _formController.currentGuarita != null &&
+                            _formController.currentGuarita!.city != null) {
+                          _formController.cityController.text =
+                              _formController.currentGuarita!.city!;
                         }
                       });
                     },
@@ -478,17 +566,18 @@ class _EvaluateRegisterFormState extends State<EvaluateRegisterForm> {
                 Padding(
                   padding: const EdgeInsets.only(top: 16.0),
                   child: InkWell(
-                    onTap: () {
-                      setState(() {
-                        _formController.beachSpotController.text = '';
-                        _formController.cityController.text = '';
-                        _formController.currentGuarita = null;
-                      });
-                    },
-                    borderRadius: BorderRadius.circular(10),
-                    child: 
-                      PhosphorIcon(PhosphorIcons.trash(PhosphorIconsStyle.regular), size: 24, color: Colors.grey)
-                  ),
+                      onTap: () {
+                        setState(() {
+                          _formController.beachSpotController.text = '';
+                          _formController.cityController.text = '';
+                          _formController.currentGuarita = null;
+                        });
+                      },
+                      borderRadius: BorderRadius.circular(10),
+                      child: PhosphorIcon(
+                          PhosphorIcons.trash(PhosphorIconsStyle.regular),
+                          size: 24,
+                          color: Colors.grey)),
                 ),
               ],
             ),
@@ -509,7 +598,7 @@ class _EvaluateRegisterFormState extends State<EvaluateRegisterForm> {
               },
               items: _filteredClasses,
               focusNode: _classFocusNode,
-              onFocusUpdate: (){
+              onFocusUpdate: () {
                 _updateDropdownOptions();
               },
             ),
@@ -524,7 +613,7 @@ class _EvaluateRegisterFormState extends State<EvaluateRegisterForm> {
               },
               items: _filteredOrders,
               focusNode: _orderFocusNode,
-              onFocusUpdate: (){
+              onFocusUpdate: () {
                 _updateDropdownOptions();
               },
             ),
@@ -539,7 +628,7 @@ class _EvaluateRegisterFormState extends State<EvaluateRegisterForm> {
               },
               items: _filteredFamilies,
               focusNode: _familyFocusNode,
-              onFocusUpdate: (){
+              onFocusUpdate: () {
                 _updateDropdownOptions();
               },
             ),
@@ -554,7 +643,7 @@ class _EvaluateRegisterFormState extends State<EvaluateRegisterForm> {
               },
               items: _filteredGenus,
               focusNode: _genusFocusNode,
-              onFocusUpdate: (){
+              onFocusUpdate: () {
                 _updateDropdownOptions();
               },
             ),
@@ -569,12 +658,12 @@ class _EvaluateRegisterFormState extends State<EvaluateRegisterForm> {
               },
               items: _filteredSpecies,
               focusNode: _speciesFocusNode,
-              onFocusUpdate: (){
+              onFocusUpdate: () {
                 _updateDropdownOptions();
               },
             ),
             RadioRowAnimal(
-              onChanged:  (String value) {
+              onChanged: (String value) {
                 setState(() {
                   _formController.animalStateController.text = value;
                 });
@@ -607,9 +696,9 @@ class _EvaluateRegisterFormState extends State<EvaluateRegisterForm> {
               width: double.infinity,
               height: 56,
               child: SendBtn(
-                  onSend: _submitForm,
-                  onValidate: _validateForm,
-                  text: "Enviar Análise",
+                onSend: _submitForm,
+                onValidate: _validateForm,
+                text: "Enviar Análise",
               ),
             ),
             const SizedBox(height: 26)

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:tcc_ceclimar/utils/app_icons.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:tcc_ceclimar/controller/my_registers_controller.dart';
 import 'package:tcc_ceclimar/pages/register_view.dart';

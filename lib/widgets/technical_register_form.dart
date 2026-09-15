@@ -1,7 +1,7 @@
 // ignore: depend_on_referenced_packages
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:tcc_ceclimar/utils/app_icons.dart';
 
 import 'package:tcc_ceclimar/models/animal_response.dart';
 import 'package:tcc_ceclimar/utils/animals_service.dart';
@@ -16,8 +16,7 @@ import 'package:tcc_ceclimar/widgets/image_selector.dart';
 import 'package:tcc_ceclimar/widgets/modal_help_register_image_btnsheet.dart';
 
 class TechnicalRegisterForm extends StatefulWidget {
-  const 
-  TechnicalRegisterForm({super.key});
+  const TechnicalRegisterForm({super.key});
 
   @override
   State<TechnicalRegisterForm> createState() => _TechnicalRegisterFormState();
@@ -30,7 +29,7 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
   bool sawStranding = false;
   bool isNotOnLocal = false;
   bool _isFormSubmitted = false;
-  
+
   final List<String> species = [];
   final List<String> classes = [];
   final List<String> orders = [];
@@ -64,70 +63,71 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
   }
 
   void _handleFocusChange() {
-    if (mounted && (_speciesFocusNode.hasFocus ||
-        _classFocusNode.hasFocus ||
-        _orderFocusNode.hasFocus ||
-        _familyFocusNode.hasFocus ||
-        _genusFocusNode.hasFocus)) {
+    if (mounted &&
+        (_speciesFocusNode.hasFocus ||
+            _classFocusNode.hasFocus ||
+            _orderFocusNode.hasFocus ||
+            _familyFocusNode.hasFocus ||
+            _genusFocusNode.hasFocus)) {
       _updateDropdownOptions();
     }
   }
 
   Future<void> _loadAnimals() async {
     _allAnimals = await _animalService.getAnimals();
-    if(mounted){
+    if (mounted) {
       setState(() {
         _populateFilterLists();
       });
     }
   }
 
-  void _populateFilterLists(){
+  void _populateFilterLists() {
     setState(() {
       species.addAll(
         _allAnimals
-          .map((animal) => animal.scientificName)
-          .where((species) => species != null && species.isNotEmpty)
-          .map((species) => species!)
-          .toSet()
-          .toList(),
+            .map((animal) => animal.scientificName)
+            .where((species) => species != null && species.isNotEmpty)
+            .map((species) => species!)
+            .toSet()
+            .toList(),
       );
       classes.addAll(
         _allAnimals
-          .map((animal) => animal.classe)
-          .where((classe) => classe != null && classe.isNotEmpty)
-          .map((classe) => classe!)
-          .toSet()
-          .toList(),
+            .map((animal) => animal.classe)
+            .where((classe) => classe != null && classe.isNotEmpty)
+            .map((classe) => classe!)
+            .toSet()
+            .toList(),
       );
       orders.addAll(
         _allAnimals
-          .map((animal) => animal.order)
-          .where((order) => order != null && order.isNotEmpty)
-          .map((order) => order!)
-          .toSet()
-          .toList(),
+            .map((animal) => animal.order)
+            .where((order) => order != null && order.isNotEmpty)
+            .map((order) => order!)
+            .toSet()
+            .toList(),
       );
       families.addAll(
         _allAnimals
-          .map((animal) => animal.family)
-          .where((family) => family != null && family.isNotEmpty)
-          .map((family) => family!)
-          .toSet()
-          .toList(),
+            .map((animal) => animal.family)
+            .where((family) => family != null && family.isNotEmpty)
+            .map((family) => family!)
+            .toSet()
+            .toList(),
       );
       genus.addAll(
         _allAnimals
-          .map((animal) => animal.genus)
-          .where((genus) => genus != null && genus.isNotEmpty)
-          .map((genus) => genus!)
-          .toSet()
-          .toList(),
+            .map((animal) => animal.genus)
+            .where((genus) => genus != null && genus.isNotEmpty)
+            .map((genus) => genus!)
+            .toSet()
+            .toList(),
       );
     });
   }
 
-  void _initializeFilteredLists(){
+  void _initializeFilteredLists() {
     setState(() {
       _filteredSpecies = species;
       _filteredClasses = classes;
@@ -141,19 +141,34 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
     List<AnimalResponse> filteredAnimals = _allAnimals;
 
     if (_formController.speciesController.text.isNotEmpty) {
-      filteredAnimals = filteredAnimals.where((animal) => animal.scientificName!.contains(_formController.speciesController.text)).toList();
+      filteredAnimals = filteredAnimals
+          .where((animal) => animal.scientificName!
+              .contains(_formController.speciesController.text))
+          .toList();
     }
     if (_formController.classController.text.isNotEmpty) {
-      filteredAnimals = filteredAnimals.where((animal) => animal.classe!.contains(_formController.classController.text)).toList();
+      filteredAnimals = filteredAnimals
+          .where((animal) =>
+              animal.classe!.contains(_formController.classController.text))
+          .toList();
     }
     if (_formController.orderController.text.isNotEmpty) {
-      filteredAnimals = filteredAnimals.where((animal) => animal.order!.contains(_formController.orderController.text)).toList();
+      filteredAnimals = filteredAnimals
+          .where((animal) =>
+              animal.order!.contains(_formController.orderController.text))
+          .toList();
     }
     if (_formController.familyController.text.isNotEmpty) {
-      filteredAnimals = filteredAnimals.where((animal) => animal.family!.contains(_formController.familyController.text)).toList();
+      filteredAnimals = filteredAnimals
+          .where((animal) =>
+              animal.family!.contains(_formController.familyController.text))
+          .toList();
     }
     if (_formController.genuController.text.isNotEmpty) {
-      filteredAnimals = filteredAnimals.where((animal) => animal.genus!.contains(_formController.genuController.text)).toList();
+      filteredAnimals = filteredAnimals
+          .where((animal) =>
+              animal.genus!.contains(_formController.genuController.text))
+          .toList();
     }
 
     return filteredAnimals;
@@ -163,66 +178,114 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
     List<AnimalResponse> filteredAnimals = _filterAnimals();
 
     setState(() {
-      _filteredClasses = filteredAnimals.map((animal) => animal.classe!).toSet().toList();
-      _filteredSpecies = filteredAnimals.map((animal) => animal.scientificName!).toSet().toList();
-      _filteredOrders = filteredAnimals.map((animal) => animal.order!).toSet().toList();
-      _filteredFamilies = filteredAnimals.map((animal) => animal.family!).toSet().toList();
-      _filteredGenus = filteredAnimals.map((animal) => animal.genus!).toSet().toList();
-      
+      _filteredClasses =
+          filteredAnimals.map((animal) => animal.classe!).toSet().toList();
+      _filteredSpecies = filteredAnimals
+          .map((animal) => animal.scientificName!)
+          .toSet()
+          .toList();
+      _filteredOrders =
+          filteredAnimals.map((animal) => animal.order!).toSet().toList();
+      _filteredFamilies =
+          filteredAnimals.map((animal) => animal.family!).toSet().toList();
+      _filteredGenus =
+          filteredAnimals.map((animal) => animal.genus!).toSet().toList();
+
       if (_speciesFocusNode.hasFocus) {
         _filteredSpecies = _allAnimals
-            .where((animal) => !(_formController.classController.text.isNotEmpty && animal.classe?.toLowerCase() != _formController.classController.text.toLowerCase()) &&
-                                !(_formController.orderController.text.isNotEmpty && animal.order?.toLowerCase() != _formController.orderController.text.toLowerCase()) &&
-                                !(_formController.familyController.text.isNotEmpty && animal.family?.toLowerCase() != _formController.familyController.text.toLowerCase()) &&
-                                !(_formController.genuController.text.isNotEmpty && animal.genus?.toLowerCase() != _formController.genuController.text.toLowerCase())
-              )
-              .map((animal) => animal.scientificName!)
-              .toSet()
-              .toList();
-        } else if (_genusFocusNode.hasFocus) {
+            .where((animal) =>
+                !(_formController.classController.text.isNotEmpty &&
+                    animal.classe?.toLowerCase() !=
+                        _formController.classController.text.toLowerCase()) &&
+                !(_formController.orderController.text.isNotEmpty &&
+                    animal.order?.toLowerCase() !=
+                        _formController.orderController.text.toLowerCase()) &&
+                !(_formController.familyController.text.isNotEmpty &&
+                    animal.family?.toLowerCase() !=
+                        _formController.familyController.text.toLowerCase()) &&
+                !(_formController.genuController.text.isNotEmpty &&
+                    animal.genus?.toLowerCase() !=
+                        _formController.genuController.text.toLowerCase()))
+            .map((animal) => animal.scientificName!)
+            .toSet()
+            .toList();
+      } else if (_genusFocusNode.hasFocus) {
         _filteredGenus = _allAnimals
-            .where((animal) => !(_formController.classController.text.isNotEmpty && animal.classe?.toLowerCase() != _formController.classController.text.toLowerCase()) &&
-                                !(_formController.orderController.text.isNotEmpty && animal.order?.toLowerCase() != _formController.orderController.text.toLowerCase()) &&
-                                !(_formController.familyController.text.isNotEmpty && animal.family?.toLowerCase() != _formController.familyController.text.toLowerCase()) &&
-                                !(_formController.speciesController.text.isNotEmpty && animal.scientificName?.toLowerCase() != _formController.speciesController.text.toLowerCase())
-              )
+            .where((animal) =>
+                !(_formController.classController.text.isNotEmpty &&
+                    animal.classe?.toLowerCase() !=
+                        _formController.classController.text.toLowerCase()) &&
+                !(_formController.orderController.text.isNotEmpty &&
+                    animal.order?.toLowerCase() !=
+                        _formController.orderController.text.toLowerCase()) &&
+                !(_formController.familyController.text.isNotEmpty &&
+                    animal.family?.toLowerCase() !=
+                        _formController.familyController.text.toLowerCase()) &&
+                !(_formController.speciesController.text.isNotEmpty &&
+                    animal.scientificName?.toLowerCase() !=
+                        _formController.speciesController.text.toLowerCase()))
             .map((animal) => animal.genus!)
             .toSet()
             .toList();
       } else if (_familyFocusNode.hasFocus) {
-          _filteredFamilies = _allAnimals
-            .where((animal) => !(_formController.classController.text.isNotEmpty && animal.classe?.toLowerCase() != _formController.classController.text.toLowerCase()) &&
-                                !(_formController.orderController.text.isNotEmpty && animal.order?.toLowerCase() != _formController.orderController.text.toLowerCase()) &&
-                                !(_formController.genuController.text.isNotEmpty && animal.genus?.toLowerCase() != _formController.genuController.text.toLowerCase()) &&
-                                !(_formController.speciesController.text.isNotEmpty && animal.scientificName?.toLowerCase() != _formController.speciesController.text.toLowerCase())
-              )
+        _filteredFamilies = _allAnimals
+            .where((animal) =>
+                !(_formController.classController.text.isNotEmpty &&
+                    animal.classe?.toLowerCase() !=
+                        _formController.classController.text.toLowerCase()) &&
+                !(_formController.orderController.text.isNotEmpty &&
+                    animal.order?.toLowerCase() !=
+                        _formController.orderController.text.toLowerCase()) &&
+                !(_formController.genuController.text.isNotEmpty &&
+                    animal.genus?.toLowerCase() !=
+                        _formController.genuController.text.toLowerCase()) &&
+                !(_formController.speciesController.text.isNotEmpty &&
+                    animal.scientificName?.toLowerCase() !=
+                        _formController.speciesController.text.toLowerCase()))
             .map((animal) => animal.family!)
             .toSet()
             .toList();
       } else if (_orderFocusNode.hasFocus) {
-          _filteredOrders = _allAnimals
-            .where((animal) => !(_formController.classController.text.isNotEmpty && animal.classe?.toLowerCase() != _formController.classController.text.toLowerCase()) &&
-                                !(_formController.familyController.text.isNotEmpty && animal.family?.toLowerCase() != _formController.familyController.text.toLowerCase()) &&
-                                !(_formController.genuController.text.isNotEmpty && animal.genus?.toLowerCase() != _formController.genuController.text.toLowerCase()) &&
-                                !(_formController.speciesController.text.isNotEmpty && animal.scientificName?.toLowerCase() != _formController.speciesController.text.toLowerCase())
-              )
+        _filteredOrders = _allAnimals
+            .where((animal) =>
+                !(_formController.classController.text.isNotEmpty &&
+                    animal.classe?.toLowerCase() !=
+                        _formController.classController.text.toLowerCase()) &&
+                !(_formController.familyController.text.isNotEmpty &&
+                    animal.family?.toLowerCase() !=
+                        _formController.familyController.text.toLowerCase()) &&
+                !(_formController.genuController.text.isNotEmpty &&
+                    animal.genus?.toLowerCase() !=
+                        _formController.genuController.text.toLowerCase()) &&
+                !(_formController.speciesController.text.isNotEmpty &&
+                    animal.scientificName?.toLowerCase() !=
+                        _formController.speciesController.text.toLowerCase()))
             .map((animal) => animal.order!)
             .toSet()
             .toList();
-        } else if (_classFocusNode.hasFocus) {
-          _filteredClasses = _allAnimals
-            .where((animal) => !(_formController.orderController.text.isNotEmpty && animal.order?.toLowerCase() != _formController.orderController.text.toLowerCase()) &&
-                                !(_formController.familyController.text.isNotEmpty && animal.family?.toLowerCase() != _formController.familyController.text.toLowerCase()) &&
-                                !(_formController.genuController.text.isNotEmpty && animal.genus?.toLowerCase() != _formController.genuController.text.toLowerCase()) &&
-                                !(_formController.speciesController.text.isNotEmpty && animal.scientificName?.toLowerCase() != _formController.speciesController.text.toLowerCase())
-              )
+      } else if (_classFocusNode.hasFocus) {
+        _filteredClasses = _allAnimals
+            .where((animal) =>
+                !(_formController.orderController.text.isNotEmpty &&
+                    animal.order?.toLowerCase() !=
+                        _formController.orderController.text.toLowerCase()) &&
+                !(_formController.familyController.text.isNotEmpty &&
+                    animal.family?.toLowerCase() !=
+                        _formController.familyController.text.toLowerCase()) &&
+                !(_formController.genuController.text.isNotEmpty &&
+                    animal.genus?.toLowerCase() !=
+                        _formController.genuController.text.toLowerCase()) &&
+                !(_formController.speciesController.text.isNotEmpty &&
+                    animal.scientificName?.toLowerCase() !=
+                        _formController.speciesController.text.toLowerCase()))
             .map((animal) => animal.classe!)
             .toSet()
             .toList();
-        }
+      }
       if (_formController.speciesController.text.isNotEmpty) {
         AnimalResponse? selectedAnimal = _allAnimals.firstWhereOrNull(
-          (animal) => animal.scientificName == _formController.speciesController.text,
+          (animal) =>
+              animal.scientificName == _formController.speciesController.text,
         );
         if (selectedAnimal != null) {
           _formController.classController.text = selectedAnimal.classe ?? '';
@@ -285,14 +348,13 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
 
   @override
   void dispose() {
-    if(mounted){
-
-    _formController.dispose();
-    _speciesFocusNode.dispose();
-    _classFocusNode.dispose();
-    _orderFocusNode.dispose();
-    _familyFocusNode.dispose();
-    _genusFocusNode.dispose();
+    if (mounted) {
+      _formController.dispose();
+      _speciesFocusNode.dispose();
+      _classFocusNode.dispose();
+      _orderFocusNode.dispose();
+      _familyFocusNode.dispose();
+      _genusFocusNode.dispose();
     }
     super.dispose();
   }
@@ -339,16 +401,23 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
       await _formController.sendRegister(context, RegisterType.technical);
     }
   }
-  
+
   List<String> _getCities() {
-    return guaritas.where((element) => element.city != null).map((guarita) => guarita.city!).toSet().toList();
+    return guaritas
+        .where((element) => element.city != null)
+        .map((guarita) => guarita.city!)
+        .toSet()
+        .toList();
   }
 
   List<GuaritaData> _getFilteredGuaritas() {
     if (_formController.cityController.text.isEmpty) {
       return guaritas;
     } else {
-      return guaritas.where((guarita) => guarita.city == _formController.cityController.text).toList();
+      return guaritas
+          .where(
+              (guarita) => guarita.city == _formController.cityController.text)
+          .toList();
     }
   }
 
@@ -369,29 +438,25 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
                   },
                 ),
                 Positioned(
-                  top: 82,
-                  child: ImageSelector(
-                    width: 50,
-                    height: 50, 
-                    onImageSelected: (image) {
-                      setState(() {
-                        _formController.setImage2(image);
-                      });
-                    },                  
-                  )
-                ),
+                    top: 82,
+                    child: ImageSelector(
+                      width: 50,
+                      height: 50,
+                      onImageSelected: (image) {
+                        setState(() {
+                          _formController.setImage2(image);
+                        });
+                      },
+                    )),
               ],
             ),
             Visibility(
-              visible: _formController.imageError != null,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 8.0),
-                child: Text(
-                  _formController.imageError ?? "",
-                  style: const TextStyle(color: Colors.red)
-                ),
-              )
-            ),
+                visible: _formController.imageError != null,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: Text(_formController.imageError ?? "",
+                      style: const TextStyle(color: Colors.red)),
+                )),
             GestureDetector(
               onTap: () {
                 _showImageObservationBottomSheet();
@@ -433,194 +498,198 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
             const SizedBox(height: 5),
             Visibility(
               visible: isNotOnLocal,
-              child: Column(
-                children: [
-                  Column(
-                    children: [
-                      GestureDetector(
-                        onTap: () async {
-                          DateTime? pickedDate = await showDatePicker(
-                            context: context,
-                            initialDate: DateTime.now(),
-                            firstDate: DateTime(2000),
-                            lastDate: DateTime.now(),
-                          );
-                          if (pickedDate != null) {
-                            setState(() {
-                              _formController.dateOriginal = pickedDate;
-                              _formController.dateController.text =
+              child: Column(children: [
+                Column(
+                  children: [
+                    GestureDetector(
+                      onTap: () async {
+                        DateTime? pickedDate = await showDatePicker(
+                          context: context,
+                          initialDate: DateTime.now(),
+                          firstDate: DateTime(2000),
+                          lastDate: DateTime.now(),
+                        );
+                        if (pickedDate != null) {
+                          setState(() {
+                            _formController.dateOriginal = pickedDate;
+                            _formController.dateController.text =
                                 "${pickedDate.day.toString().padLeft(2, '0')}/${pickedDate.month.toString().padLeft(2, '0')}/${pickedDate.year}";
-                              _formController.dateError = null;
-                            });
-                          }
-                        },
-                        child: AbsorbPointer(
-                          child: Stack(
-                            alignment: Alignment.centerRight,
-                            children: [
-                              InputField(
-                                text: "Data do avistamento",
-                                controller: _formController.dateController,
-                                validator: (value) => _formController.dateError,
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(right: 12.0),
-                                child: Icon(Icons.calendar_today, size: 20, color: Colors.grey),
-                              ),
-                            ],
-                          ),
+                            _formController.dateError = null;
+                          });
+                        }
+                      },
+                      child: AbsorbPointer(
+                        child: Stack(
+                          alignment: Alignment.centerRight,
+                          children: [
+                            InputField(
+                              text: "Data do avistamento",
+                              controller: _formController.dateController,
+                              validator: (value) => _formController.dateError,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(right: 12.0),
+                              child: Icon(Icons.calendar_today,
+                                  size: 20, color: Colors.grey),
+                            ),
+                          ],
                         ),
                       ),
-                      const SizedBox(height: 20),
-                    ],
-                  ),
-                  Visibility(
+                    ),
+                    const SizedBox(height: 20),
+                  ],
+                ),
+                Visibility(
                     visible: _formController.locationSwitchError != null,
-                    child:
-                      Padding(
-                        padding: const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 15.0),
-                        child: Text(
-                          _formController.locationSwitchError ?? "", 
-                          style: const TextStyle(color: Colors.red)
-                        ),
-                      )
-                  ),
-                  InputField(
-                    text: "Ponto de Referencia",
-                    controller: _formController.referencePointController,
-                    validator: (value) => _formController.referencePointError,
-                    onChanged: (value) {
-                      setState(() {
-                        _formController.referencePointError = null;
-                        _formController.locationSwitchError = null;
-                      });
-                    },
-                    maxLength: 50,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: DropdownButtonFormField<String>(
-                          menuMaxHeight: 400,
-                          decoration: InputDecoration(
-                            filled: true,
-                            fillColor: const Color(0xF6F6F6F6),
-                            labelText: "Município",
-                            labelStyle: Theme.of(context).textTheme.labelLarge,
-                            enabledBorder: const OutlineInputBorder(
-                              borderRadius: BorderRadius.all(Radius.circular(10)),
-                              borderSide: BorderSide(
-                                color: Colors.grey,
-                                width: 1.0,
-                                style: BorderStyle.solid,
-                              ),
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                          left: 8.0, right: 8.0, bottom: 15.0),
+                      child: Text(_formController.locationSwitchError ?? "",
+                          style: const TextStyle(color: Colors.red)),
+                    )),
+                InputField(
+                  text: "Ponto de Referencia",
+                  controller: _formController.referencePointController,
+                  validator: (value) => _formController.referencePointError,
+                  onChanged: (value) {
+                    setState(() {
+                      _formController.referencePointError = null;
+                      _formController.locationSwitchError = null;
+                    });
+                  },
+                  maxLength: 50,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: DropdownButtonFormField<String>(
+                        menuMaxHeight: 400,
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: const Color(0xF6F6F6F6),
+                          labelText: "Município",
+                          labelStyle: Theme.of(context).textTheme.labelLarge,
+                          enabledBorder: const OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                            borderSide: BorderSide(
+                              color: Colors.grey,
+                              width: 1.0,
+                              style: BorderStyle.solid,
                             ),
-                            focusedBorder: const OutlineInputBorder(
-                              borderSide: BorderSide(
-                                color: Colors.lightBlue,
-                                width: 1.0,
-                              ),
-                              borderRadius: BorderRadius.all(Radius.circular(10)),
-                            ),
-                            floatingLabelStyle: const TextStyle(
-                                color: Colors.grey, fontSize: 17),
-                            contentPadding: const EdgeInsets.symmetric(
-                                vertical: 16.0, horizontal: 10.0),
                           ),
-                          value: _formController.cityController.text.isEmpty
-                              ? null
-                              : _formController.cityController.text,
-                          items: _getCities().map((String city) {
-                            return DropdownMenuItem<String>(
-                              value: city,
-                              child: Text(
-                                city,
-                                style: const TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.normal),
-                              ),
-                            );
-                          }).toList(),
-                          onChanged: (String? newValue) {
-                            setState(() {
-                              _formController.cityController.text = newValue ?? '';
-                              _formController.beachSpotController.text = '';
-                              _formController.beachSpotError = null;
-                              _formController.cityError = null;
-                              _formController.locationSwitchError = null;
-                            });
-                          },
-                          validator: (value) => _formController.cityError,
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      SizedBox(
-                        width: 125,
-                        child: DropdownButtonFormField<String>(
-                          menuMaxHeight: 400,
-                          decoration: InputDecoration(
-                            filled: true,
-                            fillColor: const Color(0xF6F6F6F6),
-                            labelText: "Nº Guarita",
-                            labelStyle: Theme.of(context).textTheme.labelLarge,
-                            enabledBorder: const OutlineInputBorder(
-                              borderRadius: BorderRadius.all(Radius.circular(10)),
-                              borderSide: BorderSide(
-                                color: Colors.grey,
-                                width: 1.0,
-                                style: BorderStyle.solid,
-                              ),
+                          focusedBorder: const OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Colors.lightBlue,
+                              width: 1.0,
                             ),
-                            focusedBorder: const OutlineInputBorder(
-                              borderSide: BorderSide(
-                                color: Colors.lightBlue,
-                                width: 1.0,
-                              ),
-                              borderRadius: BorderRadius.all(Radius.circular(10)),
-                            ),
-                            floatingLabelStyle: const TextStyle(
-                                color: Colors.grey, fontSize: 17),
-                            contentPadding: const EdgeInsets.symmetric(
-                                vertical: 16.0, horizontal: 10.0),
+                            borderRadius: BorderRadius.all(Radius.circular(10)),
                           ),
-                          value: _formController.beachSpotController.text.isEmpty
-                              ? null
-                              : _formController.beachSpotController.text,
-                          items: _getFilteredGuaritas()
-                              .map((GuaritaData guarita) {
-                            return DropdownMenuItem<String>(
-                              value: guarita.number,
-                              child: Text(
-                                guarita.number,
-                                style: const TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.normal),
-                              ),
-                            );
-                          }).toList(),
-                          onChanged: (String? newValue) {
-                            setState(() {
-                              _formController.beachSpotController.text = newValue ?? '';
-                              _formController.currentGuarita = _getFilteredGuaritas().firstWhere((element) => element.number == newValue);
-                              if (_formController.cityController.text.isEmpty && _formController.currentGuarita != null && _formController.currentGuarita!.city != null) {
-                                _formController.cityController.text = _formController.currentGuarita!.city!;
-                              }
-                              _formController.beachSpotError = null;
-                              _formController.cityError = null;
-                              _formController.locationSwitchError = null;
-                            });
-                          },
-                          validator: (value) => _formController.beachSpotError,
+                          floatingLabelStyle:
+                              const TextStyle(color: Colors.grey, fontSize: 17),
+                          contentPadding: const EdgeInsets.symmetric(
+                              vertical: 16.0, horizontal: 10.0),
                         ),
+                        value: _formController.cityController.text.isEmpty
+                            ? null
+                            : _formController.cityController.text,
+                        items: _getCities().map((String city) {
+                          return DropdownMenuItem<String>(
+                            value: city,
+                            child: Text(
+                              city,
+                              style: const TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.normal),
+                            ),
+                          );
+                        }).toList(),
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            _formController.cityController.text =
+                                newValue ?? '';
+                            _formController.beachSpotController.text = '';
+                            _formController.beachSpotError = null;
+                            _formController.cityError = null;
+                            _formController.locationSwitchError = null;
+                          });
+                        },
+                        validator: (value) => _formController.cityError,
                       ),
-                      SizedBox(width: 10),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 16.0),
-                        child: InkWell(
+                    ),
+                    const SizedBox(width: 10),
+                    SizedBox(
+                      width: 125,
+                      child: DropdownButtonFormField<String>(
+                        menuMaxHeight: 400,
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: const Color(0xF6F6F6F6),
+                          labelText: "Nº Guarita",
+                          labelStyle: Theme.of(context).textTheme.labelLarge,
+                          enabledBorder: const OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                            borderSide: BorderSide(
+                              color: Colors.grey,
+                              width: 1.0,
+                              style: BorderStyle.solid,
+                            ),
+                          ),
+                          focusedBorder: const OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Colors.lightBlue,
+                              width: 1.0,
+                            ),
+                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                          ),
+                          floatingLabelStyle:
+                              const TextStyle(color: Colors.grey, fontSize: 17),
+                          contentPadding: const EdgeInsets.symmetric(
+                              vertical: 16.0, horizontal: 10.0),
+                        ),
+                        value: _formController.beachSpotController.text.isEmpty
+                            ? null
+                            : _formController.beachSpotController.text,
+                        items:
+                            _getFilteredGuaritas().map((GuaritaData guarita) {
+                          return DropdownMenuItem<String>(
+                            value: guarita.number,
+                            child: Text(
+                              guarita.number,
+                              style: const TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.normal),
+                            ),
+                          );
+                        }).toList(),
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            _formController.beachSpotController.text =
+                                newValue ?? '';
+                            _formController.currentGuarita =
+                                _getFilteredGuaritas().firstWhere(
+                                    (element) => element.number == newValue);
+                            if (_formController.cityController.text.isEmpty &&
+                                _formController.currentGuarita != null &&
+                                _formController.currentGuarita!.city != null) {
+                              _formController.cityController.text =
+                                  _formController.currentGuarita!.city!;
+                            }
+                            _formController.beachSpotError = null;
+                            _formController.cityError = null;
+                            _formController.locationSwitchError = null;
+                          });
+                        },
+                        validator: (value) => _formController.beachSpotError,
+                      ),
+                    ),
+                    SizedBox(width: 10),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 16.0),
+                      child: InkWell(
                           onTap: () {
                             setState(() {
                               _formController.beachSpotController.text = '';
@@ -629,14 +698,14 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
                             });
                           },
                           borderRadius: BorderRadius.circular(10),
-                          child: 
-                            PhosphorIcon(PhosphorIcons.trash(PhosphorIconsStyle.regular), size: 24, color: Colors.grey)
-                        ),
-                      ),
-                    ],
-                  ),
-                ]
-              ),
+                          child: PhosphorIcon(
+                              PhosphorIcons.trash(PhosphorIconsStyle.regular),
+                              size: 24,
+                              color: Colors.grey)),
+                    ),
+                  ],
+                ),
+              ]),
             ),
             Padding(
               padding: const EdgeInsets.only(left: 8),
@@ -655,21 +724,22 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
                   GestureDetector(
                     onTap: () async {
                       TimeOfDay? pickedTime = await showTimePicker(
-                      context: context,
-                      initialTime: TimeOfDay.now(),
+                        context: context,
+                        initialTime: TimeOfDay.now(),
                       );
                       if (pickedTime != null) {
                         setState(() {
-                          _formController.hourController.text = pickedTime.format(context);
+                          _formController.hourController.text =
+                              pickedTime.format(context);
                           _formController.hourError = null;
                         });
                       }
                     },
                     child: AbsorbPointer(
                       child: InputField(
-                      text: "Horário aproximado",
-                      controller: _formController.hourController,
-                      validator: (value) => _formController.hourError,
+                        text: "Horário aproximado",
+                        controller: _formController.hourController,
+                        validator: (value) => _formController.hourError,
                       ),
                     ),
                   ),
@@ -686,7 +756,7 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
                   setState(() {
                     _formController.obsError = null;
                   });
-                },                
+                },
                 maxLength: 600,
                 maxLines: 10,
               ),
@@ -703,7 +773,7 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
               },
               items: _filteredClasses,
               focusNode: _classFocusNode,
-              onFocusUpdate: (){
+              onFocusUpdate: () {
                 _updateDropdownOptions();
               },
             ),
@@ -719,7 +789,7 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
               },
               items: _filteredOrders,
               focusNode: _orderFocusNode,
-              onFocusUpdate: (){
+              onFocusUpdate: () {
                 _updateDropdownOptions();
               },
             ),
@@ -735,7 +805,7 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
               },
               items: _filteredFamilies,
               focusNode: _familyFocusNode,
-              onFocusUpdate: (){
+              onFocusUpdate: () {
                 _updateDropdownOptions();
               },
             ),
@@ -751,7 +821,7 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
               },
               items: _filteredGenus,
               focusNode: _genusFocusNode,
-              onFocusUpdate: (){
+              onFocusUpdate: () {
                 _updateDropdownOptions();
               },
             ),
@@ -767,7 +837,7 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
               },
               items: _filteredSpecies,
               focusNode: _speciesFocusNode,
-              onFocusUpdate: (){
+              onFocusUpdate: () {
                 _updateDropdownOptions();
               },
             ),
@@ -776,9 +846,9 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
               width: double.infinity,
               height: 56,
               child: SendBtn(
-                  onSend: _submitForm,
-                  onValidate: _validateForm,
-                  text: "Enviar Registro",
+                onSend: _submitForm,
+                onValidate: _validateForm,
+                text: "Enviar Registro",
               ),
             ),
             const SizedBox(height: 26)
@@ -793,36 +863,38 @@ class _TechnicalRegisterFormState extends State<TechnicalRegisterForm> {
       context: context,
       builder: (context) {
         return const ModalHelpRegisterImageBottomSheet(
-          text: "Sugerimos o envio de 2 imagens, sendo uma com escala e outra sem. A escala, pode ser representada por objetos como chinelos, óculos ou até mesmo o pé. \n" + 
-          "Por favor, não utilize imagens com rostos de pessoas ou animais vivos.",
+          text: "Sugerimos o envio de 2 imagens, sendo uma com escala e outra sem. A escala, pode ser representada por objetos como chinelos, óculos ou até mesmo o pé. \n" +
+              "Por favor, não utilize imagens com rostos de pessoas ou animais vivos.",
           imagePath: "assets/images/exemplo_foto_escala.jpg",
           height: 900,
-          );
+        );
       },
     );
   }
 
-    void _showSwitchInfoBottomSheet() {
+  void _showSwitchInfoBottomSheet() {
     showModalBottomSheet(
       context: context,
       builder: (context) {
         return const ModalHelpRegisterImageBottomSheet(
-          text: "Marque esse campo se você presenciou o mar trazendo o animal para a faixa de areia.",
+          text:
+              "Marque esse campo se você presenciou o mar trazendo o animal para a faixa de areia.",
           height: 250,
-          );
+        );
       },
     );
   }
-  
+
   void _showSwitchLocalInfoBottomSheet() {
     showModalBottomSheet(
       context: context,
       builder: (context) {
         return const ModalHelpRegisterImageBottomSheet(
-            text: "Marque esse campo se você está enviando o registro após ter saído do local onde encontrou o animal.\n\n Aqui você pode informar um ponto de referencia o município ou o número da guarita. Quanto mais informação melhor! 😊",
+          text:
+              "Marque esse campo se você está enviando o registro após ter saído do local onde encontrou o animal.\n\n Aqui você pode informar um ponto de referencia o município ou o número da guarita. Quanto mais informação melhor! 😊",
           height: 350,
-          );
+        );
       },
     );
-  }   
+  }
 }

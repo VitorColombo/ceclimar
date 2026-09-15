@@ -4,7 +4,7 @@ import 'package:graphic/graphic.dart';
 // ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:tcc_ceclimar/utils/app_icons.dart';
 import 'package:pie_chart/pie_chart.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:tcc_ceclimar/controller/auth_user_controller.dart';
@@ -40,7 +40,8 @@ class RegisterPannelState extends State<RegisterPannel> {
   final TextEditingController speciesController = TextEditingController();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final AnimalService _animalService = AnimalService();
-  final RegisterPannelController _registerController = RegisterPannelController();
+  final RegisterPannelController _registerController =
+      RegisterPannelController();
   final AuthenticationController _userController = AuthenticationController();
   late Future<List<AnimalResponse>> animalData;
   late Map<String, double> dataMap = {};
@@ -71,7 +72,7 @@ class RegisterPannelState extends State<RegisterPannel> {
     super.initState();
     endDate = DateTime.now();
     _loadInitialData();
-    _loadUserRole(); 
+    _loadUserRole();
   }
 
   Future<void> _loadUserRole() async {
@@ -120,13 +121,27 @@ class RegisterPannelState extends State<RegisterPannel> {
       allRegisters = await _registerController.getAllRegisters();
       setState(() {
         registerData = allRegisters;
-        evaluatedRegisters = allRegisters.where((reg) => reg.status == "Validado").length;
-        pendingRegisters = allRegisters.where((reg) => reg.status == "Enviado").length;
+        evaluatedRegisters =
+            allRegisters.where((reg) => reg.status == "Validado").length;
+        pendingRegisters =
+            allRegisters.where((reg) => reg.status == "Enviado").length;
         displayRegisters = allRegisters;
-        birdsCounter = allRegisters.where((reg) => reg.animal.classe!.toLowerCase() == "aves" && reg.status == "Validado").length;
-        mammalsCounter = allRegisters.where((reg) => reg.animal.classe!.toLowerCase() == "mammalia" && reg.status == "Validado").length;
-        reptilesCounter = allRegisters.where((reg) => reg.animal.classe!.toLowerCase() == "reptilia" && reg.status == "Validado").length;
-        });
+        birdsCounter = allRegisters
+            .where((reg) =>
+                reg.animal.classe!.toLowerCase() == "aves" &&
+                reg.status == "Validado")
+            .length;
+        mammalsCounter = allRegisters
+            .where((reg) =>
+                reg.animal.classe!.toLowerCase() == "mammalia" &&
+                reg.status == "Validado")
+            .length;
+        reptilesCounter = allRegisters
+            .where((reg) =>
+                reg.animal.classe!.toLowerCase() == "reptilia" &&
+                reg.status == "Validado")
+            .length;
+      });
     } finally {
       setState(() {
         isLoading = false;
@@ -182,18 +197,18 @@ class RegisterPannelState extends State<RegisterPannel> {
           SliverList(
             delegate: SliverChildListDelegate([
               Padding(
-                padding: const EdgeInsets.only(top: 10.0, left: 10, right: 10, bottom: 20.0),
+                padding: const EdgeInsets.only(
+                    top: 10.0, left: 10, right: 10, bottom: 20.0),
                 child: Column(
                   children: [
                     Skeletonizer(
                       enabled: isLoading,
                       child: Text("$totalRegisters",
-                        style: TextStyle(
-                          fontSize: 40,
-                          fontWeight: FontWeight.bold,
-                          color: const Color.fromRGBO(71, 169, 218, 1),
-                        )
-                      ),
+                          style: TextStyle(
+                            fontSize: 40,
+                            fontWeight: FontWeight.bold,
+                            color: const Color.fromRGBO(71, 169, 218, 1),
+                          )),
                     ),
                     Text(
                       style: TextStyle(
@@ -203,94 +218,93 @@ class RegisterPannelState extends State<RegisterPannel> {
                       ),
                       "Registros Cadastrados",
                     ),
-                    Divider(height: 40, thickness: 1.2, color: Colors.grey[200]),
+                    Divider(
+                        height: 40, thickness: 1.2, color: Colors.grey[200]),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         InkWell(
+                            onTap: () {
+                              Navigator.pushNamed(
+                                  context, EvaluatedRegisters.routeName);
+                            },
+                            splashColor: Color.fromRGBO(33, 150, 243, 0.2),
+                            highlightColor: Color.fromRGBO(33, 150, 243, 0.2),
+                            borderRadius: BorderRadius.circular(8.0),
+                            child: Column(
+                              children: [
+                                Skeletonizer(
+                                  enabled: isLoading,
+                                  child: Text("$evaluatedRegisters",
+                                      style: TextStyle(
+                                        fontSize: 30,
+                                        fontWeight: FontWeight.bold,
+                                        color: const Color.fromRGBO(
+                                            71, 169, 218, 1),
+                                      )),
+                                ),
+                                Row(children: [
+                                  Text(
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                      color:
+                                          const Color.fromRGBO(71, 169, 218, 1),
+                                    ),
+                                    "Registros avaliados",
+                                  ),
+                                  PhosphorIcon(
+                                    PhosphorIcons.arrowSquareIn(),
+                                    color:
+                                        const Color.fromRGBO(71, 169, 218, 1),
+                                    size: 18,
+                                  ),
+                                ]),
+                              ],
+                            )),
+                        InkWell(
                           onTap: () {
-                            Navigator.pushNamed(context, EvaluatedRegisters.routeName);
+                            Navigator.pushNamed(
+                                context, PendingRegistersView.routeName);
                           },
                           splashColor: Color.fromRGBO(33, 150, 243, 0.2),
                           highlightColor: Color.fromRGBO(33, 150, 243, 0.2),
                           borderRadius: BorderRadius.circular(8.0),
                           child: Column(
-                          children: [
-                            Skeletonizer(
-                            enabled: isLoading,
-                            child: Text("$evaluatedRegisters",
-                              style: TextStyle(
-                                fontSize: 30,
-                                fontWeight: FontWeight.bold,
-                                color:
-                                  const Color.fromRGBO(71, 169, 218, 1),
-                              )),
-                            ),
-                            Row(
-                              children:[
+                            children: [
+                              Skeletonizer(
+                                enabled: isLoading,
+                                child: Text("$pendingRegisters",
+                                    style: TextStyle(
+                                      fontSize: 30,
+                                      fontWeight: FontWeight.bold,
+                                      color:
+                                          const Color.fromRGBO(71, 169, 218, 1),
+                                    )),
+                              ),
+                              Row(children: [
                                 Text(
                                   style: TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.bold,
-                                    color: const Color.fromRGBO(71, 169, 218, 1),
+                                    color:
+                                        const Color.fromRGBO(71, 169, 218, 1),
                                   ),
-                                  "Registros avaliados",
+                                  "Registros pendentes",
                                 ),
                                 PhosphorIcon(
                                   PhosphorIcons.arrowSquareIn(),
                                   color: const Color.fromRGBO(71, 169, 218, 1),
                                   size: 18,
                                 ),
-                              ]
-                            ),
-                          ],
-                          )
-                        ),
-                        InkWell(
-                          onTap: () {
-                            Navigator.pushNamed(context, PendingRegistersView.routeName);
-                          },
-                          splashColor:  Color.fromRGBO(33, 150, 243, 0.2),
-                          highlightColor:  Color.fromRGBO(33, 150, 243, 0.2),
-                          borderRadius: BorderRadius.circular(8.0),
-                            child: Column(
-                            children: [
-                              Skeletonizer(
-                                enabled: isLoading,
-                                child: Text(
-                                  "$pendingRegisters",
-                                  style: TextStyle(
-                                    fontSize: 30,
-                                    fontWeight: FontWeight.bold,
-                                    color:
-                                        const Color.fromRGBO(71, 169, 218, 1),
-                                  )
-                                ),
-                              ),
-                              Row(
-                                children:[
-                                  Text(
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold,
-                                      color: const Color.fromRGBO(71, 169, 218, 1),
-                                    ),
-                                    "Registros pendentes",
-                                  ),
-                                  PhosphorIcon(
-                                    PhosphorIcons.arrowSquareIn(),
-                                    color: const Color.fromRGBO(71, 169, 218, 1),
-                                    size: 18,
-                                  ),
-                                ]
-                              ),
+                              ]),
                             ],
-                            
                           ),
                         )
                       ],
                     ),
-                    Divider(height: 40, thickness: 1.2, color: Colors.grey[200]),
+                    Divider(
+                        height: 40, thickness: 1.2, color: Colors.grey[200]),
                     Text(
                       style: TextStyle(
                         fontSize: 20,
@@ -303,65 +317,73 @@ class RegisterPannelState extends State<RegisterPannel> {
                     Padding(
                       padding: const EdgeInsets.only(left: 20.0, right: 20.0),
                       child: SizedBox(
-                        height: 300,
-                        width: double.infinity,
-                        child: FlutterMap(
-                                options: MapOptions(
-                                  initialCenter: initialCenter,
-                                  initialZoom: 13.0,
-                                ),
-                                children: [
-                                  TileLayer(
-                                    urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                                    userAgentPackageName: 'com.example.tcc_ceclimar',
-                                  ),
-                                  MarkerLayer(
-                                    markers: _getRegistersForMap().map((register) {
-                                      return Marker(
-                                        width: 80.0,
-                                        height: 80.0,
-                                        point: LatLng(
-                                          double.parse(register.latitude),
-                                          double.parse(register.longitude),
-                                        ),
-                                        child: GestureDetector(
-                                          onTap: () {
-                                            showModalBottomSheet(
-                                              context: context,
-                                              builder: (BuildContext context) {
-                                                return RegisterModalBottomSheet(
-                                                      text: 'Status: ${register.status}',
-                                                      imageUrl: register.registerImageUrl,
-                                                      animalSpecies: register.animal.species!,
-                                                      date: register.date.toString(), 
-                                                      userName: register.authorName,
-                                                      buttons: [
-                                                        SendBtn(
-                                                          text: 'Fechar',
-                                                          onSend: Navigator.of(context).pop,
-                                                          onValidate: () {
-                                                            return true;
-                                                          } 
-                                                        ),
-                                                      ],
-                                                );
-                                              },
+                          height: 300,
+                          width: double.infinity,
+                          child: FlutterMap(
+                            options: MapOptions(
+                              initialCenter: initialCenter,
+                              initialZoom: 13.0,
+                            ),
+                            children: [
+                              TileLayer(
+                                urlTemplate:
+                                    'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                                userAgentPackageName:
+                                    'com.example.tcc_ceclimar',
+                              ),
+                              MarkerLayer(
+                                markers: _getRegistersForMap().map((register) {
+                                  return Marker(
+                                    width: 80.0,
+                                    height: 80.0,
+                                    point: LatLng(
+                                      double.parse(register.latitude),
+                                      double.parse(register.longitude),
+                                    ),
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        showModalBottomSheet(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return RegisterModalBottomSheet(
+                                              text:
+                                                  'Status: ${register.status}',
+                                              imageUrl:
+                                                  register.registerImageUrl,
+                                              animalSpecies:
+                                                  register.animal.species!,
+                                              date: register.date.toString(),
+                                              userName: register.authorName,
+                                              buttons: [
+                                                SendBtn(
+                                                    text: 'Fechar',
+                                                    onSend:
+                                                        Navigator.of(context)
+                                                            .pop,
+                                                    onValidate: () {
+                                                      return true;
+                                                    }),
+                                              ],
                                             );
                                           },
-                                          child: Icon(
-                                            Icons.location_on,
-                                            color: register.status == "Validado" ? Colors.green : Colors.red,
-                                            size: 40.0,
-                                          ),
-                                        ),
-                                      );
-                                    }).toList(),
-                                  ),
-                                ],
-                              )
-                      ),
+                                        );
+                                      },
+                                      child: Icon(
+                                        Icons.location_on,
+                                        color: register.status == "Validado"
+                                            ? Colors.green
+                                            : Colors.red,
+                                        size: 40.0,
+                                      ),
+                                    ),
+                                  );
+                                }).toList(),
+                              ),
+                            ],
+                          )),
                     ),
-                    Divider(height: 40, thickness: 1.2, color: Colors.grey[200]),
+                    Divider(
+                        height: 40, thickness: 1.2, color: Colors.grey[200]),
                     Text(
                       style: TextStyle(
                         fontSize: 20,
@@ -373,7 +395,7 @@ class RegisterPannelState extends State<RegisterPannel> {
                     Container(
                       padding: const EdgeInsets.all(10),
                       width: 300,
-                        height: MediaQuery.of(context).size.height * 0.65,
+                      height: MediaQuery.of(context).size.height * 0.65,
                       child: FutureBuilder<List<AnimalResponse>>(
                         future: animalData,
                         builder: (context, snapshot) {
@@ -395,15 +417,18 @@ class RegisterPannelState extends State<RegisterPannel> {
                                         children: [
                                           PieChart(
                                             dataMap: dataMap,
-                                            animationDuration: const Duration(milliseconds: 800),
+                                            animationDuration: const Duration(
+                                                milliseconds: 800),
                                             chartLegendSpacing: 32,
                                             chartRadius: chartSize * 0.8,
-                                            chartValuesOptions: const ChartValuesOptions(
+                                            chartValuesOptions:
+                                                const ChartValuesOptions(
                                               decimalPlaces: 0,
                                               showChartValues: true,
                                             ),
                                             legendOptions: LegendOptions(
-                                              legendPosition: LegendPosition.bottom,
+                                              legendPosition:
+                                                  LegendPosition.bottom,
                                               legendTextStyle: const TextStyle(
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 14,
@@ -421,7 +446,8 @@ class RegisterPannelState extends State<RegisterPannel> {
                         },
                       ),
                     ),
-                    Divider(height: 40, thickness: 1.2, color: Colors.grey[200]),
+                    Divider(
+                        height: 40, thickness: 1.2, color: Colors.grey[200]),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -429,14 +455,14 @@ class RegisterPannelState extends State<RegisterPannel> {
                           child: Column(
                             children: [
                               Skeletonizer(
-                              enabled: isLoading,
-                              child: Text("$mammalsCounter",
-                                style: TextStyle(
-                                  fontSize: 30,
-                                  fontWeight: FontWeight.bold,
-                                  color:
-                                    const Color.fromRGBO(71, 169, 218, 1),
-                                )),
+                                enabled: isLoading,
+                                child: Text("$mammalsCounter",
+                                    style: TextStyle(
+                                      fontSize: 30,
+                                      fontWeight: FontWeight.bold,
+                                      color:
+                                          const Color.fromRGBO(71, 169, 218, 1),
+                                    )),
                               ),
                               Text(
                                 style: TextStyle(
@@ -454,14 +480,13 @@ class RegisterPannelState extends State<RegisterPannel> {
                             children: [
                               Skeletonizer(
                                 enabled: isLoading,
-                                child: Text(
-                                  "$birdsCounter",
-                                  style: TextStyle(
-                                    fontSize: 30,
-                                    fontWeight: FontWeight.bold,
-                                    color: const Color.fromRGBO(71, 169, 218, 1),
-                                  )
-                                ),
+                                child: Text("$birdsCounter",
+                                    style: TextStyle(
+                                      fontSize: 30,
+                                      fontWeight: FontWeight.bold,
+                                      color:
+                                          const Color.fromRGBO(71, 169, 218, 1),
+                                    )),
                               ),
                               Text(
                                 style: TextStyle(
@@ -471,7 +496,7 @@ class RegisterPannelState extends State<RegisterPannel> {
                                 ),
                                 "Aves",
                               ),
-                            ],                        
+                            ],
                           ),
                         ),
                         Expanded(
@@ -479,14 +504,13 @@ class RegisterPannelState extends State<RegisterPannel> {
                             children: [
                               Skeletonizer(
                                 enabled: isLoading,
-                                child: Text(
-                                  "$reptilesCounter",
-                                  style: TextStyle(
-                                    fontSize: 30,
-                                    fontWeight: FontWeight.bold,
-                                    color: const Color.fromRGBO(71, 169, 218, 1),
-                                  )
-                                ),
+                                child: Text("$reptilesCounter",
+                                    style: TextStyle(
+                                      fontSize: 30,
+                                      fontWeight: FontWeight.bold,
+                                      color:
+                                          const Color.fromRGBO(71, 169, 218, 1),
+                                    )),
                               ),
                               Text(
                                 style: TextStyle(
@@ -496,12 +520,13 @@ class RegisterPannelState extends State<RegisterPannel> {
                                 ),
                                 "Répteis",
                               ),
-                            ],                        
-                                                 ),
+                            ],
+                          ),
                         )
                       ],
                     ),
-                    Divider(height: 40, thickness: 1.2, color: Colors.grey[200]),
+                    Divider(
+                        height: 40, thickness: 1.2, color: Colors.grey[200]),
                     Text(
                       style: TextStyle(
                         fontSize: 20,
@@ -523,28 +548,30 @@ class RegisterPannelState extends State<RegisterPannel> {
                     ),
                     SizedBox(height: 10),
                     Visibility(
-                      visible: showSpeciesRegisters && speciesRegisters.isNotEmpty,
-                      child: SizedBox(
-                        height: MediaQuery.of(context).size.height - 500,
-                        child: Skeletonizer(
-                          enabled: isLoading,
-                          child: ListView.builder(
-                            padding: const EdgeInsets.only(top: 0, bottom: 10),
-                            physics: const AlwaysScrollableScrollPhysics(),
-                            shrinkWrap: true,
-                            itemCount: speciesRegisters.length,
-                            itemBuilder: (context, index) {
-                              return RegisterItem(
-                                register: speciesRegisters[index],
-                                route: RegisterDetailPage.routeName,
-                                isLoading: isLoading,
-                              );
-                            },
+                        visible:
+                            showSpeciesRegisters && speciesRegisters.isNotEmpty,
+                        child: SizedBox(
+                          height: MediaQuery.of(context).size.height - 500,
+                          child: Skeletonizer(
+                            enabled: isLoading,
+                            child: ListView.builder(
+                              padding:
+                                  const EdgeInsets.only(top: 0, bottom: 10),
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              shrinkWrap: true,
+                              itemCount: speciesRegisters.length,
+                              itemBuilder: (context, index) {
+                                return RegisterItem(
+                                  register: speciesRegisters[index],
+                                  route: RegisterDetailPage.routeName,
+                                  isLoading: isLoading,
+                                );
+                              },
+                            ),
                           ),
-                        ),
-                      )
-                    ),
-                    Divider(height: 40, thickness: 1.2, color: Colors.grey[200]),
+                        )),
+                    Divider(
+                        height: 40, thickness: 1.2, color: Colors.grey[200]),
                     Text(
                       style: TextStyle(
                         fontSize: 20,
@@ -563,7 +590,8 @@ class RegisterPannelState extends State<RegisterPannel> {
                             onTap: () => _selectDate(context, true),
                             child: IgnorePointer(
                               child: TextField(
-                                style: TextStyle(color: Colors.black, fontSize: 14),
+                                style: TextStyle(
+                                    color: Colors.black, fontSize: 14),
                                 controller: initDateController,
                                 decoration: InputDecoration(
                                   labelText: 'Data Inicial',
@@ -580,7 +608,8 @@ class RegisterPannelState extends State<RegisterPannel> {
                             onTap: () => _selectDate(context, false),
                             child: IgnorePointer(
                               child: TextField(
-                                style: TextStyle(color: Colors.black, fontSize: 14),
+                                style: TextStyle(
+                                    color: Colors.black, fontSize: 14),
                                 controller: endDateController,
                                 decoration: InputDecoration(
                                   labelText: 'Data Final',
@@ -601,16 +630,22 @@ class RegisterPannelState extends State<RegisterPannel> {
                         height: 300,
                         child: FutureBuilder<List<RegisterResponse>>(
                           future: (initDate != null && endDate != null)
-                              ? (_registerDataFuture ??
-                                  Future.value([]))
+                              ? (_registerDataFuture ?? Future.value([]))
                               : Future.value([]),
                           builder: (context, snapshot) {
-                            if (snapshot.connectionState == ConnectionState.waiting) {
-                              return const Center(child: CircularProgressIndicator());
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const Center(
+                                  child: CircularProgressIndicator());
                             } else if (snapshot.hasError) {
                               return Text('Error: ${snapshot.error}');
-                            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                              return Center(child: const Text('Sem dados disponíveis para o período selecionado', textAlign: TextAlign.center,));
+                            } else if (!snapshot.hasData ||
+                                snapshot.data!.isEmpty) {
+                              return Center(
+                                  child: const Text(
+                                'Sem dados disponíveis para o período selecionado',
+                                textAlign: TextAlign.center,
+                              ));
                             } else {
                               return Chart(
                                 data: _generateChartData(snapshot.data!),
@@ -619,7 +654,8 @@ class RegisterPannelState extends State<RegisterPannel> {
                                     accessor: (RegisterSeriesQuantity datum) =>
                                         datum.date,
                                     scale: TimeScale(
-                                      formatter: (time) => _monthDayFormat.format(time),
+                                      formatter: (time) =>
+                                          _monthDayFormat.format(time),
                                     ),
                                   ),
                                   'Registros': Variable(
@@ -629,7 +665,8 @@ class RegisterPannelState extends State<RegisterPannel> {
                                 },
                                 marks: [
                                   IntervalMark(
-                                    color: ColorEncode(value: Color(0xFF4c88ff)),
+                                    color:
+                                        ColorEncode(value: Color(0xFF4c88ff)),
                                   )
                                 ],
                                 coord: RectCoord(color: Colors.white),
@@ -653,58 +690,54 @@ class RegisterPannelState extends State<RegisterPannel> {
                                   offset: const Offset(-20, -20),
                                 ),
                                 crosshair: CrosshairGuide(
-                                  followPointer: [false, true]
-                                ),
+                                    followPointer: [false, true]),
                               );
                             }
                           },
                         ),
                       ),
                     ),
-                    Divider(height: 40, thickness: 1.2, color: Colors.grey[200]),
-                    Stack(
-                        alignment: Alignment.center,
-                        children: [
-                            SizedBox(
-                              width: 260,
-                              child: TextButton(
-                                style: TextButton.styleFrom(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  backgroundColor: const Color.fromRGBO(71, 169, 218, 1),
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 40,
-                                    vertical: 16,
-                                  ),
-                                  textStyle: const TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                    fontFamily: "Inter"
-                                  ),
-                                ),
-                                onPressed: () {
-                                showModalBottomSheet(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return TableManipulationBottomSheet(data: registerData, userRole: userRole);
-                                  },
-                                );
-                              },
-                              child: Text('Exportar dados', style: TextStyle(color: Colors.white)),
-                              ),
+                    Divider(
+                        height: 40, thickness: 1.2, color: Colors.grey[200]),
+                    Stack(alignment: Alignment.center, children: [
+                      SizedBox(
+                        width: 260,
+                        child: TextButton(
+                          style: TextButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
                             ),
-                          Positioned(
-                            top: 10,
-                            right: 10,
-                            child:
-                              Icon(
-                                PhosphorIcons.export(),
-                                size: 30, color: Colors.white
-                              ),
+                            backgroundColor:
+                                const Color.fromRGBO(71, 169, 218, 1),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 40,
+                              vertical: 16,
+                            ),
+                            textStyle: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: "Inter"),
                           ),
-                        ]
-                    ),
+                          onPressed: () {
+                            showModalBottomSheet(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return TableManipulationBottomSheet(
+                                    data: registerData, userRole: userRole);
+                              },
+                            );
+                          },
+                          child: Text('Exportar dados',
+                              style: TextStyle(color: Colors.white)),
+                        ),
+                      ),
+                      Positioned(
+                        top: 10,
+                        right: 10,
+                        child: Icon(PhosphorIcons.export(),
+                            size: 30, color: Colors.white),
+                      ),
+                    ]),
                   ],
                 ),
               )
@@ -721,7 +754,7 @@ class RegisterPannelState extends State<RegisterPannel> {
     }
 
     if (isDateRangeLoading) {
-        return _registerDataFuture ?? Future.value([]);
+      return _registerDataFuture ?? Future.value([]);
     }
 
     setState(() {
@@ -729,12 +762,14 @@ class RegisterPannelState extends State<RegisterPannel> {
       showSpeciesRegisters = false;
       speciesController.clear();
       speciesRegisters = [];
-
     });
     try {
-      DateTime initialDateTime = DateTime(initDate!.year, initDate!.month, initDate!.day, 0, 0, 0);
-      DateTime endDateTime = DateTime(endDate!.year, endDate!.month, endDate!.day, 23, 59, 59);
-      List<RegisterResponse> registers = await _registerController.getRegisterByDate(initialDateTime, endDateTime);
+      DateTime initialDateTime =
+          DateTime(initDate!.year, initDate!.month, initDate!.day, 0, 0, 0);
+      DateTime endDateTime =
+          DateTime(endDate!.year, endDate!.month, endDate!.day, 23, 59, 59);
+      List<RegisterResponse> registers = await _registerController
+          .getRegisterByDate(initialDateTime, endDateTime);
       displayRegisters = registers;
       return registers;
     } finally {
@@ -744,16 +779,14 @@ class RegisterPannelState extends State<RegisterPannel> {
     }
   }
 
-
   void _handleSpeciesSearch(String species) async {
-     setState(() {
-          initDate = null;
-          endDate = null;
-          initDateController.clear();
-          endDateController.clear();
-          _registerDataFuture = null;
+    setState(() {
+      initDate = null;
+      endDate = null;
+      initDateController.clear();
+      endDateController.clear();
+      _registerDataFuture = null;
     });
-
 
     setState(() {
       isLoading = true;
@@ -767,7 +800,8 @@ class RegisterPannelState extends State<RegisterPannel> {
         });
         return;
       }
-      List<RegisterResponse> registers = await _registerController.getRegisterBySpecies(species);
+      List<RegisterResponse> registers =
+          await _registerController.getRegisterBySpecies(species);
       setState(() {
         speciesRegisters = registers;
         displayRegisters = registers;
@@ -780,13 +814,17 @@ class RegisterPannelState extends State<RegisterPannel> {
     }
   }
 
-  List<RegisterSeriesQuantity> _generateChartData(List<RegisterResponse> registersData) {
+  List<RegisterSeriesQuantity> _generateChartData(
+      List<RegisterResponse> registersData) {
     Map<DateTime, int> registerCountsByDate = {};
     for (var register in registersData) {
-      DateTime dateOnly = DateTime(register.date.year, register.date.month, register.date.day);
-      registerCountsByDate[dateOnly] = (registerCountsByDate[dateOnly] ?? 0) + 1;
+      DateTime dateOnly =
+          DateTime(register.date.year, register.date.month, register.date.day);
+      registerCountsByDate[dateOnly] =
+          (registerCountsByDate[dateOnly] ?? 0) + 1;
     }
-    List<RegisterSeriesQuantity> chartData = registerCountsByDate.entries.map((entry) {
+    List<RegisterSeriesQuantity> chartData =
+        registerCountsByDate.entries.map((entry) {
       return RegisterSeriesQuantity(entry.key, entry.value);
     }).toList();
 
@@ -799,11 +837,13 @@ class RegisterPannelState extends State<RegisterPannel> {
     return chartData;
   }
 
-   Future<void> _selectDate(BuildContext context, bool isInitDate) async {
+  Future<void> _selectDate(BuildContext context, bool isInitDate) async {
     focusNode.unfocus();
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: isInitDate ? (initDate ?? DateTime.now()) : (endDate ?? DateTime.now()),
+      initialDate: isInitDate
+          ? (initDate ?? DateTime.now())
+          : (endDate ?? DateTime.now()),
       firstDate: DateTime(2015, 8),
       lastDate: DateTime.now(),
     );
@@ -817,7 +857,7 @@ class RegisterPannelState extends State<RegisterPannel> {
           endDateController.text = dateFormat.format(picked);
         }
         if (initDate != null && endDate != null) {
-           _registerDataFuture = _fetchChartData();
+          _registerDataFuture = _fetchChartData();
         }
       });
     }

@@ -1,7 +1,7 @@
 import 'package:badges/badges.dart' as badges;
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:tcc_ceclimar/utils/app_icons.dart';
 
 import 'package:tcc_ceclimar/controller/auth_user_controller.dart';
 import 'package:tcc_ceclimar/controller/my_registers_controller.dart';
@@ -103,17 +103,17 @@ class _BasePageState extends State<BasePage> {
   }
 
   List<Widget> get pages => [
-    HomePage(updateIndex: updateIndex),
-    MyRegisters(updateIndex: updateIndex),
-    MyProfile(updateIndex: updateIndex),
-    NewSimpleRegister(updateIndex: updateIndex),
-    LocalAnimals(updateIndex: updateIndex),
-    RegisterPannel(updateIndex: updateIndex),
-    PendingRegisters(updateIndex: updateIndex),
-    NewResearcherPage(updateIndex: updateIndex),
-    NewTechnicalRegister(updateIndex: updateIndex),
-    AboutUs(updateIndex: updateIndex),
-  ];
+        HomePage(updateIndex: updateIndex),
+        MyRegisters(updateIndex: updateIndex),
+        MyProfile(updateIndex: updateIndex),
+        NewSimpleRegister(updateIndex: updateIndex),
+        LocalAnimals(updateIndex: updateIndex),
+        RegisterPannel(updateIndex: updateIndex),
+        PendingRegisters(updateIndex: updateIndex),
+        NewResearcherPage(updateIndex: updateIndex),
+        NewTechnicalRegister(updateIndex: updateIndex),
+        AboutUs(updateIndex: updateIndex),
+      ];
 
   @override
   Widget build(BuildContext context) {
@@ -161,11 +161,10 @@ class _BasePageState extends State<BasePage> {
                       ),
               ),
               GestureDetector(
-                onTap: () {
-                  updateIndex(0);
-                },
-                child: label("Início", 0)
-              ),
+                  onTap: () {
+                    updateIndex(0);
+                  },
+                  child: label("Início", 0)),
             ],
           ),
           Column(
@@ -180,8 +179,7 @@ class _BasePageState extends State<BasePage> {
                   stream: _registerCountStream,
                   builder: (context, snapshot) {
                     int currentCount = snapshot.data ?? 0;
-                    bool hasNewRegister =
-                        currentCount > _lastSeenRegisterCount;
+                    bool hasNewRegister = currentCount > _lastSeenRegisterCount;
                     return selectedIndex == 1
                         ? badges.Badge(
                             showBadge: hasNewRegister,
@@ -208,9 +206,7 @@ class _BasePageState extends State<BasePage> {
                                 style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 12,
-                                    fontWeight: FontWeight.normal
-                                )
-                            ),
+                                    fontWeight: FontWeight.normal)),
                             badgeAnimation: badges.BadgeAnimation.rotation(
                               animationDuration: const Duration(seconds: 1),
                               colorChangeAnimationDuration:
@@ -274,7 +270,8 @@ class _BasePageState extends State<BasePage> {
                         PhosphorIcons.info(PhosphorIconsStyle.fill),
                         size: 25,
                       )
-                    : Icon(PhosphorIcons.info(PhosphorIconsStyle.regular),
+                    : Icon(
+                        PhosphorIcons.info(PhosphorIconsStyle.regular),
                         size: 25,
                       ),
               ),
@@ -301,7 +298,8 @@ class _BasePageState extends State<BasePage> {
           text: TextSpan(
             text: s,
             style: TextStyle(
-              fontWeight: selectedIndex == index ? FontWeight.bold : FontWeight.normal,
+              fontWeight:
+                  selectedIndex == index ? FontWeight.bold : FontWeight.normal,
               color: Colors.black,
               fontSize: 12,
             ),

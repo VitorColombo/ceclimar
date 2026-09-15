@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:tcc_ceclimar/utils/app_icons.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:tcc_ceclimar/controller/auth_user_controller.dart';
 import 'package:tcc_ceclimar/controller/my_profile_controller.dart';
@@ -34,10 +34,12 @@ class MyProfile extends StatefulWidget {
 class _MyProfileState extends State<MyProfile> {
   final AuthenticationController _controller = AuthenticationController();
   final MyProfileController _myProfileController = MyProfileController();
-  final ValueNotifier<bool> isUltimosRegistrosNotifier = ValueNotifier<bool>(false);
+  final ValueNotifier<bool> isUltimosRegistrosNotifier =
+      ValueNotifier<bool>(false);
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   Future<ImageProvider?>? _profileImageFuture;
-  final ImageProvider _defaultImage = const AssetImage('assets/images/imageProfile.png');
+  final ImageProvider _defaultImage =
+      const AssetImage('assets/images/imageProfile.png');
 
   @override
   void initState() {
@@ -78,7 +80,7 @@ class _MyProfileState extends State<MyProfile> {
           .showSnackBar(SnackBar(content: Text('Erro ao sair: $e')));
     }
   }
-  
+
   void _loadUserImage() {
     setState(() {
       _profileImageFuture = _fetchProfileImage();
@@ -104,8 +106,7 @@ class _MyProfileState extends State<MyProfile> {
 
             final bool combinedIsLoading = registersLoading ||
                 (!countersSnapshot.hasData &&
-                    countersSnapshot.connectionState !=
-                        ConnectionState.active);
+                    countersSnapshot.connectionState != ConnectionState.active);
 
             return Scaffold(
               key: _scaffoldKey,
@@ -124,7 +125,8 @@ class _MyProfileState extends State<MyProfile> {
                         child: Stack(
                           children: [
                             LoginHeaderWidget(
-                              imageFuture: _profileImageFuture ?? Future.value(null),
+                              imageFuture:
+                                  _profileImageFuture ?? Future.value(null),
                               pageHeader: PageHeader(
                                 text: "Meu perfil",
                                 icon: const Icon(
@@ -197,7 +199,8 @@ class _MyProfileState extends State<MyProfile> {
                                 RichText(
                                   text: TextSpan(
                                     text: "Registros realizados: ",
-                                    style: Theme.of(context).textTheme.bodyLarge,
+                                    style:
+                                        Theme.of(context).textTheme.bodyLarge,
                                   ),
                                 ),
                                 combinedIsLoading
@@ -209,8 +212,9 @@ class _MyProfileState extends State<MyProfile> {
                                     : RichText(
                                         text: TextSpan(
                                           text: "${registers.length}",
-                                          style:
-                                              Theme.of(context).textTheme.bodyLarge,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyLarge,
                                         ),
                                       ),
                               ],
@@ -249,7 +253,7 @@ class _MyProfileState extends State<MyProfile> {
       },
     );
   }
-  
+
   void showMyProfileBottomSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -265,7 +269,7 @@ class _MyProfileState extends State<MyProfile> {
                 onPressed: () {
                   Navigator.pop(context);
                   Navigator.pushNamed(context, EditProfile.routeName).then((_) {
-                    _loadUserImage(); 
+                    _loadUserImage();
                   });
                 },
                 style: TextButton.styleFrom(
@@ -278,7 +282,9 @@ class _MyProfileState extends State<MyProfile> {
                     vertical: 16,
                   ),
                   textStyle: const TextStyle(
-                      fontSize: 18, fontWeight: FontWeight.bold, fontFamily: "Inter"),
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: "Inter"),
                   overlayColor: Colors.white,
                 ),
                 child: const Text(
@@ -303,7 +309,9 @@ class _MyProfileState extends State<MyProfile> {
                   vertical: 16,
                 ),
                 textStyle: const TextStyle(
-                    fontSize: 18, fontWeight: FontWeight.bold, fontFamily: "Inter"),
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: "Inter"),
               ),
               child: const Text(
                 "Excluir conta",
@@ -348,8 +356,8 @@ class _MyProfileState extends State<MyProfile> {
             TextButton(
               onPressed: () async {
                 String password = _controller.passController.text.trim();
-                bool success =
-                    await _controller.deleteAccount(password, _scaffoldKey.currentContext!);
+                bool success = await _controller.deleteAccount(
+                    password, _scaffoldKey.currentContext!);
                 if (success) {
                   if (mounted) _logout(_scaffoldKey.currentContext!);
                 }
@@ -383,7 +391,8 @@ class UltimosRegistrosContent extends StatelessWidget {
     }
     final limitedRegisters = registers.take(10).toList();
     final placeholderRegisters = generatePlaceholderRegisters(6);
-    final displayRegisters = isLoading ? placeholderRegisters : limitedRegisters;
+    final displayRegisters =
+        isLoading ? placeholderRegisters : limitedRegisters;
 
     return SizedBox(
       height: 340,
@@ -434,30 +443,54 @@ class AnimaisEncontradosContent extends StatelessWidget {
                 classe: "Aves",
                 count: counters['birdsFound'] ?? 0,
                 thresholds: [
-                  BadgeThreshold(threshold: 1, assetPath: "assets/images/badges/gaivota1.png"),
-                  BadgeThreshold(threshold: 5, assetPath: "assets/images/badges/gaivota5NOVO.png"),
-                  BadgeThreshold(threshold: 20, assetPath: "assets/images/badges/gaivota10NOVO.png"),
-                  BadgeThreshold(threshold: 50, assetPath: "assets/images/badges/gaivota50NOVO.png"),
+                  BadgeThreshold(
+                      threshold: 1,
+                      assetPath: "assets/images/badges/gaivota1.png"),
+                  BadgeThreshold(
+                      threshold: 5,
+                      assetPath: "assets/images/badges/gaivota5NOVO.png"),
+                  BadgeThreshold(
+                      threshold: 20,
+                      assetPath: "assets/images/badges/gaivota10NOVO.png"),
+                  BadgeThreshold(
+                      threshold: 50,
+                      assetPath: "assets/images/badges/gaivota50NOVO.png"),
                 ],
               ),
               BadgeColumn(
                 classe: "Mamíferos",
                 count: counters['mammalsFound'] ?? 0,
                 thresholds: [
-                  BadgeThreshold(threshold: 1, assetPath: "assets/images/badges/lobo1.png"),
-                  BadgeThreshold(threshold: 5, assetPath: "assets/images/badges/lobo5NOVO.png"),
-                  BadgeThreshold(threshold: 20, assetPath: "assets/images/badges/lobo10NOVO.png"),
-                  BadgeThreshold(threshold: 50, assetPath: "assets/images/badges/lobo50NOVO.png"),
+                  BadgeThreshold(
+                      threshold: 1,
+                      assetPath: "assets/images/badges/lobo1.png"),
+                  BadgeThreshold(
+                      threshold: 5,
+                      assetPath: "assets/images/badges/lobo5NOVO.png"),
+                  BadgeThreshold(
+                      threshold: 20,
+                      assetPath: "assets/images/badges/lobo10NOVO.png"),
+                  BadgeThreshold(
+                      threshold: 50,
+                      assetPath: "assets/images/badges/lobo50NOVO.png"),
                 ],
               ),
               BadgeColumn(
                 classe: "Répteis",
                 count: counters['reptilesFound'] ?? 0,
                 thresholds: [
-                  BadgeThreshold(threshold: 1, assetPath: "assets/images/badges/tartaruga1.png"),
-                  BadgeThreshold(threshold: 5, assetPath: "assets/images/badges/tartaruga5NOVO.png"),
-                  BadgeThreshold(threshold: 20, assetPath: "assets/images/badges/tartaruga10NOVO.png"),
-                  BadgeThreshold(threshold: 50, assetPath: "assets/images/badges/tartaruga50NOVO.png"),
+                  BadgeThreshold(
+                      threshold: 1,
+                      assetPath: "assets/images/badges/tartaruga1.png"),
+                  BadgeThreshold(
+                      threshold: 5,
+                      assetPath: "assets/images/badges/tartaruga5NOVO.png"),
+                  BadgeThreshold(
+                      threshold: 20,
+                      assetPath: "assets/images/badges/tartaruga10NOVO.png"),
+                  BadgeThreshold(
+                      threshold: 50,
+                      assetPath: "assets/images/badges/tartaruga50NOVO.png"),
                 ],
               ),
             ],
@@ -466,7 +499,9 @@ class AnimaisEncontradosContent extends StatelessWidget {
             classe: "Cientista Cidadão",
             count: registerCount,
             thresholds: [
-              BadgeThreshold(threshold: 100, assetPath: "assets/images/badges/secretBadge.png"),
+              BadgeThreshold(
+                  threshold: 100,
+                  assetPath: "assets/images/badges/secretBadge.png"),
             ],
           ),
           const SizedBox(height: 10),

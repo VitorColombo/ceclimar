@@ -404,9 +404,6 @@ class NewRegisterFormController {
       } else {
         return baseData;
       }
-    
-
-    throw Exception('Invalid RegisterType or missing data (invalid coordinates)');
   }
 
   Future<void> _handleSubmission(BuildContext context, ConnectivityResult connectivityResult, Map<String, dynamic> data, RegisterType type) async {
@@ -677,6 +674,12 @@ class NewRegisterFormController {
       return imageUrl;
     } on FirebaseException catch (e) {
       debugPrint('Erro ao enviar imagem para o Firebase Storage: $e');
+      if (e.code == 'unknown') {
+        throw Exception(
+          'O Firebase Storage está indisponível neste projeto. '
+          'Atualize o projeto Firebase para o plano Blaze.',
+        );
+      }
       throw Exception('Falha ao enviar a imagem para o Firebase Storage: ${e.message ?? 'Erro desconhecido'}');
     }
     catch (e){
@@ -738,14 +741,14 @@ class NewRegisterFormController {
       );
   }
   
-  Future<void> _handleError(BuildContext context, dynamic error) {
+  void _handleError(BuildContext context, dynamic error) {
     String message;
     if (error is PlatformException) {
       message = error.message ?? 'Erro desconhecido';
     } else if (error is Exception) {
       message = error.toString();
     } else {
-      message = 'Falha ao se comunicar com os satélites, tente novamente: $error';
+      message = 'Falha ao enviar o registro: $error';
     }
 
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
@@ -758,7 +761,6 @@ class NewRegisterFormController {
         backgroundColor: Colors.red,
       ),
     );
-    throw Exception(message);
   }
   
   Future<void> retryPendingRegisters() async {

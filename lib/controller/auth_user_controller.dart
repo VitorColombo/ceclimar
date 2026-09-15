@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:tcc_ceclimar/utils/pass_generator.dart';
@@ -303,7 +304,21 @@ class AuthenticationController {
         String name = user.displayName!;
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Bem vindo, $name'), backgroundColor: Colors.green,));
       }
+    } on PlatformException catch (e) {
+      final message = switch (e.code) {
+        'sign_in_failed' => 'Falha no Google Sign-In. Verifique o SHA-1/SHA-256 do app no Firebase.',
+        'network_error' => 'Não foi possível conectar ao Google.',
+        'sign_in_canceled' => 'Login com Google cancelado.',
+        _ => 'Falha no Google Sign-In (${e.code}).',
+      };
+      debugPrint('Google Sign-In failed: code=${e.code}, message=${e.message}, details=${e.details}');
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(message), backgroundColor: Colors.red),
+      );
     } catch (e) {
+      debugPrint('Google Sign-In failed: $e');
+      if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(e.toString()), backgroundColor: Colors.red,),
       );

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:tcc_ceclimar/utils/app_icons.dart';
 import 'package:tcc_ceclimar/controller/auth_user_controller.dart';
 import 'package:tcc_ceclimar/controller/my_registers_controller.dart';
 import 'package:tcc_ceclimar/models/register_response.dart';
@@ -13,7 +13,7 @@ class RegisterDetailPage extends StatefulWidget {
   final VoidCallback? onDelete;
 
   const RegisterDetailPage({
-    super.key, 
+    super.key,
     required this.register,
     this.onDelete,
   });
@@ -82,7 +82,11 @@ class RegisterDetailPageState extends State<RegisterDetailPage> {
                   top: 50,
                   right: 5,
                   child: IconButton(
-                    icon: const Icon(Icons.close, color: Colors.white, size: 30,),
+                    icon: const Icon(
+                      Icons.close,
+                      color: Colors.white,
+                      size: 30,
+                    ),
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
@@ -104,9 +108,8 @@ class RegisterDetailPageState extends State<RegisterDetailPage> {
     ].where((image) => image.isNotEmpty).toList();
 
     return Scaffold(
-      extendBodyBehindAppBar: true,
-      body: CustomScrollView(
-        slivers: [
+        extendBodyBehindAppBar: true,
+        body: CustomScrollView(slivers: [
           SliverAppBar(
             pinned: true,
             collapsedHeight: 60,
@@ -127,96 +130,94 @@ class RegisterDetailPageState extends State<RegisterDetailPage> {
             flexibleSpace: FlexibleSpaceBar(
               background: Stack(
                 alignment: Alignment.bottomCenter,
-                  children: [
-                    PageView.builder(
-                      controller: _pageController,
-                      itemCount: images.length,
-                      onPageChanged: (index) {
-                        setState(() {
-                          _currentPage = index;
-                        });
-                      },
-                      itemBuilder: (context, index) {
-                        return GestureDetector(
-                          onTap: () => _openImageDialog(images[index]),
-                          child: Image.network(
-                            images[index],
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              return const Center(
-                                child: Icon(Icons.image_not_supported, size: 50, color: Colors.grey),
-                              );
-                            },
-                            loadingBuilder: (context, child, loadingProgress) {
-                              if (loadingProgress == null) return child;
-                                return const Center(
-                                  child: CircularProgressIndicator(),
-                                );
-                              },
-                            ),
-                        );
-                      },
-                    ),
-                    if(images.length == 1)
-                      Positioned(
-                        bottom: 10,
-                        child: Container(
-                          width: 8.0,
-                          height: 8.0,
-                          margin: const EdgeInsets.symmetric(
-                            vertical: 10.0, horizontal: 2.0
-                          ),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.white,
-                            border: Border.all(
-                              color: Colors.grey,
-                              width: 1,
-                            ),
+                children: [
+                  PageView.builder(
+                    controller: _pageController,
+                    itemCount: images.length,
+                    onPageChanged: (index) {
+                      setState(() {
+                        _currentPage = index;
+                      });
+                    },
+                    itemBuilder: (context, index) {
+                      return GestureDetector(
+                        onTap: () => _openImageDialog(images[index]),
+                        child: Image.network(
+                          images[index],
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return const Center(
+                              child: Icon(Icons.image_not_supported,
+                                  size: 50, color: Colors.grey),
+                            );
+                          },
+                          loadingBuilder: (context, child, loadingProgress) {
+                            if (loadingProgress == null) return child;
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          },
+                        ),
+                      );
+                    },
+                  ),
+                  if (images.length == 1)
+                    Positioned(
+                      bottom: 10,
+                      child: Container(
+                        width: 8.0,
+                        height: 8.0,
+                        margin: const EdgeInsets.symmetric(
+                            vertical: 10.0, horizontal: 2.0),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.white,
+                          border: Border.all(
+                            color: Colors.grey,
+                            width: 1,
                           ),
                         ),
                       ),
-                    if(images.length > 1)
-                      Positioned(
-                        bottom: 10,
-                        child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: List.generate(
-                                images.length,
-                                (index) => Container(
+                    ),
+                  if (images.length > 1)
+                    Positioned(
+                      bottom: 10,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: List.generate(
+                            images.length,
+                            (index) => Container(
                                   width: 8.0,
                                   height: 8.0,
                                   margin: const EdgeInsets.symmetric(
-                                      vertical: 10.0, horizontal: 2.0
-                                    ),
+                                      vertical: 10.0, horizontal: 2.0),
                                   decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: _currentPage == index
-                                          ? Colors.white
-                                          : Colors.grey[500],
-                                      border: Border.all(
-                                        color: Colors.grey,
-                                        width: 1,
-                                      ),
+                                    shape: BoxShape.circle,
+                                    color: _currentPage == index
+                                        ? Colors.white
+                                        : Colors.grey[500],
+                                    border: Border.all(
+                                      color: Colors.grey,
+                                      width: 1,
+                                    ),
                                   ),
-                                )
-                           ),
-                        ),
+                                )),
+                      ),
                     ),
-                  ],
-                 ),
+                ],
+              ),
             ),
           ),
           SliverList(
-            delegate: SliverChildListDelegate(
-            [
+            delegate: SliverChildListDelegate([
               SizedBox(
                 height: 700,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Padding(
-                      padding: const EdgeInsets.only(top: 10, left: 16, right: 16),
+                      padding:
+                          const EdgeInsets.only(top: 10, left: 16, right: 16),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -250,12 +251,16 @@ class RegisterDetailPageState extends State<RegisterDetailPage> {
                                   child: Container(
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
-                                      border: Border.all(color: Color.fromARGB(255, 121, 121, 121), width: 1),
+                                      border: Border.all(
+                                          color: Color.fromARGB(
+                                              255, 121, 121, 121),
+                                          width: 1),
                                     ),
                                     child: Padding(
                                       padding: const EdgeInsets.all(4.0),
                                       child: Icon(
-                                        PhosphorIcons.trash(PhosphorIconsStyle.light),
+                                        PhosphorIcons.trash(
+                                            PhosphorIconsStyle.light),
                                         size: 25,
                                       ),
                                     ),
@@ -269,12 +274,17 @@ class RegisterDetailPageState extends State<RegisterDetailPage> {
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const SizedBox(height: 8), 
-                                  StatusLabel(status: '${widget.register?.status}', borderColor: Colors.transparent),
+                                  const SizedBox(height: 8),
+                                  StatusLabel(
+                                      status: '${widget.register?.status}',
+                                      borderColor: Colors.transparent),
                                   const SizedBox(height: 8),
                                   Row(
                                     children: [
-                                      Icon(PhosphorIcons.user(PhosphorIconsStyle.regular), size: 20),
+                                      Icon(
+                                          PhosphorIcons.user(
+                                              PhosphorIconsStyle.regular),
+                                          size: 20),
                                       const SizedBox(width: 8),
                                       Text(
                                         widget.register!.authorName,
@@ -285,17 +295,28 @@ class RegisterDetailPageState extends State<RegisterDetailPage> {
                                   const SizedBox(height: 8),
                                   Row(
                                     children: [
-                                      Icon(PhosphorIcons.mapPin(PhosphorIconsStyle.regular), size: 20),
+                                      Icon(
+                                          PhosphorIcons.mapPin(
+                                              PhosphorIconsStyle.regular),
+                                          size: 20),
                                       const SizedBox(width: 8),
-                                      Text(widget.register!.city.isEmpty ? "Cidade não informada" : widget.register!.city),
+                                      Text(widget.register!.city.isEmpty
+                                          ? "Cidade não informada"
+                                          : widget.register!.city),
                                     ],
                                   ),
                                   const SizedBox(height: 8),
                                   Row(
                                     children: [
-                                      Icon(PhosphorIcons.calendarBlank(PhosphorIconsStyle.regular), size: 20,),
+                                      Icon(
+                                        PhosphorIcons.calendarBlank(
+                                            PhosphorIconsStyle.regular),
+                                        size: 20,
+                                      ),
                                       const SizedBox(width: 8),
-                                      Text(DateFormat('dd/MM/yyyy').format(widget.register!.date),
+                                      Text(
+                                        DateFormat('dd/MM/yyyy')
+                                            .format(widget.register!.date),
                                         style: const TextStyle(fontSize: 16),
                                       ),
                                     ],
@@ -308,7 +329,7 @@ class RegisterDetailPageState extends State<RegisterDetailPage> {
                                 children: [
                                   Container(
                                     width: 95,
-                                      decoration: BoxDecoration(
+                                    decoration: BoxDecoration(
                                       color: Colors.grey[200],
                                       border: Border.all(
                                         color: Colors.transparent,
@@ -333,7 +354,7 @@ class RegisterDetailPageState extends State<RegisterDetailPage> {
                                   const SizedBox(height: 4),
                                   Container(
                                     width: 95,
-                                      decoration: BoxDecoration(
+                                    decoration: BoxDecoration(
                                       color: Colors.grey[200],
                                       border: Border.all(
                                         color: Colors.transparent,
@@ -365,7 +386,8 @@ class RegisterDetailPageState extends State<RegisterDetailPage> {
                             style: const TextStyle(fontSize: 16),
                           ),
                           Visibility(
-                            visible: widget.register!.animal.species != null && widget.register!.animal.species!.isNotEmpty,
+                            visible: widget.register!.animal.species != null &&
+                                widget.register!.animal.species!.isNotEmpty,
                             child: Column(
                               children: [
                                 const SizedBox(height: 8),
@@ -389,7 +411,8 @@ class RegisterDetailPageState extends State<RegisterDetailPage> {
                             ),
                           ),
                           Visibility(
-                            visible: widget.register!.referencePoint!.isNotEmpty,
+                            visible:
+                                widget.register!.referencePoint!.isNotEmpty,
                             child: Column(
                               children: [
                                 const SizedBox(height: 8),
@@ -402,25 +425,32 @@ class RegisterDetailPageState extends State<RegisterDetailPage> {
                           ),
                           const SizedBox(height: 8),
                           Container(
-                            padding: const EdgeInsets.only(left: 8, right: 8, top: 4, bottom: 4),
+                            padding: const EdgeInsets.only(
+                                left: 8, right: 8, top: 4, bottom: 4),
                             decoration: BoxDecoration(
-                              color: getSampleStateColor(widget.register!.sampleState),
+                              color: getSampleStateColor(
+                                  widget.register!.sampleState),
                               borderRadius: BorderRadius.circular(10),
                             ),
-                            child: 
-                            Text(
+                            child: Text(
                               widget.register!.sampleState != null
-                                ? 'Grau de decomposição ${widget.register!.sampleState}'
-                                : 'Registro em análise',
+                                  ? 'Grau de decomposição ${widget.register!.sampleState}'
+                                  : 'Registro em análise',
                               style: TextStyle(
-                              fontSize: 16,
-                              color: widget.register!.sampleState == 2 ? Colors.grey[600] : Colors.white,
+                                fontSize: 16,
+                                color: widget.register!.sampleState == 2
+                                    ? Colors.grey[600]
+                                    : Colors.white,
                               ),
                             ),
                           ),
                           const SizedBox(height: 16),
                           Visibility(
-                            visible: widget.register!.status == "Validado" && widget.register!.animal.species != null && widget.register!.animal.order != null && widget.register!.animal.family != null && widget.register!.animal.genus != null,
+                            visible: widget.register!.status == "Validado" &&
+                                widget.register!.animal.species != null &&
+                                widget.register!.animal.order != null &&
+                                widget.register!.animal.family != null &&
+                                widget.register!.animal.genus != null,
                             child: Container(
                               padding: const EdgeInsets.all(16),
                               decoration: BoxDecoration(
@@ -437,44 +467,56 @@ class RegisterDetailPageState extends State<RegisterDetailPage> {
                                     ),
                                   ),
                                   const SizedBox(height: 8),
-                                    RichText(
+                                  RichText(
                                     text: TextSpan(
-                                      style: const TextStyle(fontSize: 16, color: Colors.black),
+                                      style: const TextStyle(
+                                          fontSize: 16, color: Colors.black),
                                       children: [
-                                      const TextSpan(text: 'Animal da ordem '),
-                                      TextSpan(
-                                        text: widget.register!.animal.order,
-                                        style: const TextStyle(fontStyle: FontStyle.normal),
-                                      ),
-                                      const TextSpan(text: ', família '),
-                                      TextSpan(
-                                        text: widget.register!.animal.family,
-                                        style: const TextStyle(fontStyle: FontStyle.normal),
-                                      ),
-                                      const TextSpan(text: ', genêro '),
-                                      TextSpan(
-                                        text: widget.register!.animal.genus,
-                                        style: const TextStyle(fontStyle: FontStyle.italic),
-                                      ),
-                                      const TextSpan(text: ', espécie '),
-                                      TextSpan(
-                                        text: widget.register!.animal.species,
-                                        style: const TextStyle(fontStyle: FontStyle.italic),
-                                      ),
-                                      const TextSpan(text: '.'),
+                                        const TextSpan(
+                                            text: 'Animal da ordem '),
+                                        TextSpan(
+                                          text: widget.register!.animal.order,
+                                          style: const TextStyle(
+                                              fontStyle: FontStyle.normal),
+                                        ),
+                                        const TextSpan(text: ', família '),
+                                        TextSpan(
+                                          text: widget.register!.animal.family,
+                                          style: const TextStyle(
+                                              fontStyle: FontStyle.normal),
+                                        ),
+                                        const TextSpan(text: ', genêro '),
+                                        TextSpan(
+                                          text: widget.register!.animal.genus,
+                                          style: const TextStyle(
+                                              fontStyle: FontStyle.italic),
+                                        ),
+                                        const TextSpan(text: ', espécie '),
+                                        TextSpan(
+                                          text: widget.register!.animal.species,
+                                          style: const TextStyle(
+                                              fontStyle: FontStyle.italic),
+                                        ),
+                                        const TextSpan(text: '.'),
                                       ],
                                     ),
-                                    ),
+                                  ),
                                   const SizedBox(height: 8),
                                   Visibility(
-                                    visible: widget.register?.specialistReturn != null && widget.register!.specialistReturn!.isNotEmpty,
-                                    child: RichText(
-                                    text: TextSpan(
-                                      text: "${widget.register!.specialistReturn}",
-                                      style: const TextStyle(fontSize: 16, color: Colors.black),
-                                      ),
-                                    )
-                                  ),
+                                      visible:
+                                          widget.register?.specialistReturn !=
+                                                  null &&
+                                              widget.register!.specialistReturn!
+                                                  .isNotEmpty,
+                                      child: RichText(
+                                        text: TextSpan(
+                                          text:
+                                              "${widget.register!.specialistReturn}",
+                                          style: const TextStyle(
+                                              fontSize: 16,
+                                              color: Colors.black),
+                                        ),
+                                      )),
                                 ],
                               ),
                             ),
@@ -485,12 +527,9 @@ class RegisterDetailPageState extends State<RegisterDetailPage> {
                   ],
                 ),
               ),
-            ]
-          ),
-        )
-      ]
-      )
-    );
+            ]),
+          )
+        ]));
   }
 
   Color getSampleStateColor(int? sampleState) {
@@ -515,7 +554,8 @@ class RegisterDetailPageState extends State<RegisterDetailPage> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Confirmar Exclusão'),
-        content: const Text('Tem certeza que deseja excluir este registro? Esta ação não pode ser desfeita.'),
+        content: const Text(
+            'Tem certeza que deseja excluir este registro? Esta ação não pode ser desfeita.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -539,9 +579,7 @@ class RegisterDetailPageState extends State<RegisterDetailPage> {
       );
 
       final result = await myRegistersController.deleteRegister(
-        widget.register!.registerNumber, 
-        widget.register!.userId
-      );
+          widget.register!.registerNumber, widget.register!.userId);
 
       if (!mounted) return;
 
@@ -550,10 +588,10 @@ class RegisterDetailPageState extends State<RegisterDetailPage> {
       if (result) {
         Navigator.of(context).pop();
         widget.onDelete?.call();
-        
+
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Registro excluído com sucesso!'), 
+            content: Text('Registro excluído com sucesso!'),
             duration: Duration(seconds: 2),
             backgroundColor: Colors.green,
           ),
@@ -569,16 +607,14 @@ class RegisterDetailPageState extends State<RegisterDetailPage> {
       }
     } catch (e) {
       if (!mounted) return;
-      
+
       Navigator.of(context).pop();
-      
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Erro: $e'), 
-          duration: Duration(seconds: 2),
-          backgroundColor: Colors.red,
-        )
-      );
+
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Erro: $e'),
+        duration: Duration(seconds: 2),
+        backgroundColor: Colors.red,
+      ));
     }
   }
 }

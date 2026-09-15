@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:tcc_ceclimar/utils/app_icons.dart';
 import 'package:share_plus/share_plus.dart';
 
 import 'package:tcc_ceclimar/models/register_response.dart';
@@ -33,9 +33,9 @@ class TableManipulationBottomSheet extends StatelessWidget {
 
     if (userRole != 'admin') {
       filteredData = data
-        .where((e) => e.status.toLowerCase() == 'validado')
-        .map((e) => e.copyWith(authorName: ''))
-        .toList();
+          .where((e) => e.status.toLowerCase() == 'validado')
+          .map((e) => e.copyWith(authorName: ''))
+          .toList();
     }
 
     var excelData = convertDataToExcel(filteredData);
@@ -52,12 +52,13 @@ class TableManipulationBottomSheet extends StatelessWidget {
     var excel = Excel.createExcel();
     Sheet sheet = excel['Registros'];
     excel.setDefaultSheet(sheet.sheetName);
-    var titleCell = sheet.cell(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: 0));
+    var titleCell =
+        sheet.cell(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: 0));
     titleCell.value = TextCellValue('Fauna Marinha RS');
 
     CellStyle titleStyle = CellStyle(
       backgroundColorHex: ExcelColor.fromHexString('#0099FF'),
-      fontColorHex: ExcelColor.fromHexString('#FFFFFF'), 
+      fontColorHex: ExcelColor.fromHexString('#FFFFFF'),
       bold: true,
       horizontalAlign: HorizontalAlign.Center,
       verticalAlign: VerticalAlign.Center,
@@ -66,10 +67,26 @@ class TableManipulationBottomSheet extends StatelessWidget {
     titleCell.cellStyle = titleStyle;
 
     List<String> headers = [
-      'ID', 'Data', 'Horário', 'Hora Encalhe', 'Imagem', 'Nome popular',
-      'Espécie', 'Gênero', 'Família', 'Ordem', 'Classe', 'ID Guarita',
-      'Latitude', 'Longitude', 'Município', 'Nome do informante',
-      'Percepção do observador', 'Grau de decomposição', 'Observações', 'Status'
+      'ID',
+      'Data',
+      'Horário',
+      'Hora Encalhe',
+      'Imagem',
+      'Nome popular',
+      'Espécie',
+      'Gênero',
+      'Família',
+      'Ordem',
+      'Classe',
+      'ID Guarita',
+      'Latitude',
+      'Longitude',
+      'Município',
+      'Nome do informante',
+      'Percepção do observador',
+      'Grau de decomposição',
+      'Observações',
+      'Status'
     ];
 
     CellStyle headerStyle = CellStyle(
@@ -84,11 +101,14 @@ class TableManipulationBottomSheet extends StatelessWidget {
     );
     Map<int, int> maxColumnWidths = {};
 
-    sheet.merge(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: 0),
-    CellIndex.indexByColumnRow(columnIndex: headers.length - 1, rowIndex: 0));
+    sheet.merge(
+        CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: 0),
+        CellIndex.indexByColumnRow(
+            columnIndex: headers.length - 1, rowIndex: 0));
 
     for (int i = 0; i < headers.length; i++) {
-      var cell = sheet.cell(CellIndex.indexByColumnRow(columnIndex: i, rowIndex: 1));
+      var cell =
+          sheet.cell(CellIndex.indexByColumnRow(columnIndex: i, rowIndex: 1));
       cell.value = TextCellValue(headers[i]);
       cell.cellStyle = headerStyle;
 
@@ -126,7 +146,8 @@ class TableManipulationBottomSheet extends StatelessWidget {
       ];
 
       for (int j = 0; j < rowData.length; j++) {
-        var cell = sheet.cell(CellIndex.indexByColumnRow(columnIndex: j, rowIndex: currentRow));
+        var cell = sheet.cell(
+            CellIndex.indexByColumnRow(columnIndex: j, rowIndex: currentRow));
         cell.value = TextCellValue(rowData[j]);
 
         if (![4, 16, 18].contains(j)) {
@@ -144,8 +165,8 @@ class TableManipulationBottomSheet extends StatelessWidget {
     for (int i = 0; i < headers.length; i++) {
       if (![4, 16, 18].contains(i)) {
         sheet.setColumnWidth(i, (maxColumnWidths[i]! + 2).toDouble());
-      }else{
-      sheet.setColumnWidth(i, (40));  
+      } else {
+        sheet.setColumnWidth(i, (40));
       }
     }
 
@@ -158,14 +179,15 @@ class TableManipulationBottomSheet extends StatelessWidget {
       final result = await OpenFilex.open(file.path);
 
       if (result.type != ResultType.done) {
-        if(!context.mounted) return;
+        if (!context.mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Erro ao abrir arquivo: ${result.message}')),
         );
       }
     } catch (e) {
-      if(!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erro no download: $e')));
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Erro no download: $e')));
     }
   }
 
@@ -179,8 +201,9 @@ class TableManipulationBottomSheet extends StatelessWidget {
         text: 'Arquivo gerado com registros selecionados.',
       );
     } catch (e) {
-      if(!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erro ao compartilhar: $e')));
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Erro ao compartilhar: $e')));
     }
   }
 

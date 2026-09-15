@@ -2,7 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 // ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:tcc_ceclimar/utils/app_icons.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:tcc_ceclimar/models/register_response.dart';
 import 'package:tcc_ceclimar/pages/evaluate_register.dart';
@@ -30,25 +30,26 @@ class RegisterItem extends StatelessWidget {
           padding: const EdgeInsets.all(4),
           child: GestureDetector(
             onTap: isLoading
-              ? null
-              : () async {
-                  final result = await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => route == RegisterDetailPage.routeName
-                        ? RegisterDetailPage(
-                          register: register,
-                          onDelete: onDeleted,
-                        )
-                        : EvaluateRegister(
-                          register: register,
-                        ),
-                    ),
-                  );
-                  if (result == true && onDeleted != null) {
-                    onDeleted!();
-                  }
-                },
+                ? null
+                : () async {
+                    final result = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            route == RegisterDetailPage.routeName
+                                ? RegisterDetailPage(
+                                    register: register,
+                                    onDelete: onDeleted,
+                                  )
+                                : EvaluateRegister(
+                                    register: register,
+                                  ),
+                      ),
+                    );
+                    if (result == true && onDeleted != null) {
+                      onDeleted!();
+                    }
+                  },
             child: Card(
               elevation: 0,
               shape: RoundedRectangleBorder(
@@ -71,63 +72,72 @@ class RegisterItem extends StatelessWidget {
                           ? CachedNetworkImage(
                               imageUrl: register.registerImageUrl,
                               fit: BoxFit.cover,
-                              errorWidget: (context, url, error) => const Icon(Icons.broken_image, size: 40, color: Colors.grey),
+                              errorWidget: (context, url, error) => const Icon(
+                                  Icons.broken_image,
+                                  size: 40,
+                                  color: Colors.grey),
                             )
-                          : const Icon(Icons.image_not_supported, size: 40, color: Colors.grey),
+                          : const Icon(Icons.image_not_supported,
+                              size: 40, color: Colors.grey),
                     ),
                   ),
                   title: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Flexible(
-                            child: Text(
-                              register.animal.popularName!,
-                              style: const TextStyle(fontWeight: FontWeight.bold),
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Baseline(
-                            baseline: 14,
-                            baselineType: TextBaseline.alphabetic,
-                            child: Container(
-                              width: 10,
-                              height: 10,
-                              decoration: BoxDecoration(
-                                color: register.status == "Validado"
-                                    ? const Color.fromARGB(255, 178, 227, 170)
-                                    : register.status == "Enviado"
-                                      ? const Color.fromARGB(255, 255, 242, 124)
-                                      : Colors.grey[200],
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                          ),
-                        ],
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Flexible(
+                        child: Text(
+                          register.animal.popularName!,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                        ),
                       ),
+                      const SizedBox(width: 8),
+                      Baseline(
+                        baseline: 14,
+                        baselineType: TextBaseline.alphabetic,
+                        child: Container(
+                          width: 10,
+                          height: 10,
+                          decoration: BoxDecoration(
+                            color: register.status == "Validado"
+                                ? const Color.fromARGB(255, 178, 227, 170)
+                                : register.status == "Enviado"
+                                    ? const Color.fromARGB(255, 255, 242, 124)
+                                    : Colors.grey[200],
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Icon(PhosphorIcons.mapPin(), color: Colors.black, size: 20),
+                          Icon(PhosphorIcons.mapPin(),
+                              color: Colors.black, size: 20),
                           const SizedBox(width: 6),
-                            SizedBox(
-                                width: MediaQuery.of(context).size.width * 0.4,
-                                child: Text(register.city.isEmpty ? "Cidade não informada" : register.city,
-                                   maxLines: 1,
-                                   overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(fontSize: 14),
-                                ),
-                              ),
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.4,
+                            child: Text(
+                              register.city.isEmpty
+                                  ? "Cidade não informada"
+                                  : register.city,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(fontSize: 14),
+                            ),
+                          ),
                         ],
                       ),
                       const SizedBox(height: 4),
                       Row(
                         children: [
-                          Icon(PhosphorIcons.calendarBlank(), color: Colors.black, size: 20),
+                          Icon(PhosphorIcons.calendarBlank(),
+                              color: Colors.black, size: 20),
                           const SizedBox(width: 6),
                           Text(
                             DateFormat('dd/MM/yyyy').format(register.date),
@@ -137,7 +147,8 @@ class RegisterItem extends StatelessWidget {
                       ),
                     ],
                   ),
-                  trailing: const Icon(Icons.arrow_forward_ios, color: Colors.grey),
+                  trailing:
+                      const Icon(Icons.arrow_forward_ios, color: Colors.grey),
                 ),
               ),
             ),

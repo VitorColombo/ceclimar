@@ -28,7 +28,6 @@ dependencies:
   photo_view: ^0.15.0
   geolocator: ^13.0.2
   geocoding: ^3.0.0
-  phosphor_flutter: ^2.1.0
   url_launcher: ^6.3.1
   accordion: ^2.6.0
   cached_network_image: ^3.4.1
@@ -37,7 +36,7 @@ dependencies:
   path_provider: ^2.1.1
   connectivity_plus: ^5.0.2
   build_runner: ^2.4.8
-  skeletonizer: ^1.4.2
+  skeletonizer: ^2.0.0
   badges: ^3.1.2
   pie_chart: ^5.4.0
   graphic: ^2.5.0
@@ -47,7 +46,7 @@ dependencies:
   open_filex: ^4.3.4
   excel: ^4.0.6
   flutter_map: ^8.1.1
-  intl: ^0.19.0
+  intl: 0.20.2
   permission_handler: ^12.0.0+1
   device_info_plus: ^11.3.3
 
