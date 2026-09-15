@@ -12,18 +12,18 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 void main() async {
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-      statusBarIconBrightness: Brightness.dark, 
-    ));
+    statusBarColor: Colors.transparent,
+    statusBarIconBrightness: Brightness.dark,
+  ));
 
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   await FirebaseAppCheck.instance.activate(
-    androidProvider: kDebugMode
-        ? AndroidProvider.debug
-        : AndroidProvider.playIntegrity,
+    androidProvider:
+        kDebugMode ? AndroidProvider.debug : AndroidProvider.playIntegrity,
   );
-  FirebaseFirestore.instance.settings = const Settings(persistenceEnabled: true);
+  FirebaseFirestore.instance.settings =
+      const Settings(persistenceEnabled: true);
   final appDocumentDir = await getApplicationDocumentsDirectory();
   Hive.init(appDocumentDir.path);
   Hive.registerAdapter(LocalRegisterAdapter());
